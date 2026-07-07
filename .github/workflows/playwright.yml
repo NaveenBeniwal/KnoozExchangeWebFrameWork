@@ -7,46 +7,110 @@ on:
     branches: [main]
   workflow_dispatch: # manual trigger button in GitHub UI
 
-  jobs:
-    test:
-      runs-on: ubuntu-latest
-      timeout-minutes: 30
-      
-      steps:
-        - name: Checkout code
-          uses: actions/checkout@v4
+jobs:
+  ui-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
 
-        - name: Setup Node.js
-          uses: actions/setup-node@v4
-          with:
-            node-version: 20
+    env:
+      ENV: stage
+      BASE_URL: ${{ secrets.BASE_URL }}
+      EMAIL: ${{ secrets.EMAIL }}
+      PASSWORD: ${{ secrets.PASSWORD }}
+      OTP: ${{ secrets.OTP }}
 
-        - name: Install dependencies
-          run: npm ci
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-        - name: Install Playwright browsers
-          run: npx playwright install --with-deps chromium
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
 
-        - name: Run tests
-          run: npx playwright test --project=chromium
-          env:
-          Env: qa
-          BASE_URL: ${{ secrets.BASE_URL }}
-          USERNAME: ${{ secrets.USERNAME }}
-          PASSWORD: ${{ secrets.PASSWORD }}
-          API_BASE_URL: ${{ secrets.API_BASE_URL }}
-          API_TOKEN: ${{ secrets.API_TOKEN }}
+      - name: Install dependencies
+        run: npm ci
 
-          -name: Upload HTML report
-          if: always()
-          uses: actions/upload-artifact@v4
-          with:
-            name: playwright-html-report
-            path: reports/html-report
-            retention-days: 30
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
 
-            -name: Upload Allure report
-            if: always()
-            uses: actions/upload-artifact@v4
-            with:
-              name: allure-results
+      - name: Run UI tests
+        run: npx playwright test tests/homepage.spec.ts tests/loginpage.spec.ts tests/loginpagevalidation.spec.ts tests/otppagevalidation.spec.ts tests/portfolio tests/trade --project=chromium
+
+      - name: Upload Playwright HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-playwright-html-report
+          path: reports/html-report
+          retention-days: 30
+
+      - name: Upload Allure results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-allure-results
+          path: allure-results
+          retention-days: 30
+
+  api-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    env:
+      ENV: stage
+      BASE_URL: ${{ secrets.BASE_URL }}
+      EMAIL: ${{ secrets.EMAIL }}
+      PASSWORD: ${{ secrets.PASSWORD }}
+      OTP: ${{ secrets.OTP }}
+      API_BASE_URL: ${{ secrets.API_BASE_URL }}
+      API_TOKEN: ${{ secrets.API_TOKEN }}
+      GRANT_TYPE: ${{ secrets.GRANT_TYPE }}
+      OAUTH_CLIENT_ID: ${{ secrets.OAUTH_CLIENT_ID }}
+      OAUTH_CLIENT_SECRET: ${{ secrets.OAUTH_CLIENT_SECRET }}
+      TRADE_BASE_URL: ${{ secrets.TRADE_BASE_URL }}
+      TRADE_USER_EMAIL: ${{ secrets.TRADE_USER_EMAIL }}
+      TRADE_USER_PASSWORD: ${{ secrets.TRADE_USER_PASSWORD }}
+      TRADE_2FA_SECRET: ${{ secrets.TRADE_2FA_SECRET }}
+      TRADE_BUY_MARKET: ${{ secrets.TRADE_BUY_MARKET }}
+      TRADE_BUY_VOLUME: ${{ secrets.TRADE_BUY_VOLUME }}
+      TRADE_BUY_PRICE: ${{ secrets.TRADE_BUY_PRICE }}
+      TRADE_SELL_MARKET: ${{ secrets.TRADE_SELL_MARKET }}
+      TRADE_SELL_VOLUME: ${{ secrets.TRADE_SELL_VOLUME }}
+      TRADE_SELL_PRICE: ${{ secrets.TRADE_SELL_PRICE }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run API tests
+        run: npx playwright test tests/api --project=chromium
+
+      - name: Upload Playwright HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-playwright-html-report
+          path: reports/html-report
+          retention-days: 30
+
+      - name: Upload Allure results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-allure-results
+          path: allure-results
+          retention-days: 30
