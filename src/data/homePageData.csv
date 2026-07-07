@@ -1,0 +1,26 @@
+scenario,param,expectedUrl,expectedText,description
+home_url,,https://stage-exchange.knooz.com/,,Home page loads at the correct URL
+home_title,,,KNOOZ,Home page title should be KNOOZ
+button_visible,Exchange,,,Exchange button should be visible on the home page
+button_visible,Sign In,,,Sign In button should be visible on the home page
+button_visible,Register,,,Register button should be visible on the home page
+button_visible,Contact Us,,,Contact Us link should be visible on the home page
+button_visible,Language icon,,,Language icon should be visible on the home page
+button_visible,Theme toggle,,,Theme toggle icon should be visible on the home page
+button_visible,Logo,,,KNOOZ logo should be visible on the home page
+exchange_navigation,,https://stage-exchange.knooz.com/advanceTrading/ethusdt,,Clicking Exchange navigates to the ETH/USDT trading page
+login_link_exchange,first,https://stage-exchange.knooz.com/login,,First Log In link on the Exchange page navigates to login
+login_link_exchange,last,https://stage-exchange.knooz.com/login,,Second Log In link on the Exchange page navigates to login
+register_link_exchange,first,https://stage-exchange.knooz.com/createAccount,,First Register link on the Exchange page navigates to create account
+register_link_exchange,last,https://stage-exchange.knooz.com/createAccount,,Second Register link on the Exchange page navigates to create account
+available_balance,,,0,Available balance without login should show 0 on the Exchange page
+signin_home,,https://stage-exchange.knooz.com/login,,Sign In button on the home page navigates to login
+register_home,,https://stage-exchange.knooz.com/createAccount,,Register button on the home page navigates to create account
+contact_us,,https://stage-exchange.knooz.com/support,,Contact Us link navigates to the support page
+signin_support,,https://stage-exchange.knooz.com/login,,Sign In button on the support page navigates to login
+logo_login_page,,https://stage-exchange.knooz.com/,,Clicking the logo on the login page navigates home
+language_select,English,,CRYPTOCURRENCY EXCHANGE,Select English language and verify English content is shown
+language_select,Arabic,,كنوز,Select Arabic language and verify Arabic content is shown
+theme_initial,,,theme-dark,Default theme on page load should be dark
+theme_toggle,,,theme-light,Toggling the theme should switch from dark to light
+theme_toggle,,,theme-dark,Toggling the theme again should switch back from light to dark

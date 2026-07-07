@@ -1,0 +1,49 @@
+scenario,email,password,expectedError
+invalid_email,abc@@example.com,,Please enter valid email
+invalid_email,abc.example.com,,Please enter valid email
+invalid_email,abc@.com,,Please enter valid email
+invalid_email,abc@com,,Please enter valid email
+invalid_email,@example.com,,Please enter valid email
+invalid_email,abc@exam_ple.com,,Please enter valid email
+invalid_email,abc@-example.com,,Please enter valid email
+invalid_email,abc@example..com,,Please enter valid email
+invalid_email,abc..@example.com,,Please enter valid email
+invalid_email,abc.@example.com,,Please enter valid email
+invalid_email,abc@exam!ple.com,,Please enter valid email
+invalid_email,abc@example.c,,Please enter valid email
+invalid_email,abc@example.123,,Please enter valid email
+invalid_email,abc@.example.com,,Please enter valid email
+invalid_email,abc@.com.com,,Please enter valid email
+invalid_email,abc@%*.com,,Please enter valid email
+invalid_email,abc@exam#ple.com,,Please enter valid email
+invalid_email,abc@exam$ple.com,,Please enter valid email
+invalid_email,abc@exam%ple.com,,Please enter valid email
+invalid_email,abc@exam^ple.com,,Please enter valid email
+invalid_email,abc@exam&ple.com,,Please enter valid email
+invalid_email,abc@exam*ple.com,,Please enter valid email
+invalid_email,abc@exam(ple.com,,Please enter valid email
+invalid_email,abc@exam)ple.com,,Please enter valid email
+invalid_email,abc@exam+ple.com,,Please enter valid email
+invalid_email,abc@exam=ple.com,,Please enter valid email
+invalid_email,abc@exam{ple.com,,Please enter valid email
+invalid_email,abc@exam}ple.com,,Please enter valid email
+invalid_email,abc@exam[ple.com,,Please enter valid email
+invalid_email,abc@exam]ple.com,,Please enter valid email
+invalid_email,abc@exam|ple.com,,Please enter valid email
+invalid_email,abc@exam\ple.com,,Please enter valid email
+invalid_email,abc@exam/ple.com,,Please enter valid email
+invalid_email,abc@exam:ple.com,,Please enter valid email
+invalid_email,abc@exam;ple.com,,Please enter valid email
+invalid_email,abc@exam<ple.com,,Please enter valid email
+invalid_email,abc@exam>ple.com,,Please enter valid email
+invalid_email,abc@exam?ple.com,,Please enter valid email
+invalid_email,abc@exam~ple.com,,Please enter valid email
+invalid_email,abc@exam`ple.com,,Please enter valid email
+invalid_email,abc@exam ple.com,,Please enter valid email
+invalid_password,naveen.beniwal@antiersolutions.com,wrongpass,Invalid Credentials. Total 4 attempts allowed
+invalid_password,naveen.beniwal@antiersolutions.com,Test123!,Invalid Credentials. Total 3 attempts allowed
+invalid_password,naveen.beniwal@antiersolutions.com,Test321,Invalid Credentials. Total 2 attempts allowed
+invalid_password,naveen.beniwal@antiersolutions.com,Admin123,Invalid Credentials. Total 1 attempts allowed
+invalid_password,naveen.beniwal@antiersolutions.com,Test@321,Invalid Credentials. Total 0 attempts allowed
+invalid_password,naveen.beniwal@antiersolutions.com,Test@123,Your acount is locked due to multiple failed login attempts
+both_wrong,naveen@antiersolutions.com,wrongpass123,Incorrect email or password. Please try again.

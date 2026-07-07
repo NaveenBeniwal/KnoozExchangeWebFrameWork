@@ -1,0 +1,8 @@
+type,name,tolerance
+wallet,Spot,2
+wallet,Funding,2
+wallet,Grid,2
+wallet,Copy,2
+coin,Tether USDT,2
+coin,Ethereum,2
+coin,Bitcoin,2

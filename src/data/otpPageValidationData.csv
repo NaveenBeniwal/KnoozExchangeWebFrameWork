@@ -1,0 +1,12 @@
+scenario,otpValue,expectedMessage,description
+continue_without_otp,,Please get a verification code first,Click Continue without requesting OTP code
+otp_sent_successfully,,OTP sent  successfully,Request OTP and verify the sent confirmation message
+invalid_otp_submission,1234,Please enter valid email OTP,Enter 4-digit OTP and click Continue
+max_otp_limit,12345678,Max OTP limit should be 5 digits.,Enter 8-digit OTP exceeds max limit
+must_be_only_digits,abcde,Must be only digits,Enter alphabetic characters only
+must_be_only_digits,!@#$%,Must be only digits,Enter special characters only
+must_be_only_digits,abc12,Must be only digits,Enter mixed alphanumeric string
+must_be_only_digits,12 34,Must be only digits,Enter digits with space in between
+must_be_only_digits,abc,Must be only digits,Enter short alphabetic string
+resend_otp,,OTP resent  successfully,Wait for Resend OTP cooldown then verify resend confirmation message
+cancel_signing_in,,https://stage-exchange.knooz.com/login,Verify Cancel Signing In is visible and navigates to the login page

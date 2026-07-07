@@ -1,0 +1,2 @@
+buyCurrency,sellCurrency,searchPair,sellAmount,tradeSuccessMsg,feePercent,orderType,orderSide,allOrdersSide,tradeHistorySide
+USDT,BTC,BTC/USDT,0.0002,Order created successfully,0.15,Market,Sell Full,Sell Full,Sell

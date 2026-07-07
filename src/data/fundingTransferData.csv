@@ -1,0 +1,5 @@
+coin,symbol,network,transferFraction
+Tether USDT,USDT,ETH,0.1
+Ethereum,ETH,ETH,0.1
+Bitcoin,BTC,BTC,0.1
+BNB,BNB,BSC,0.1

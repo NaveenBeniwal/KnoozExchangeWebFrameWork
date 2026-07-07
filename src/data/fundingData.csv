@@ -1,0 +1,26 @@
+scenario,coin,action,query,expectedText,description
+header,,,,Coin,Coin column header is visible in the Funding table
+header,,,,Funding Balance,Funding Balance column header is visible in the Funding table
+header,,,,In Order,In Order column header is visible in the Funding table
+header,,,,Total,Total column header is visible in the Funding table
+header,,,,Action,Action column header is visible in the Funding table
+coin_row,Ethereum,,,,Ethereum row is visible in the Funding table
+coin_row,Tether USDT,,,,Tether USDT row is visible in the Funding table
+coin_row,Bitcoin,,,,Bitcoin row is visible in the Funding table
+action_button,Ethereum,Deposit,,,Deposit action is visible for Ethereum
+action_button,Ethereum,Withdraw,,,Withdraw action is visible for Ethereum
+action_button,Ethereum,Transfer,,,Transfer action is visible for Ethereum
+action_button,Tether USDT,Deposit,,,Deposit action is visible for Tether USDT
+action_button,Tether USDT,Withdraw,,,Withdraw action is visible for Tether USDT
+action_button,Tether USDT,Transfer,,,Transfer action is visible for Tether USDT
+action_button,Bitcoin,Deposit,,,Deposit action is visible for Bitcoin
+action_button,Bitcoin,Withdraw,,,Withdraw action is visible for Bitcoin
+action_button,Bitcoin,Transfer,,,Transfer action is visible for Bitcoin
+search,,,eth,Ethereum,Searching 'eth' filters the table down to Ethereum
+search,,,btc,Bitcoin,Searching 'btc' filters the table down to Bitcoin
+search,,,usdt,Tether USDT,Searching 'usdt' filters the table down to Tether USDT
+search_no_match,,,zzz999,,Searching a symbol that matches nothing shows the 'No data' empty state
+deposit_modal,Ethereum,,,ETH,Deposit modal shows the correct network for Ethereum
+withdraw_modal,Ethereum,,,ETH,Withdraw modal shows the correct network for Ethereum
+transfer_modal,Bitcoin,,,Bitcoin,Transfer modal's Coin field defaults to the row's own coin
+select_coin_search,,,usdt,Tether USDT,Searching 'usdt' in the Select Coin panel filters down to Tether USDT

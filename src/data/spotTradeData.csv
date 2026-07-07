@@ -1,0 +1,2 @@
+buyCurrency,sellCurrency,searchPair,buyLimitPrice,total,sellLimitPrice,tradeSuccessMsg,aboveMarketPriceOffset,aboveMarketTotal
+USDT,BTC,BTC/USDT,61500,20,120000,Order created successfully.,2000,15
