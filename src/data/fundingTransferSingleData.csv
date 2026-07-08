@@ -1,5 +1,2 @@
 coin,symbol,network,fundingToSpotAmount,spotToFundingAmount
 Tether USDT,USDT,ETH,2,4
-Ethereum,ETH,ETH,0.001,0.002
-Bitcoin,BTC,BTC,0.0002,0.0004
-BNB,BNB,BSC,0.01,0.02

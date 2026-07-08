@@ -85,6 +85,7 @@ export class PortfolioFundingPage extends BasePage {
     private readonly selectCoinBackButton: Locator;
     private readonly selectCoinCloseButton: Locator;
     private readonly selectCoinSearchInput: Locator;
+    private readonly selectCoinRows: Locator;
 
     // Shared across all three modals — only one Ant modal is ever open at a time
     private readonly modalCloseButton: Locator;
@@ -97,10 +98,6 @@ export class PortfolioFundingPage extends BasePage {
         this.activeTabPane = page.locator('.ant-tabs-tabpane-active');
         this.fundingRows   = this.activeTabPane.locator('tr.ant-table-row');
         this.estimatedBalanceLabel  = page.locator(`h4:has-text("Estimated Balance:")`);
-        // Scoped to the label's own container, not the whole page — an unscoped page-wide regex
-        // match previously grabbed an unrelated element (confirmed live: read back "2" instead of
-        // the real ~370 USDT total, most likely an unrelated badge/counter elsewhere on the page
-        // whose combined text happened to satisfy the /\d+\.\d+\s*USDT/ filter).
         this.estimatedBalanceContainer = this.estimatedBalanceLabel.locator('..');
         this.estimatedBalanceAmount = this.estimatedBalanceContainer.locator('b, strong, span, p, div').filter({ hasText: /\d+\.\d+\s*USDT/ }).last();
         this.estimatedBalanceUsdValue = page.locator('.arabicspotValue').first();
@@ -108,10 +105,6 @@ export class PortfolioFundingPage extends BasePage {
 
         this.depositWithdrawButton = page.getByText('Deposit & Withdraw', { exact: true });
         this.fundingTab = page.getByText('Funding', { exact: true }).first();
-        // .last() on these: confirmed live that navigating Portfolio > Spot > Funding leaves the
-        // Spot tab's content mounted-but-hidden in the DOM (rather than unmounted), so page-wide
-        // text/checkbox lookups match both tabs' copies — the Funding tab's real one, being the
-        // currently active/later-rendered pane, reliably comes last in DOM order.
         this.searchField = page.getByPlaceholder('Search currency').last();
         this.searchIcon  = page.getByRole('img', { name: 'search' }).last();
         this.hideZeroBalanceToggle = page.locator('.ant-checkbox-input').last();
@@ -129,10 +122,7 @@ export class PortfolioFundingPage extends BasePage {
         this.depositModalTitle   = depositModal.locator(`h2:has-text("Deposit")`);
         this.depositAssetField   = depositModal.getByText('Asset', { exact: true }).locator('..');
         this.depositNetworkField = depositModal.getByText('Network', { exact: true }).locator('..');
-        // Confirmed live element for the address value itself (no label-text stripping needed).
         this.depositAddressText  = depositModal.locator(`.grey.twelve.text-right`).first();
-        // Confirmed live element for the copy icon — .first() (not .last(), which resolved to
-        // nothing visible in this modal specifically).
         this.depositCopyIcon     = depositModal.getByRole('img', { name: 'icon' }).first();
         this.depositQrImage      = depositModal.locator('img, canvas, svg').first();
         this.depositImportantSection = depositModal.getByText('Important', { exact: true });
@@ -157,16 +147,9 @@ export class PortfolioFundingPage extends BasePage {
         this.transferModalTitle = this.transferModal.locator(`h2:has-text("Transfer")`);
         this.transferSwapIcon   = page.locator(`#Rectangle_10934 > rect`).nth(8);
         this.transferCoinField  = this.transferModal.getByText('Coin', { exact: true }).locator('..');
-        // Coin dropdown chevron that opens the Select Coin panel — confirmed live structure.
         this.transferCoinDropdownIcon = this.transferModal.locator('li > span.anticon > svg');
-        // Same nesting pattern as From/To below: one ".." only reaches the label's own wrapper (text
-        // stayed just "Quantity") — confirmed live — so this climbs one level further to reach the
-        // row that also holds the value ("X P2P / Y Avlb").
         this.transferQuantityText = this.transferModal.getByText('Quantity', { exact: true }).locator('..').locator('..');
         this.transferMaxLink      = this.transferModal.getByText('MAX', { exact: true });
-        // Confirmed live accessible name — direct and reliable, unlike the structural "preceding
-        // input before MAX" XPath guess this replaces (which may have been resolving to the wrong
-        // input all along, given how many MAX-related read issues that approach ran into).
         this.transferAmountInput = this.transferModal.getByRole('textbox', { name: 'Amount' });
         this.transferAmountValidationMessage = this.transferModal.getByText('Please enter a valid amount', { exact: false });
         this.transferConfirmButton  = this.transferModal.getByRole('button', { name: 'Confirm' });
@@ -175,11 +158,10 @@ export class PortfolioFundingPage extends BasePage {
         // ─── Select Coin panel ──────────────────────────────────────────────────────
         const selectCoinPanel = page.locator(`.ant-modal-content:has-text("Select Coin")`);
         this.selectCoinTitle        = selectCoinPanel.locator(`h5:has-text("Select Coin")`);
-        // Confirmed live class for the back arrow — .first() since Select Coin/Confirm actions on
-        // this page may share the same clickable utility class; the back arrow renders first (top-left).
         this.selectCoinBackButton   = selectCoinPanel.locator(`.curserPointer`).first();
         this.selectCoinCloseButton  = selectCoinPanel.locator(`.ant-modal-close`);
-        this.selectCoinSearchInput  = selectCoinPanel.getByPlaceholder('Search');
+        this.selectCoinSearchInput  = selectCoinPanel.getByRole('textbox', { name: 'Search' });
+        this.selectCoinRows         = selectCoinPanel.locator('.style_Asset_body_list__R-AOS');
 
         this.modalCloseButton = page.locator(`.ant-modal-close`).last();
     }
@@ -258,10 +240,13 @@ export class PortfolioFundingPage extends BasePage {
         return isVisible;
     }
 
+    // Expected/Actual are the same plain fact here (not an outcome description) — this method
+    // doesn't itself confirm whether the balance masked or revealed, isBalanceMasked() does that
+    // right after, so claiming an outcome here would just duplicate (and risk contradicting) that.
     async clickBalanceToggle(): Promise<void> {
         await this.balanceToggleIcon.click();
         await this.page.waitForTimeout(300);
-        this.logStep('Clicked the balance toggle (eye) icon', 'balance masks/reveals', 'toggle clicked');
+        this.logStep('Clicked the balance toggle (eye) icon', 'toggle clicked', 'toggle clicked');
     }
 
     // Masked balances render as filler characters (*, •, etc.) instead of digits — a simple absence
@@ -328,10 +313,13 @@ export class PortfolioFundingPage extends BasePage {
 
     // ─── Balance extraction ───────────────────────────────────────────────────────
 
-    async getEstimatedBalanceAmount(): Promise<number> {
+    // expectedSum is optional — pass the sum of every coin row's USD value (computed by the caller
+    // via getAllCoinBalances()) so the log shows a concrete number to compare Estimated Balance
+    // against, instead of a vague "valid non-negative amount" with nothing to check it against.
+    async getEstimatedBalanceAmount(expectedSum?: number): Promise<number> {
         const text   = await this.estimatedBalanceAmount.textContent() ?? '';
         const amount = this.parseNativeAmount(text);
-        this.logStep('Read Estimated Balance amount', 'a valid non-negative USDT amount', `${amount} USDT`);
+        this.logStep('Read Estimated Balance amount', expectedSum !== undefined ? `≈ ${expectedSum.toFixed(4)} USDT (sum of all coin rows)` : 'a valid non-negative USDT amount', `${amount} USDT`);
         return amount;
     }
 
@@ -426,7 +414,7 @@ export class PortfolioFundingPage extends BasePage {
 
                 balances.push({ coin, fundingBalance, inOrder, total, totalUsd });
                 this.logStep(
-                    `Read row ${i + 1}/${count} on page ${pageNum} of the Funding table`,
+                    `Read row ${i + 1}/${count} (${coin}) on page ${pageNum} of the Funding table`,
                     'funding/inOrder/total amounts',
                     `${coin}: funding=${fundingBalance}, inOrder=${inOrder}, total=${total}, ~$${totalUsd}`,
                 );
@@ -445,13 +433,13 @@ export class PortfolioFundingPage extends BasePage {
     async searchCurrency(query: string): Promise<void> {
         await this.searchField.fill(query);
         await this.page.waitForTimeout(500);
-        this.logStep(`Searched currency: "${query}"`, 'table filters to matching coins', 'search applied');
+        this.logStep(`Searched currency: "${query}"`, 'search applied', 'search applied');
     }
 
     async clearSearch(): Promise<void> {
         await this.searchField.clear();
         await this.page.waitForTimeout(500);
-        this.logStep('Cleared the search field', 'full coin list restored', 'search cleared');
+        this.logStep('Cleared the search field', 'search cleared', 'search cleared');
     }
 
     async getVisibleRowCount(): Promise<number> {
@@ -497,21 +485,25 @@ export class PortfolioFundingPage extends BasePage {
 
     // ─── Opening modals from a row ────────────────────────────────────────────────
 
+    // No logStep here — logging "modal opens" before the wrapper's own waitFor has actually
+    // confirmed that would be claiming an unconfirmed outcome. Each wrapper below logs once its
+    // own wait succeeds, so Actual can honestly echo the Expected outcome instead of just the click.
     private async clickRowAction(coin: string, action: FundingAction): Promise<void> {
         const row = this.fundingRows.filter({ hasText: coin }).last();
         await row.getByText(action, { exact: true }).last().click();
         await this.page.waitForTimeout(500);
-        this.logStep(`Clicked "${action}" for ${coin}`, `${action} modal opens`, `${action} clicked`);
     }
 
     async clickDepositAction(coin: string): Promise<void> {
         await this.clickRowAction(coin, 'Deposit');
         await this.depositModalTitle.waitFor({ state: 'visible', timeout: 5000 });
+        this.logStep(`Clicked "Deposit" for ${coin}`, 'Deposit modal opens', 'Deposit modal opened');
     }
 
     async clickWithdrawAction(coin: string): Promise<void> {
         await this.clickRowAction(coin, 'Withdraw');
         await this.withdrawModalTitle.waitFor({ state: 'visible', timeout: 5000 });
+        this.logStep(`Clicked "Withdraw" for ${coin}`, 'Withdraw modal opens', 'Withdraw modal opened');
     }
 
     async clickTransferAction(coin: string): Promise<void> {
@@ -527,6 +519,7 @@ export class PortfolioFundingPage extends BasePage {
             if (text && /[1-9]/.test(text)) break;
             await this.page.waitForTimeout(200);
         }
+        this.logStep(`Clicked "Transfer" for ${coin}`, 'Transfer modal opens', 'Transfer modal opened');
     }
 
     // Bounded + idempotent: safe to call even if a modal was already closed by something else (e.g.
@@ -548,13 +541,15 @@ export class PortfolioFundingPage extends BasePage {
     }
 
     async getDepositAssetText(): Promise<string> {
-        const text = ((await this.depositAssetField.textContent()) ?? '').trim();
+        const raw  = ((await this.depositAssetField.textContent()) ?? '').trim();
+        const text = this.stripLabelPrefix(raw, 'Asset');
         this.logStep('Read Deposit modal Asset field', 'the selected coin name', `"${text}"`);
         return text;
     }
 
     async getDepositNetworkText(): Promise<string> {
-        const text = ((await this.depositNetworkField.textContent()) ?? '').trim();
+        const raw  = ((await this.depositNetworkField.textContent()) ?? '').trim();
+        const text = this.stripLabelPrefix(raw, 'Network');
         this.logStep('Read Deposit modal Network field', 'the selected coin\'s network', `"${text}"`);
         return text;
     }
@@ -585,7 +580,7 @@ export class PortfolioFundingPage extends BasePage {
 
     async copyDepositAddress(): Promise<void> {
         await this.depositCopyIcon.click();
-        this.logStep('Clicked the copy icon on the deposit address', 'address copied to clipboard', 'copy icon clicked');
+        this.logStep('Clicked the copy icon on the deposit address', 'copy icon clicked', 'copy icon clicked');
     }
 
     // ─── Withdraw modal ───────────────────────────────────────────────────────────
@@ -604,28 +599,32 @@ export class PortfolioFundingPage extends BasePage {
 
     async fillWithdrawAmount(amount: string): Promise<void> {
         await this.withdrawAmountInput.fill(amount);
-        this.logStep(`Filled withdraw amount: ${amount}`, 'amount field updated', `filled with "${amount}"`);
+        this.logStep(`Filled withdraw amount: ${amount}`, `filled with "${amount}"`, `filled with "${amount}"`);
     }
 
     async clickWithdrawMax(): Promise<void> {
         await this.withdrawMaxLink.click();
-        this.logStep('Clicked MAX on withdraw amount', 'amount field fills with the available balance', 'MAX clicked');
+        this.logStep('Clicked MAX on withdraw amount', 'MAX clicked', 'MAX clicked');
     }
 
-    async getWithdrawAmountValue(): Promise<string> {
+    // expectedValue is optional — pass the balance the caller expects (e.g. after clicking MAX) so
+    // the log shows a concrete Expected value next to Actual.
+    async getWithdrawAmountValue(expectedValue?: string): Promise<string> {
         const value = await this.withdrawAmountInput.inputValue();
-        this.logStep('Read withdraw amount field value', 'a non-empty amount', `"${value}"`);
+        this.logStep('Read withdraw amount field value', expectedValue !== undefined ? `"${expectedValue}"` : 'current Amount field value', `"${value}"`);
         return value;
     }
 
     async getWithdrawAssetText(): Promise<string> {
-        const text = ((await this.withdrawAssetField.textContent()) ?? '').trim();
+        const raw  = ((await this.withdrawAssetField.textContent()) ?? '').trim();
+        const text = this.stripLabelPrefix(raw, 'Asset');
         this.logStep('Read Withdraw modal Asset field', 'the selected coin name', `"${text}"`);
         return text;
     }
 
     async getWithdrawNetworkText(): Promise<string> {
-        const text = ((await this.withdrawNetworkField.textContent()) ?? '').trim();
+        const raw  = ((await this.withdrawNetworkField.textContent()) ?? '').trim();
+        const text = this.stripLabelPrefix(raw, 'Network');
         this.logStep('Read Withdraw modal Network field', 'the selected coin\'s network', `"${text}"`);
         return text;
     }
@@ -639,12 +638,12 @@ export class PortfolioFundingPage extends BasePage {
     async selectWithdrawTab(tab: WithdrawTab): Promise<void> {
         const target = tab === 'Deposit Address' ? this.withdrawDepositAddressTab : this.withdrawKnoozUserTab;
         await target.click();
-        this.logStep(`Selected withdraw tab: ${tab}`, `${tab} tab becomes active`, `${tab} clicked`);
+        this.logStep(`Selected withdraw tab: ${tab}`, `${tab} clicked`, `${tab} clicked`);
     }
 
     async fillWithdrawAddress(address: string): Promise<void> {
         await this.withdrawAddressInput.fill(address);
-        this.logStep(`Filled withdraw address: ${address}`, 'address field updated', `filled with "${address}"`);
+        this.logStep(`Filled withdraw address: ${address}`, `filled with "${address}"`, `filled with "${address}"`);
     }
 
     async isEnable2FAVisible(): Promise<boolean> {
@@ -661,7 +660,7 @@ export class PortfolioFundingPage extends BasePage {
 
     async clickWithdrawContinue(): Promise<void> {
         await this.withdrawContinueButton.click();
-        this.logStep('Clicked Continue on withdraw modal', 'withdrawal flow proceeds', 'Continue clicked');
+        this.logStep('Clicked Continue on withdraw modal', 'Continue clicked', 'Continue clicked');
     }
 
     // ─── Transfer modal ───────────────────────────────────────────────────────────
@@ -686,34 +685,44 @@ export class PortfolioFundingPage extends BasePage {
         return slot === 'From' ? headings.nth(0) : headings.nth(1);
     }
 
-    async getTransferFromText(): Promise<string> {
+    // expectedWallet is optional — pass the wallet name the caller actually expects (e.g. "Funding")
+    // so the console log shows a concrete Expected value next to Actual instead of a vague
+    // description, letting anyone reading the report see directly whether they match.
+    async getTransferFromText(expectedWallet?: string): Promise<string> {
         const text = ((await this.transferSlotHeading('From').textContent()) ?? '').trim();
-        this.logStep('Read Transfer modal From wallet', 'the source wallet name', `"${text}"`);
+        this.logStep('Read Transfer modal From wallet', expectedWallet ? `"${expectedWallet}"` : 'the source wallet name', `"${text}"`);
         return text;
     }
 
-    async getTransferToText(): Promise<string> {
+    async getTransferToText(expectedWallet?: string): Promise<string> {
         const text = ((await this.transferSlotHeading('To').textContent()) ?? '').trim();
-        this.logStep('Read Transfer modal To wallet', 'the destination wallet name', `"${text}"`);
+        this.logStep('Read Transfer modal To wallet', expectedWallet ? `"${expectedWallet}"` : 'the destination wallet name', `"${text}"`);
         return text;
     }
 
-    async getTransferCoinText(): Promise<string> {
-        const text = ((await this.transferCoinField.textContent()) ?? '').trim();
-        this.logStep('Read Transfer modal Coin field', 'the selected coin name', `"${text}"`);
+    async getTransferCoinText(expectedCoin?: string): Promise<string> {
+        const raw  = ((await this.transferCoinField.textContent()) ?? '').trim();
+        const text = this.stripLabelPrefix(raw, 'Coin');
+        this.logStep('Read Transfer modal Coin field', expectedCoin ? `"${expectedCoin}"` : 'the selected coin name', `"${text}"`);
         return text;
     }
 
     async swapTransferDirection(): Promise<void> {
         await this.transferSwapIcon.click();
         await this.page.waitForTimeout(300);
-        this.logStep('Clicked the Transfer swap icon', 'From/To values exchange', 'swap icon clicked');
+        this.logStep('Clicked the Transfer swap icon', 'swap icon clicked', 'swap icon clicked');
+    }
+
+    async isTransferCoinDropdownVisible(): Promise<boolean> {
+        const isVisible = await this.transferCoinDropdownIcon.isVisible();
+        this.logStep('Checked Coin dropdown icon', 'visible', isVisible ? 'visible' : 'not visible');
+        return isVisible;
     }
 
     async clickTransferCoinDropdown(): Promise<void> {
         await this.transferCoinDropdownIcon.click();
         await this.selectCoinTitle.waitFor({ state: 'visible', timeout: 5000 });
-        this.logStep('Clicked the Coin dropdown icon', 'Select Coin panel opens', 'Select Coin panel opened');
+        this.logStep('Clicked the Coin dropdown icon', 'Select Coin panel opened', 'Select Coin panel opened');
     }
 
     // Kept as an alias for backward compatibility with existing call sites.
@@ -723,7 +732,11 @@ export class PortfolioFundingPage extends BasePage {
 
     async getTransferQuantityText(): Promise<string> {
         const text = ((await this.transferQuantityText.textContent()) ?? '').trim();
-        this.logStep('Read Transfer modal Quantity text', 'available quantity for the selected coin', `"${text}"`);
+        // The raw text has the currency label, "MAX", and "Quantity" glued onto the end with no
+        // separator (e.g. "108.42844793 Avlb / 23.69490335 P2Pusdt MAXQuantity") — this only cleans
+        // up what gets logged; the return value stays raw since the regex parsers below don't care.
+        const displayText = text.match(/[\d,.]+\s*(?:P2P|Avlb)\s*\/\s*[\d,.]+\s*(?:P2P|Avlb)/i)?.[0] ?? text;
+        this.logStep('Read Transfer modal Quantity text', 'available quantity for the selected coin', `"${displayText}"`);
         return text;
     }
 
@@ -752,14 +765,37 @@ export class PortfolioFundingPage extends BasePage {
         return numbers;
     }
 
+    // Confirmed live across two separate runs: "Avlb" is always the Spot wallet's balance and "P2P"
+    // is always the Funding wallet's balance — that mapping doesn't change when the From/To direction
+    // is swapped (only the display order in the raw string does). That makes this a precise read
+    // instead of the "matches as a set" fallback getTransferQuantityNumbers() has to use.
+    // expectedSpotQty/expectedFundingQty are optional — pass the balances the caller already knows
+    // (e.g. from a Step 1 snapshot) so the log's Expected line shows concrete numbers to compare
+    // against Actual, instead of a description with nothing to visually check it against.
+    async getTransferWalletQuantities(expectedSpotQty?: number, expectedFundingQty?: number): Promise<{ spotQty: number; fundingQty: number }> {
+        const text = await this.getTransferQuantityText();
+        const spotMatch    = text.match(/([\d,.]+)\s*Avlb/i);
+        const fundingMatch = text.match(/([\d,.]+)\s*P2P/i);
+        const spotQty    = spotMatch    ? parseFloat(spotMatch[1].replace(/,/g, ''))    : 0;
+        const fundingQty = fundingMatch ? parseFloat(fundingMatch[1].replace(/,/g, '')) : 0;
+        const expectedText = (expectedSpotQty !== undefined && expectedFundingQty !== undefined)
+            ? `Spot: ${expectedSpotQty}, Funding: ${expectedFundingQty}`
+            : 'Spot (Avlb) and Funding (P2P) balances';
+        this.logStep('Read Spot and Funding wallet quantities from Transfer modal', expectedText, `Spot: ${spotQty}, Funding: ${fundingQty}`);
+        return { spotQty, fundingQty };
+    }
+
     async fillTransferAmount(amount: string): Promise<void> {
         await this.transferAmountInput.fill(amount);
         // Settles any async auto-recalculation (e.g. clamping an over-limit entry down to MAX)
         // before a caller reads the value back.
         await this.page.waitForTimeout(400);
-        this.logStep(`Filled transfer amount: ${amount}`, 'amount field updated', `filled with "${amount}"`);
+        this.logStep(`Filled transfer amount: ${amount}`, `filled with "${amount}"`, `filled with "${amount}"`);
     }
 
+    // Expected/Actual are both just "MAX clicked" here — this method doesn't itself confirm which
+    // balance got filled in (the follow-up getTransferAmountValue() call does, with a concrete
+    // expected number of its own), so claiming that outcome here would just duplicate it.
     async clickTransferMax(): Promise<void> {
         await this.transferMaxLink.click();
         // Confirmed live that a fixed 400ms wait wasn't always enough — the field would settle on a
@@ -771,12 +807,17 @@ export class PortfolioFundingPage extends BasePage {
             if (value !== '' && value !== '0' && value !== '0.00') break;
             await this.page.waitForTimeout(200);
         }
-        this.logStep('Clicked MAX on transfer amount', 'amount field fills with the available balance', 'MAX clicked');
+        this.logStep('Clicked MAX on transfer amount', 'MAX clicked', 'MAX clicked');
     }
 
-    async getTransferAmountValue(): Promise<string> {
+    // expectedValue is optional — pass what the caller expects (e.g. a MAX/clamp target, or '' for
+    // an expected-empty check) so the log shows a concrete Expected value next to Actual. Falls back
+    // to neutral wording when omitted, since this is also used where either an empty or non-empty
+    // result can be correct depending on the caller, and a fixed "non-empty" description would
+    // misleadingly read as a failure in the empty-is-correct cases.
+    async getTransferAmountValue(expectedValue?: string): Promise<string> {
         const value = await this.transferAmountInput.inputValue();
-        this.logStep('Read transfer amount field value', 'a non-empty amount', `"${value}"`);
+        this.logStep('Read transfer amount field value', expectedValue !== undefined ? `"${expectedValue}"` : 'current Amount field value', `"${value}"`);
         return value;
     }
 
@@ -800,10 +841,28 @@ export class PortfolioFundingPage extends BasePage {
         return isVisible;
     }
 
+    async isTransferAmountFieldVisible(): Promise<boolean> {
+        const isVisible = await this.transferAmountInput.isVisible();
+        this.logStep('Checked Transfer Amount field', 'visible', isVisible ? 'visible' : 'not visible');
+        return isVisible;
+    }
+
+    async getTransferAmountPlaceholder(expectedPlaceholder = 'Amount'): Promise<string> {
+        const placeholder = (await this.transferAmountInput.getAttribute('placeholder')) ?? '';
+        this.logStep('Read Transfer Amount field placeholder', `"${expectedPlaceholder}"`, `"${placeholder}"`);
+        return placeholder;
+    }
+
+    async isTransferMaxVisible(): Promise<boolean> {
+        const isVisible = await this.transferMaxLink.isVisible();
+        this.logStep('Checked Transfer MAX control', 'visible', isVisible ? 'visible' : 'not visible');
+        return isVisible;
+    }
+
     async clickTransferConfirm(): Promise<void> {
         await this.transferConfirmButton.click();
         await this.page.waitForTimeout(500);
-        this.logStep('Clicked Confirm on transfer modal', 'transfer executes', 'Confirm clicked');
+        this.logStep('Clicked Confirm on transfer modal', 'Confirm clicked', 'Confirm clicked');
     }
 
     // waitFor(), not isVisible({timeout}) — isVisible() checks the CURRENT state immediately and
@@ -825,10 +884,28 @@ export class PortfolioFundingPage extends BasePage {
         return isVisible;
     }
 
+    async isSelectCoinSearchFieldVisible(): Promise<boolean> {
+        const isVisible = await this.selectCoinSearchInput.isVisible();
+        this.logStep('Checked Select Coin search field', 'visible', isVisible ? 'visible' : 'not visible');
+        return isVisible;
+    }
+
+    async getSelectCoinVisibleCoinCount(): Promise<number> {
+        const count = await this.selectCoinRows.count();
+        this.logStep('Counted visible currencies in the Select Coin panel', 'row count', `${count} row(s)`);
+        return count;
+    }
+
+    async clearCoinSearchInSelectPanel(): Promise<void> {
+        await this.selectCoinSearchInput.clear();
+        await this.page.waitForTimeout(500);
+        this.logStep('Cleared the Select Coin panel search field', 'search cleared', 'search cleared');
+    }
+
     async searchCoinInSelectPanel(query: string): Promise<void> {
         await this.selectCoinSearchInput.fill(query);
         await this.page.waitForTimeout(500);
-        this.logStep(`Searched Select Coin panel: "${query}"`, 'panel filters to matching coins', 'search applied');
+        this.logStep(`Searched Select Coin panel: "${query}"`, 'search applied', 'search applied');
     }
 
     // Scoped to the actual list-item row class (.style_Asset_body_list__R-AOS), not a generic "any
@@ -876,7 +953,10 @@ export class PortfolioFundingPage extends BasePage {
     // first()/last() read balance data from the WRONG row (Tether's, not Ethereum's). Polls within
     // the scoped row for the same reason as before: the balance can still be loading a moment after
     // the row itself renders.
-    async getSelectCoinRowData(coin: string): Promise<{ balanceText: string; usdText: string }> {
+    // expectedBalance is optional — pass the balance the caller already knows (e.g. the Spot Wallet
+    // page's balance for this coin) so the log's Expected line is a concrete number to compare
+    // against Actual, instead of a description with nothing to check it against.
+    async getSelectCoinRowData(coin: string, expectedBalance?: number): Promise<{ balanceText: string; usdText: string }> {
         const dataAssets = this.selectCoinPanelRow(coin).locator('.dataAssets');
         let balanceText = '';
         for (let i = 0; i < 15; i++) {
@@ -885,14 +965,14 @@ export class PortfolioFundingPage extends BasePage {
             await this.page.waitForTimeout(200);
         }
         const usdText = ((await dataAssets.last().textContent({ timeout: 2000 }).catch(() => '')) ?? '').trim();
-        this.logStep(`Read "${coin}" row data in Select Coin panel`, 'balance and $ value', `balance: "${balanceText}", $ value: "${usdText}"`);
+        this.logStep(`Read "${coin}" row data in Select Coin panel`, expectedBalance !== undefined ? `balance ≈ ${expectedBalance}` : 'balance and $ value', `balance: "${balanceText}", $ value: "${usdText}"`);
         return { balanceText, usdText };
     }
 
     async selectCoinFromPanel(coin: string): Promise<void> {
         await this.selectCoinPanelRow(coin).click();
         await this.page.waitForTimeout(300);
-        this.logStep(`Selected "${coin}" from the Select Coin panel`, 'Transfer modal Coin field updates', `${coin} selected`);
+        this.logStep(`Selected "${coin}" from the Select Coin panel`, `${coin} selected`, `${coin} selected`);
     }
 
     // Bounded click with a fallback to closing the whole panel: if the confirmed .curserPointer class
@@ -901,12 +981,12 @@ export class PortfolioFundingPage extends BasePage {
     async goBackFromSelectCoin(): Promise<void> {
         const clicked = await this.selectCoinBackButton.click({ timeout: 5000 }).then(() => true).catch(() => false);
         if (!clicked) {
-            this.logStep('Clicked Select Coin back button', 'returns to Transfer modal', 'back button not found — falling back to close');
+            this.logStep('Clicked Select Coin back button', 'back button not found — falling back to close', 'back button not found — falling back to close');
             await this.closeSelectCoinPanel();
             return;
         }
         await this.page.waitForTimeout(300);
-        this.logStep('Clicked Select Coin back button', 'returns to Transfer modal', 'went back');
+        this.logStep('Clicked Select Coin back button', 'went back', 'went back');
     }
 
     async closeSelectCoinPanel(): Promise<void> {
@@ -917,9 +997,16 @@ export class PortfolioFundingPage extends BasePage {
 
     // ─── Private parsing helpers ──────────────────────────────────────────────────
 
+    // Asset/Network/Coin fields are located as the label's own parent (".."), so their textContent
+    // includes the label text glued directly to the value with no separator (e.g. "AssetTether USDT",
+    // "CoinTether USDT") — strips that leading label word so callers/logs see just the value.
+    private stripLabelPrefix(text: string, label: string): string {
+        return text.startsWith(label) ? text.slice(label.length).trim() : text.trim();
+    }
+
     private parseNativeAmount(text: string): number {
-        const match = text.match(/([\d]+\.[\d]+|[\d]+)/);
-        return match ? parseFloat(match[1]) : 0;
+        const match = text.match(/(\d[\d,]*\.\d+|\d[\d,]*)/);
+        return match ? parseFloat(match[1].replace(/,/g, '')) : 0;
     }
 
     // No fallback to the native amount when there's no "≈$" marker — confirmed live that some
@@ -929,6 +1016,6 @@ export class PortfolioFundingPage extends BasePage {
     // Every real, priced currency in this app consistently shows "≈$X" — its absence means $0.
     private parseUsdValue(text: string): number {
         const approx = text.match(/[≈~]\$?([\d,.]+)/);
-        return approx ? parseFloat(approx[1].replace(',', '')) : 0;
+        return approx ? parseFloat(approx[1].replace(/,/g, '')) : 0;
     }
 }

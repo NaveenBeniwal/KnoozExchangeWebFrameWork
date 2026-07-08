@@ -10,6 +10,12 @@ import type { Browser, BrowserContext, Page } from '@playwright/test';
 const currencies = CsvHelper.readCsv('src/data/fundingTransferData.csv');
 const actions = ['Deposit', 'Withdraw', 'Transfer'] as const;
 
+// The Transfer flow below runs against exactly ONE currency — to test BTC/ETH/BNB instead, just
+// edit this row (coin/symbol/network/amounts), no test code changes needed. Kept separate from
+// `currencies` above so it doesn't affect the Deposit/Withdraw/search tests, which still cover
+// every row in fundingTransferData.csv.
+const transferCurrency = CsvHelper.readCsv('src/data/fundingTransferSingleData.csv')[0];
+
 let browser:      Browser;
 let context:      BrowserContext;
 let page:         Page;
@@ -25,8 +31,10 @@ test.describe('Portfolio Funding Page', () => {
     // no risk of fullyParallel splitting these 55 tests across multiple workers, which would mean
     // multiple browsers hitting the same real staging account concurrently (a very plausible cause
     // of the confusing, inconsistent balance reads seen in an earlier run of this suite). Tests are
-    // also laid out below in strict TC-F01 → TC-F19 numeric order (each per-coin TC gets its own
-    // loop over every currency before moving to the next TC number), not grouped by coin.
+    // also laid out below in strict TC-F01 → TC-F22 numeric order (each per-coin TC gets its own
+    // loop over every currency before moving to the next TC number), not grouped by coin. TC-F09
+    // through TC-F19 are the Transfer flow, which runs against a single CSV-configured currency
+    // rather than looping over every row.
     test.describe.configure({ mode: 'serial', timeout: 60000 });
 
     test.beforeAll(async ({ playwright }, testInfo) => {
@@ -52,8 +60,12 @@ test.describe('Portfolio Funding Page', () => {
     // Every test below is independent: its own beforeEach re-navigates Portfolio > Spot > Funding
     // fresh, so no test depends on another's leftover state (open modal, active search, checkbox).
     test.describe('Funding tab', () => {
-        test.beforeEach(async () => {
-            await fundingPage.goToFundingTab();
+        // TC-F02 does its own navigation (via Spot) as the whole point of the test — navigating
+        // here first as well would just log/perform the same trip twice for no reason.
+        test.beforeEach(async ({}, testInfo) => {
+            if (!testInfo.title.startsWith('TC-F02')) {
+                await fundingPage.goToFundingTab();
+            }
         });
 
         // ─── TC-F02 ─────────────────────────────────────────────────────────────
@@ -71,9 +83,9 @@ test.describe('Portfolio Funding Page', () => {
             expect.soft(await fundingPage.isEstimatedBalanceAmountVisible(), 'Estimated Balance amount should be visible').toBe(true);
             expect.soft(await fundingPage.isEstimatedBalanceUsdValueVisible(), 'Estimated Balance $ value should be visible').toBe(true);
 
-            const estimated = await fundingPage.getEstimatedBalanceAmount();
             const balances  = await fundingPage.getAllCoinBalances();
             const sum       = balances.reduce((total, b) => total + b.totalUsd, 0);
+            const estimated = await fundingPage.getEstimatedBalanceAmount(sum);
             expect.soft(estimated, `Estimated Balance (${estimated}) should equal the sum of all coin rows (${sum.toFixed(4)})`).toBeCloseTo(sum, 1);
         });
 
@@ -151,158 +163,277 @@ test.describe('Portfolio Funding Page', () => {
             });
         }
 
-        // ─── TC-F09 through TC-F16 (Transfer) ────────────────────────────────────
-        // One continuous test per currency: click Transfer once for the coin, run every Transfer
-        // check in a single unbroken session (structure, quantity, swap, amount validation, MAX,
-        // Select Coin back/close/search, and finally a real transfer), then move to the next coin —
-        // usdt, then btc, then eth, then bnb.
-        for (const row of currencies) {
-            test(`TC-F09–F16 [${row.coin}]: full Transfer flow in one continuous session — structure, quantity, swap, amount, MAX, Select Coin, and a real transfer`, async () => {
-                const { fundingBalanceNative } = await fundingPage.getCoinRowData(row.coin);
+        // ─── TC-F09 through TC-F19 (Transfer) ────────────────────────────────────
+        // Runs against exactly ONE currency (transferCurrency, from fundingTransferSingleData.csv) —
+        // to test a different coin, edit that CSV row, no test code changes needed. Split into 11
+        // independent tests (one per step) rather than one mega-test: each test re-navigates/reopens
+        // whatever it needs at its own start (same "every test is independent" convention as the rest
+        // of this file), and only the numeric balance snapshots from Step 1 are shared across tests
+        // via the `let`s below — the same pattern this file already uses for the shared login.
+        test.describe(`TC-F09–F19 [${transferCurrency.coin}]: Transfer flow`, () => {
+            let fundingBalanceNative: number;
+            let spotBalanceNative:    number;
+
+            // ─── Step 1 ─────────────────────────────────────────────────────────────
+            test('TC-F09: snapshot the Funding and Spot Wallet balances', async () => {
+                const funding = await fundingPage.getCoinRowData(transferCurrency.coin);
+                fundingBalanceNative = funding.fundingBalanceNative;
+
                 await spotPage.goToSpotTab();
-                const { spotBalanceNative } = await spotPage.getCoinRowData(row.coin);
+                const spot = await spotPage.getCoinRowData(transferCurrency.coin);
+                spotBalanceNative = spot.spotBalanceNative;
                 await fundingPage.goToFundingTab();
+            });
 
-                // TC-F09 — structure
-                await fundingPage.clickTransferAction(row.coin);
+            // ─── Step 2 ─────────────────────────────────────────────────────────────
+            test('TC-F10: Transfer modal opens, closes on (X), and reopens', async () => {
+                await fundingPage.clickTransferAction(transferCurrency.coin);
                 expect.soft(await fundingPage.isTransferModalVisible(), 'Transfer modal should be visible').toBe(true);
-                expect.soft(await fundingPage.getTransferFromText(), 'From should default to Funding').toContain('Funding');
-                expect.soft(await fundingPage.getTransferToText(), 'To should default to Spot').toContain('Spot');
-                expect.soft(await fundingPage.getTransferCoinText(), `Coin field should show ${row.coin}`).toContain(row.coin);
+                await fundingPage.closeModal();
+                expect.soft(await fundingPage.isFundingTabVisible(), 'Closing (X) should return to the Funding tab').toBe(true);
+                await fundingPage.clickTransferAction(transferCurrency.coin);
+                expect.soft(await fundingPage.isTransferModalVisible(), 'Reopening Transfer should show the modal again').toBe(true);
 
-                // TC-F10 — quantity reflects both wallets (checked as a set; see method comment on why
-                // not a fixed From/To position), including after swapping.
-                const quantityNumbers = await fundingPage.getTransferQuantityNumbers();
-                const matchesBothWallets = [fundingBalanceNative, spotBalanceNative].every(balance =>
-                    quantityNumbers.some(n => Math.abs(n - balance) < 0.0001)
-                );
-                expect.soft(matchesBothWallets, `Quantity numbers [${quantityNumbers.join(', ')}] should include both the Funding (${fundingBalanceNative}) and Spot (${spotBalanceNative}) balances for ${row.coin}`).toBe(true);
+                // Every test here is independent and reopens the modal itself — leaving it open would
+                // block the next test's beforeEach from navigating back to the Funding tab.
+                await fundingPage.closeModal();
+                expect.soft(await fundingPage.isFundingTabVisible(), 'Closing the modal at the end of this test should return to the Funding tab').toBe(true);
+            });
 
-                // TC-F11 — swap exchanges From/To and reverts
-                await fundingPage.swapTransferDirection();
-                expect.soft(await fundingPage.getTransferFromText(), 'After swapping, From should show Spot').toContain('Spot');
-                expect.soft(await fundingPage.getTransferToText(), 'After swapping, To should show Funding').toContain('Funding');
-                const quantityAfterSwap = await fundingPage.getTransferQuantityNumbers();
-                const matchesAfterSwap = [fundingBalanceNative, spotBalanceNative].every(balance =>
-                    quantityAfterSwap.some(n => Math.abs(n - balance) < 0.0001)
-                );
-                expect.soft(matchesAfterSwap, `After swapping, quantity numbers [${quantityAfterSwap.join(', ')}] should still include both wallet balances for ${row.coin}`).toBe(true);
-                await fundingPage.swapTransferDirection();
-                expect.soft(await fundingPage.getTransferFromText(), 'Swapping back should restore From to Funding').toContain('Funding');
-                expect.soft(await fundingPage.getTransferToText(), 'Swapping back should restore To to Spot').toContain('Spot');
-
-                // TC-F12 — Amount field currency label, typed value, and empty-amount validation.
-                // Uses a balance-relative safe amount (half the Funding balance), not a hardcoded "1"
-                // — confirmed live that typing "1" for a low-balance coin (e.g. ETH at 0.03199429)
-                // exceeds the available amount and gets auto-clamped down to MAX, which isn't the
-                // "typed value reflected" behavior this check is actually about.
-                expect.soft(await fundingPage.isTransferAmountCurrencyLabelVisible(row.symbol), `Amount field should show the "${row.symbol}" currency label`).toBe(true);
-                const safeTypedAmount = fundingBalanceNative > 0 ? (fundingBalanceNative / 2).toFixed(8) : '0';
-                await fundingPage.fillTransferAmount(safeTypedAmount);
-                expect.soft(await fundingPage.getTransferAmountValue(), `Typed amount (${safeTypedAmount}) should be reflected in the field`).toBe(safeTypedAmount);
-                await fundingPage.fillTransferAmount('');
-                await fundingPage.clickTransferConfirm();
-                expect.soft(await fundingPage.isTransferAmountValidationVisible(), 'Confirming an empty amount should show a validation message').toBe(true);
-
-                // TC-F13 — MAX means the max available balance of the currently-active (From) wallet
-                await fundingPage.clickTransferMax();
-                const fundingMax = await fundingPage.getTransferAmountValue();
-                expect.soft(Number(fundingMax), `MAX should fill the Funding wallet's available balance (${fundingBalanceNative}) for ${row.coin}`).toBeCloseTo(fundingBalanceNative, 4);
+            // ─── Step 3 ─────────────────────────────────────────────────────────────
+            // Quantity is read precisely (Avlb = Spot's balance, P2P = Funding's balance — confirmed
+            // live that mapping is fixed to wallet identity, not to whichever wallet is currently in
+            // the From slot), so swapping changes the From/To labels but each wallet's own quantity
+            // reading stays the same.
+            test('TC-F11: From/To default to Funding/Spot, swap exchanges them, and wallet balances stay correct', async () => {
+                await fundingPage.clickTransferAction(transferCurrency.coin);
+                expect.soft(await fundingPage.getTransferFromText('Funding'), 'From should default to Funding').toContain('Funding');
+                expect.soft(await fundingPage.getTransferToText('Spot'), 'To should default to Spot').toContain('Spot');
 
                 await fundingPage.swapTransferDirection();
-                await fundingPage.clickTransferMax();
-                const spotMax = await fundingPage.getTransferAmountValue();
-                expect.soft(Number(spotMax), `MAX should fill the Spot wallet's available balance (${spotBalanceNative}) for ${row.coin}`).toBeCloseTo(spotBalanceNative, 4);
-                await fundingPage.swapTransferDirection();
+                expect.soft(await fundingPage.getTransferFromText('Spot'), 'After swapping, From should show Spot').toContain('Spot');
+                expect.soft(await fundingPage.getTransferToText('Funding'), 'After swapping, To should show Funding').toContain('Funding');
+                const walletQtyAfterSwap = await fundingPage.getTransferWalletQuantities(spotBalanceNative, fundingBalanceNative);
+                expect.soft(walletQtyAfterSwap.spotQty, `After swapping, the Spot wallet quantity shown (${walletQtyAfterSwap.spotQty}) should equal the Spot balance (${spotBalanceNative})`).toBeCloseTo(spotBalanceNative, 4);
+                expect.soft(walletQtyAfterSwap.fundingQty, `After swapping, the Funding wallet quantity shown (${walletQtyAfterSwap.fundingQty}) should equal the Funding balance (${fundingBalanceNative})`).toBeCloseTo(fundingBalanceNative, 4);
 
-                // TC-F14 (Back half) — Select Coin's Back button returns to Transfer without closing it
+                await fundingPage.swapTransferDirection();
+                expect.soft(await fundingPage.getTransferFromText('Funding'), 'Swapping back should restore From to Funding').toContain('Funding');
+                expect.soft(await fundingPage.getTransferToText('Spot'), 'Swapping back should restore To to Spot').toContain('Spot');
+
+                await fundingPage.closeModal();
+                expect.soft(await fundingPage.isFundingTabVisible(), 'Closing the modal at the end of this test should return to the Funding tab').toBe(true);
+            });
+
+            // ─── Step 4 ─────────────────────────────────────────────────────────────
+            test('TC-F12: Coin field shows the opened currency, with a clickable dropdown', async () => {
+                await fundingPage.clickTransferAction(transferCurrency.coin);
+                expect.soft(await fundingPage.getTransferCoinText(transferCurrency.coin), `Coin field should show ${transferCurrency.coin}`).toContain(transferCurrency.coin);
+                expect.soft(await fundingPage.isTransferCoinDropdownVisible(), 'Coin dropdown icon should be visible').toBe(true);
+
+                await fundingPage.closeModal();
+                expect.soft(await fundingPage.isFundingTabVisible(), 'Closing the modal at the end of this test should return to the Funding tab').toBe(true);
+            });
+
+            // ─── Step 5 ─────────────────────────────────────────────────────────────
+            test('TC-F13: Select Coin panel — close/back navigation, a full currency search sweep, and reselecting the coin', async () => {
+                await fundingPage.clickTransferAction(transferCurrency.coin);
+
+                // Popup opens → close (X) → back on Funding tab → reopen Transfer → reopen popup
                 await fundingPage.clickTransferCoinDropdown();
                 expect.soft(await fundingPage.isSelectCoinPanelVisible(), 'Select Coin panel should open').toBe(true);
-                await fundingPage.goBackFromSelectCoin();
-                expect.soft(await fundingPage.isTransferModalVisible(), 'Back should return to the Transfer modal, not close it').toBe(true);
-
-                // TC-F15 — Select Coin search shows icon/balance matching either wallet, and selecting
-                // this same coin returns to Transfer with the Coin field and currency label refreshed
-                await fundingPage.clickTransferCoinDropdown();
-                await fundingPage.searchCoinInSelectPanel(row.symbol);
-                expect.soft(await fundingPage.isCoinVisibleInSelectPanel(row.coin), `${row.coin} row should appear when searching "${row.symbol}"`).toBe(true);
-                expect.soft(await fundingPage.isCoinIconVisibleInSelectPanel(row.coin), `${row.coin} row should show a coin icon`).toBe(true);
-                const { balanceText } = await fundingPage.getSelectCoinRowData(row.coin);
-                const panelBalance = parseFloat(balanceText) || 0;
-                const matchesEitherWallet =
-                    Math.abs(panelBalance - fundingBalanceNative) < 0.0001 ||
-                    Math.abs(panelBalance - spotBalanceNative) < 0.0001;
-                expect.soft(matchesEitherWallet, `Select Coin panel balance (${panelBalance}) should match either the Funding (${fundingBalanceNative}) or Spot (${spotBalanceNative}) wallet`).toBe(true);
-                await fundingPage.selectCoinFromPanel(row.coin);
-                expect.soft(await fundingPage.isTransferModalVisible(), 'Selecting a coin should return to the Transfer modal').toBe(true);
-                expect.soft(await fundingPage.getTransferCoinText(), `Coin field should now show ${row.coin}`).toContain(row.coin);
-                expect.soft(await fundingPage.isTransferAmountCurrencyLabelVisible(row.symbol), `Amount currency label should refresh to "${row.symbol}"`).toBe(true);
-
-                // TC-F14 (Close half) — Select Coin's close (X) exits the whole flow back to Funding
-                await fundingPage.clickTransferCoinDropdown();
                 await fundingPage.closeSelectCoinPanel();
                 expect.soft(await fundingPage.isFundingTabVisible(), 'Closing (X) should exit back to the Funding tab').toBe(true);
 
-                // TC-F16 — two real transfers, each verified by exact native-balance arithmetic rather
-                // than the account-wide Estimated Balance (USD) total. Confirmed live that the USD
-                // total is not a reliable check here — it can read short by exactly the transferred
-                // amount's USD value right after a transfer (an aggregate-widget refresh lag), even
-                // though the individual Funding/Spot rows already reflect the transfer correctly. Native
-                // balance and In Order, read straight from those same rows, aren't subject to that lag.
-                // Amount is a CSV-configurable fraction of the live balance (dynamic per coin), not a
-                // hardcoded value — works whether the coin holds a large or a very small balance.
-                // Skips cleanly rather than failing when this coin holds a zero Funding balance.
-                const fundingBefore1 = await fundingPage.getCoinRowData(row.coin);
-                test.skip(fundingBefore1.fundingBalanceNative <= 0, `${row.coin} has a zero Funding balance — no valid amount to transfer`);
-                await spotPage.goToSpotTab();
-                const spotBefore1 = await spotPage.getCoinRowData(row.coin);
-                await fundingPage.goToFundingTab();
+                await fundingPage.clickTransferAction(transferCurrency.coin);
+                await fundingPage.clickTransferCoinDropdown();
+                expect.soft(await fundingPage.isSelectCoinPanelVisible(), 'Select Coin panel should open again').toBe(true);
 
-                const fraction = parseFloat(row.transferFraction);
+                // Back button returns to Transfer without closing the whole flow
+                await fundingPage.goBackFromSelectCoin();
+                expect.soft(await fundingPage.isTransferModalVisible(), 'Back should return to the Transfer modal, not close it').toBe(true);
+
+                // Reopen the popup and verify its structure
+                await fundingPage.clickTransferCoinDropdown();
+                expect.soft(await fundingPage.isSelectCoinPanelVisible(), 'Select Coin panel title should be visible').toBe(true);
+                expect.soft(await fundingPage.isSelectCoinSearchFieldVisible(), 'Select Coin search field should be visible').toBe(true);
+                // No separate search-icon check here — confirmed live (screenshot) that this panel's
+                // search box has no distinct icon element to find, unlike the main Funding table's.
+                const allCoinsCount = await fundingPage.getSelectCoinVisibleCoinCount();
+                expect.soft(allCoinsCount, `All ${currencies.length} CSV currencies should be visible before any search`).toBeGreaterThanOrEqual(currencies.length);
+
+                // Search sweep across every CSV currency (BTC, BNB, ETH, USDT — from fundingTransferData.csv,
+                // not hardcoded). Only asserts the target coin appears — confirmed live (screenshot) that
+                // searching "ETH" legitimately also matches "Tether USDT" (the app searches the full coin
+                // name, and "Tether" contains the letters "ETH"), so a strict single-row count would fail
+                // on real, correct app behavior, not a test bug.
+                for (const sweepRow of currencies) {
+                    await fundingPage.searchCoinInSelectPanel(sweepRow.symbol);
+                    expect.soft(await fundingPage.getSelectCoinVisibleCoinCount(), `Searching "${sweepRow.symbol}" should return at least ${sweepRow.coin}`).toBeGreaterThanOrEqual(1);
+                    expect.soft(await fundingPage.isCoinVisibleInSelectPanel(sweepRow.coin), `${sweepRow.coin} should appear when searching "${sweepRow.symbol}"`).toBe(true);
+                    await fundingPage.clearCoinSearchInSelectPanel();
+                }
+
+                // Finally search this test's own currency and verify its balance/USD value against the
+                // Spot Wallet page balance for the same coin (from Step 1's snapshot) — confirmed live
+                // that the Select Coin panel always shows the Spot balance here, not Funding.
+                await fundingPage.searchCoinInSelectPanel(transferCurrency.symbol);
+                expect.soft(await fundingPage.isCoinVisibleInSelectPanel(transferCurrency.coin), `${transferCurrency.coin} row should appear when searching "${transferCurrency.symbol}"`).toBe(true);
+                expect.soft(await fundingPage.isCoinIconVisibleInSelectPanel(transferCurrency.coin), `${transferCurrency.coin} row should show a coin icon`).toBe(true);
+                const { balanceText } = await fundingPage.getSelectCoinRowData(transferCurrency.coin, spotBalanceNative);
+                const panelBalance = parseFloat(balanceText) || 0;
+                expect.soft(panelBalance, `Select Coin panel balance (${panelBalance}) should match the Spot Wallet page balance (${spotBalanceNative}) for ${transferCurrency.coin}`).toBeCloseTo(spotBalanceNative, 4);
+
+                await fundingPage.selectCoinFromPanel(transferCurrency.coin);
+                expect.soft(await fundingPage.isTransferModalVisible(), 'Selecting a coin should return to the Transfer modal').toBe(true);
+                expect.soft(await fundingPage.getTransferCoinText(transferCurrency.coin), `Coin field should now show ${transferCurrency.coin}`).toContain(transferCurrency.coin);
+                expect.soft(await fundingPage.isTransferAmountCurrencyLabelVisible(transferCurrency.symbol), `Amount currency label should refresh to "${transferCurrency.symbol}"`).toBe(true);
+
+                await fundingPage.closeModal();
+                expect.soft(await fundingPage.isFundingTabVisible(), 'Closing the modal at the end of this test should return to the Funding tab').toBe(true);
+            });
+
+            // ─── Step 6 ─────────────────────────────────────────────────────────────
+            test('TC-F14: Transfer modal quantity matches both wallet balances', async () => {
+                await fundingPage.clickTransferAction(transferCurrency.coin);
+                const walletQty = await fundingPage.getTransferWalletQuantities(spotBalanceNative, fundingBalanceNative);
+                expect.soft(walletQty.spotQty, `Spot wallet quantity shown (${walletQty.spotQty}) should match the Spot Wallet page balance (${spotBalanceNative})`).toBeCloseTo(spotBalanceNative, 4);
+                expect.soft(walletQty.fundingQty, `Funding wallet quantity shown (${walletQty.fundingQty}) should match the Funding Wallet page balance (${fundingBalanceNative})`).toBeCloseTo(fundingBalanceNative, 4);
+
+                await fundingPage.closeModal();
+                expect.soft(await fundingPage.isFundingTabVisible(), 'Closing the modal at the end of this test should return to the Funding tab').toBe(true);
+            });
+
+            // ─── Step 7 ─────────────────────────────────────────────────────────────
+            test('TC-F15: Amount field has the "Amount" placeholder, the currency label, and a MAX button', async () => {
+                await fundingPage.clickTransferAction(transferCurrency.coin);
+                expect.soft(await fundingPage.getTransferAmountPlaceholder(), 'Amount field placeholder should read "Amount"').toBe('Amount');
+                expect.soft(await fundingPage.isTransferAmountCurrencyLabelVisible(transferCurrency.symbol), `Amount field should show the "${transferCurrency.symbol}" currency label`).toBe(true);
+                expect.soft(await fundingPage.isTransferMaxVisible(), 'MAX control should be visible').toBe(true);
+
+                await fundingPage.closeModal();
+                expect.soft(await fundingPage.isFundingTabVisible(), 'Closing the modal at the end of this test should return to the Funding tab').toBe(true);
+            });
+
+            // ─── Step 8 ─────────────────────────────────────────────────────────────
+            test('TC-F16: MAX fills the available balance of the active (From) wallet, both directions', async () => {
+                await fundingPage.clickTransferAction(transferCurrency.coin);
+
+                await fundingPage.clickTransferMax();
+                const fundingMax = await fundingPage.getTransferAmountValue(fundingBalanceNative.toFixed(8));
+                expect.soft(Number(fundingMax), `MAX should fill the Funding wallet's available balance (${fundingBalanceNative})`).toBeCloseTo(fundingBalanceNative, 4);
+
+                await fundingPage.swapTransferDirection();
+                await fundingPage.clickTransferMax();
+                const spotMax = await fundingPage.getTransferAmountValue(spotBalanceNative.toFixed(8));
+                expect.soft(Number(spotMax), `MAX should fill the Spot wallet's available balance (${spotBalanceNative})`).toBeCloseTo(spotBalanceNative, 4);
+
+                await fundingPage.closeModal();
+                expect.soft(await fundingPage.isFundingTabVisible(), 'Closing the modal at the end of this test should return to the Funding tab').toBe(true);
+            });
+
+            // ─── Step 9 ─────────────────────────────────────────────────────────────
+            // fillTransferAmount() already waits out the app's async auto-clamp.
+            test('TC-F17: An over-limit amount auto-clamps down to the available balance, both directions', async () => {
+                await fundingPage.clickTransferAction(transferCurrency.coin);
+
+                const overLimitFunding = (fundingBalanceNative * 2 + 1).toFixed(8);
+                await fundingPage.fillTransferAmount(overLimitFunding);
+                expect.soft(Number(await fundingPage.getTransferAmountValue(fundingBalanceNative.toFixed(8))), `Typing an over-limit amount (${overLimitFunding}) should clamp down to the Funding balance (${fundingBalanceNative})`).toBeCloseTo(fundingBalanceNative, 4);
+
+                await fundingPage.swapTransferDirection();
+                const overLimitSpot = (spotBalanceNative * 2 + 1).toFixed(8);
+                await fundingPage.fillTransferAmount(overLimitSpot);
+                expect.soft(Number(await fundingPage.getTransferAmountValue(spotBalanceNative.toFixed(8))), `Typing an over-limit amount (${overLimitSpot}) should clamp down to the Spot balance (${spotBalanceNative})`).toBeCloseTo(spotBalanceNative, 4);
+
+                await fundingPage.closeModal();
+                expect.soft(await fundingPage.isFundingTabVisible(), 'Closing the modal at the end of this test should return to the Funding tab').toBe(true);
+            });
+
+            // ─── Step 10 ────────────────────────────────────────────────────────────
+            test('TC-F18: "0" amount is rejected in both directions, and the Amount field clears on swap', async () => {
+                await fundingPage.clickTransferAction(transferCurrency.coin);
+
+                await fundingPage.fillTransferAmount('0');
+                await fundingPage.clickTransferConfirm();
+                expect.soft(await fundingPage.isTransferAmountValidationVisible(), 'Confirming a "0" amount (Funding → Spot) should show a validation message').toBe(true);
+
+                const safeAmountBeforeSwap = fundingBalanceNative > 0 ? (fundingBalanceNative / 4).toFixed(8) : '0';
+                await fundingPage.fillTransferAmount(safeAmountBeforeSwap);
+                await fundingPage.swapTransferDirection();
+                expect.soft(await fundingPage.getTransferAmountValue(''), 'Swapping direction should clear the Amount field').toBe('');
+
+                await fundingPage.fillTransferAmount('0');
+                await fundingPage.clickTransferConfirm();
+                expect.soft(await fundingPage.isTransferAmountValidationVisible(), 'Confirming a "0" amount (Spot → Funding) should show a validation message').toBe(true);
+
+                await fundingPage.closeModal();
+                expect.soft(await fundingPage.isFundingTabVisible(), 'Closing the modal after the "0" validation checks should return to the Funding tab').toBe(true);
+            });
+
+            // ─── Step 11 ────────────────────────────────────────────────────────────
+            // Two real transfers, each verified by exact native-balance arithmetic rather than the
+            // account-wide Estimated Balance (USD) total. Confirmed live that the USD total is not a
+            // reliable check here — it can read short by exactly the transferred amount's USD value
+            // right after a transfer (an aggregate-widget refresh lag), even though the individual
+            // Funding/Spot rows already reflect the transfer correctly. Amount is the fixed, CSV-
+            // configured native amount (not a balance percentage) — skips cleanly rather than failing
+            // when the live balance is below that configured amount.
+            test('TC-F19: a real Funding → Spot then Spot → Funding transfer updates both wallet balances exactly', async () => {
+                const fundingBefore1 = await fundingPage.getCoinRowData(transferCurrency.coin);
+                const fundingToSpotAmount = parseFloat(transferCurrency.fundingToSpotAmount);
+                test.skip(fundingBefore1.fundingBalanceNative < fundingToSpotAmount, `${transferCurrency.coin} Funding balance (${fundingBefore1.fundingBalanceNative}) is below the configured transfer amount (${fundingToSpotAmount}) — skipping the real transfer`);
+                await spotPage.goToSpotTab();
+                const spotBefore1 = await spotPage.getCoinRowData(transferCurrency.coin);
+                await fundingPage.goToFundingTab();
 
                 // ─── Leg 1: Funding → Spot ─────────────────────────────────────────────
-                const transferAmount1 = (fundingBefore1.fundingBalanceNative * fraction).toFixed(8);
-                await fundingPage.clickTransferAction(row.coin);
+                const transferAmount1 = fundingToSpotAmount.toFixed(8);
+                await fundingPage.clickTransferAction(transferCurrency.coin);
                 await fundingPage.fillTransferAmount(transferAmount1);
                 await fundingPage.clickTransferConfirm();
-                expect.soft(await fundingPage.isTransferSuccessMessageVisible(), `Transferring ${transferAmount1} ${row.symbol} from Funding to Spot should succeed`).toBe(true);
+                expect.soft(await fundingPage.isTransferSuccessMessageVisible(), `Transferring ${transferAmount1} ${transferCurrency.symbol} from Funding to Spot should succeed`).toBe(true);
                 await fundingPage.closeModal();
+                expect.soft(await fundingPage.isFundingTabVisible(), 'Closing the success modal should redirect to the Funding tab').toBe(true);
 
                 await fundingPage.goToFundingTab();
-                const fundingAfter1 = await fundingPage.getCoinRowData(row.coin);
+                const fundingAfter1 = await fundingPage.getCoinRowData(transferCurrency.coin);
                 await spotPage.goToSpotTab();
-                const spotAfter1 = await spotPage.getCoinRowData(row.coin);
+                const spotAfter1 = await spotPage.getCoinRowData(transferCurrency.coin);
                 await fundingPage.goToFundingTab();
 
-                expect.soft(fundingAfter1.fundingBalanceNative, `Funding balance (${fundingBefore1.fundingBalanceNative}) should decrease by ${transferAmount1} to ${(fundingBefore1.fundingBalanceNative - parseFloat(transferAmount1)).toFixed(8)}`).toBeCloseTo(fundingBefore1.fundingBalanceNative - parseFloat(transferAmount1), 6);
-                expect.soft(spotAfter1.spotBalanceNative, `Spot balance (${spotBefore1.spotBalanceNative}) should increase by ${transferAmount1} to ${(spotBefore1.spotBalanceNative + parseFloat(transferAmount1)).toFixed(8)}`).toBeCloseTo(spotBefore1.spotBalanceNative + parseFloat(transferAmount1), 6);
+                expect.soft(fundingAfter1.fundingBalanceNative, `Funding balance (${fundingBefore1.fundingBalanceNative}) should decrease by ${transferAmount1} to ${(fundingBefore1.fundingBalanceNative - fundingToSpotAmount).toFixed(8)}`).toBeCloseTo(fundingBefore1.fundingBalanceNative - fundingToSpotAmount, 6);
+                expect.soft(spotAfter1.spotBalanceNative, `Spot balance (${spotBefore1.spotBalanceNative}) should increase by ${transferAmount1} to ${(spotBefore1.spotBalanceNative + fundingToSpotAmount).toFixed(8)}`).toBeCloseTo(spotBefore1.spotBalanceNative + fundingToSpotAmount, 6);
                 expect.soft(fundingAfter1.inOrderNative, 'Funding In Order should stay unchanged by a balance-only transfer').toBe(fundingBefore1.inOrderNative);
                 expect.soft(spotAfter1.inOrderNative, 'Spot In Order should stay unchanged by a balance-only transfer').toBe(spotBefore1.inOrderNative);
 
                 // ─── Leg 2: Spot → Funding (reverse direction) ─────────────────────────
-                const transferAmount2 = (spotAfter1.spotBalanceNative * fraction).toFixed(8);
-                await fundingPage.clickTransferAction(row.coin);
+                const spotToFundingAmount = parseFloat(transferCurrency.spotToFundingAmount);
+                test.skip(spotAfter1.spotBalanceNative < spotToFundingAmount, `${transferCurrency.coin} Spot balance (${spotAfter1.spotBalanceNative}) is below the configured transfer amount (${spotToFundingAmount}) — skipping the reverse leg`);
+                const transferAmount2 = spotToFundingAmount.toFixed(8);
+                await fundingPage.clickTransferAction(transferCurrency.coin);
                 await fundingPage.swapTransferDirection();
                 await fundingPage.fillTransferAmount(transferAmount2);
                 await fundingPage.clickTransferConfirm();
-                expect.soft(await fundingPage.isTransferSuccessMessageVisible(), `Transferring ${transferAmount2} ${row.symbol} from Spot to Funding should succeed`).toBe(true);
+                expect.soft(await fundingPage.isTransferSuccessMessageVisible(), `Transferring ${transferAmount2} ${transferCurrency.symbol} from Spot to Funding should succeed`).toBe(true);
                 await fundingPage.closeModal();
+                expect.soft(await fundingPage.isFundingTabVisible(), 'Closing the success modal should redirect to the Funding tab').toBe(true);
 
                 await fundingPage.goToFundingTab();
-                const fundingAfter2 = await fundingPage.getCoinRowData(row.coin);
+                const fundingAfter2 = await fundingPage.getCoinRowData(transferCurrency.coin);
                 await spotPage.goToSpotTab();
-                const spotAfter2 = await spotPage.getCoinRowData(row.coin);
+                const spotAfter2 = await spotPage.getCoinRowData(transferCurrency.coin);
                 await fundingPage.goToFundingTab();
 
-                expect.soft(fundingAfter2.fundingBalanceNative, `Funding balance (${fundingAfter1.fundingBalanceNative}) should increase by ${transferAmount2} to ${(fundingAfter1.fundingBalanceNative + parseFloat(transferAmount2)).toFixed(8)}`).toBeCloseTo(fundingAfter1.fundingBalanceNative + parseFloat(transferAmount2), 6);
-                expect.soft(spotAfter2.spotBalanceNative, `Spot balance (${spotAfter1.spotBalanceNative}) should decrease by ${transferAmount2} to ${(spotAfter1.spotBalanceNative - parseFloat(transferAmount2)).toFixed(8)}`).toBeCloseTo(spotAfter1.spotBalanceNative - parseFloat(transferAmount2), 6);
+                expect.soft(fundingAfter2.fundingBalanceNative, `Funding balance (${fundingAfter1.fundingBalanceNative}) should increase by ${transferAmount2} to ${(fundingAfter1.fundingBalanceNative + spotToFundingAmount).toFixed(8)}`).toBeCloseTo(fundingAfter1.fundingBalanceNative + spotToFundingAmount, 6);
+                expect.soft(spotAfter2.spotBalanceNative, `Spot balance (${spotAfter1.spotBalanceNative}) should decrease by ${transferAmount2} to ${(spotAfter1.spotBalanceNative - spotToFundingAmount).toFixed(8)}`).toBeCloseTo(spotAfter1.spotBalanceNative - spotToFundingAmount, 6);
                 expect.soft(fundingAfter2.inOrderNative, 'Funding In Order should stay unchanged by a balance-only transfer').toBe(fundingBefore1.inOrderNative);
                 expect.soft(spotAfter2.inOrderNative, 'Spot In Order should stay unchanged by a balance-only transfer').toBe(spotBefore1.inOrderNative);
             });
-        }
+        });
 
-        // ─── TC-F17 ─────────────────────────────────────────────────────────────
-        test('TC-F17: Hide Zero Balance hides zero-total rows and restores them on uncheck', async () => {
+        // ─── TC-F20 ─────────────────────────────────────────────────────────────
+        test('TC-F20: Hide Zero Balance hides zero-total rows and restores them on uncheck', async () => {
             const baseline = await fundingPage.getAllCoinBalances();
 
             await fundingPage.setHideZeroBalance(true);
@@ -318,12 +449,12 @@ test.describe('Portfolio Funding Page', () => {
             expect.soft(restored.length, 'Unchecking Hide Zero Balance should restore every baseline row').toBe(baseline.length);
         });
 
-        // ─── TC-F18 ─────────────────────────────────────────────────────────────
+        // ─── TC-F21 ─────────────────────────────────────────────────────────────
         // Checks both Hide Zero Balance states inside one test — this TC is about search
         // filtering behavior across both states, not two unrelated things, so it stays one
         // self-contained, independent test per coin rather than splitting further.
         for (const row of currencies) {
-            test(`TC-F18 [${row.coin}]: search currency filters correctly with Hide Zero Balance on and off`, async () => {
+            test(`TC-F21 [${row.coin}]: search currency filters correctly with Hide Zero Balance on and off`, async () => {
                 expect.soft(await fundingPage.isSearchFieldVisible(), 'Search currency field should be visible').toBe(true);
                 expect.soft(await fundingPage.isSearchIconVisible(), 'Search icon should be visible').toBe(true);
 
@@ -349,8 +480,8 @@ test.describe('Portfolio Funding Page', () => {
             });
         }
 
-        // ─── TC-F19 ─────────────────────────────────────────────────────────────
-        test('TC-F19: Footer is visible', async () => {
+        // ─── TC-F22 ─────────────────────────────────────────────────────────────
+        test('TC-F22: Footer is visible', async () => {
             expect(await fundingPage.isFooterVisible()).toBe(true);
         });
     });
