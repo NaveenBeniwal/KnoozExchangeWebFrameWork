@@ -1,0 +1,2 @@
+[Setup] Trade CSV row (src/data/spotTradeRoundTripData.csv): {"buyCurrency":"USDT","sellCurrency":"BTC","searchPair":"BTC/USDT","aboveMarketLimitPrice":"70000","buyTotal":"10","belowMarketLimitPrice":"60000","sellTotal":"10","feePercent":"0.15"}
+user creds: naveen.beniwal@antiersolutions.com : Test@123 : 12345
