@@ -48,6 +48,7 @@ test.describe.serial('Spot Module — Buy/Sell Round-Trip Smoke & Sanity Flow', 
     test.describe.configure({ timeout: 90000 });
 
     test.beforeAll(async ({ playwright }, testInfo) => {
+        test.setTimeout(90000);
         browser           = await playwright.chromium.launch({ headless: testInfo.project.use.headless });
         context           = await browser.newContext({ viewport: { width: 1280, height: 720 }, baseURL: process.env.BASE_URL, ignoreHTTPSErrors: true });
         page              = await context.newPage();
