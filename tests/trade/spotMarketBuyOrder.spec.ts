@@ -46,13 +46,13 @@ test.describe.serial('Spot Module — Market Buy Order Positive Flow', () => {
     test.afterAll(async () => { await browser.close(); });
 
     // ── TC-01 ─────────────────────────────────────────────────────────────────
-    test('TC-01: navigate to Spot Trading page', async () => {
+    test('TC-01: navigate to Spot Trading page @smoke @sanity @regression', async () => {
         await spotMarketBuyPage.navigateToSpotTrading();
         console.log('[TC-01] Navigated to Spot Trading page');
     });
 
     // ── TC-02 ─────────────────────────────────────────────────────────────────
-    test('TC-02: Spot Trading page shows all expected labels', async () => {
+    test('TC-02: Spot Trading page shows all expected labels @smoke @sanity @regression', async () => {
         const r = await spotMarketBuyPage.getSpotPageLabelsStatus();
         expect.soft(r.depthViewText,    'Depth View label').toBe('Depth View');
         expect.soft(r.orderBookText,    'Order Book heading').toBe('Order Book');
@@ -68,20 +68,20 @@ test.describe.serial('Spot Module — Market Buy Order Positive Flow', () => {
     });
 
     // ── TC-03 ─────────────────────────────────────────────────────────────────
-    test('TC-03: search currency pair', async () => {
+    test('TC-03: search currency pair @sanity @regression', async () => {
         await spotMarketBuyPage.searchCurrencyPair(getTradeData().searchPair);
         console.log(`[TC-03] Searched pair: ${getTradeData().searchPair}`);
     });
 
     // ── TC-04 ─────────────────────────────────────────────────────────────────
-    test('TC-04: mark currency pair as favorite', async () => {
+    test('TC-04: mark currency pair as favorite @sanity @regression', async () => {
         const r = await spotMarketBuyPage.markAsFavorite(getTradeData().searchPair);
         expect.soft(r.favoriteAddedStatus, r.favoriteMsg).toBe('added');
         console.log(`[TC-04] Marked ${getTradeData().searchPair} as favorite | Status: "${r.favoriteAddedStatus}" | Message: "${r.favoriteMsg}"`);
     });
 
     // ── TC-05 ─────────────────────────────────────────────────────────────────
-    test('TC-05: unmark currency pair from favorites', async () => {
+    test('TC-05: unmark currency pair from favorites @sanity @regression', async () => {
         const r = await spotMarketBuyPage.unmarkFavorite(getTradeData().searchPair);
         expect.soft(r.favoriteRemovedStatus, r.favoriteMsg).toBe('removed');
         console.log(`[TC-05] Unmarked ${getTradeData().searchPair} from favorites | Status: "${r.favoriteRemovedStatus}" | Message: "${r.favoriteMsg}"`);
@@ -89,14 +89,14 @@ test.describe.serial('Spot Module — Market Buy Order Positive Flow', () => {
 
     // ── TC-06 ─────────────────────────────────────────────────────────────────
     // Pair is active from here — all Binance comparisons use getTradeData().searchPair
-    test('TC-06: select currency pair from ALL tab', async () => {
+    test('TC-06: select currency pair from ALL tab @sanity @regression', async () => {
         await spotMarketBuyPage.selectCurrencyPair();
         console.log('[TC-06] Currency pair selected from ALL tab');
     });
 
     // ── TC-02b ────────────────────────────────────────────────────────────────
     // Positioned after TC-06 so the page shows the selected pair before comparing with Binance
-    test('TC-02b: 24h ticker header matches Binance reference data (exact match)', async () => {
+    test('TC-02b: 24h ticker header matches Binance reference data (exact match) @sanity @regression', async () => {
         const [binance, ticker] = await Promise.all([
             BinanceHelper.get24hTicker(page, getTradeData().searchPair),
             spotMarketBuyPage.getTickerHeaderData(),
@@ -109,7 +109,7 @@ test.describe.serial('Spot Module — Market Buy Order Positive Flow', () => {
     });
 
     // ── TC-03b ────────────────────────────────────────────────────────────────
-    test('TC-03b: order book column headers show Price, Amount, Total', async () => {
+    test('TC-03b: order book column headers show Price, Amount, Total @sanity @regression', async () => {
         const h = await spotMarketBuyPage.getOrderBookColumnHeaders();
         expect.soft(h.price,  'Price header should be visible').not.toBe('');
         expect.soft(h.amount, 'Amount header should be visible').not.toBe('');
@@ -118,7 +118,7 @@ test.describe.serial('Spot Module — Market Buy Order Positive Flow', () => {
     });
 
     // ── TC-03c ────────────────────────────────────────────────────────────────
-    test('TC-03c: order book view switches (all / sell-only / buy-only)', async () => {
+    test('TC-03c: order book view switches (all / sell-only / buy-only) @sanity @regression', async () => {
         await spotMarketBuyPage.setOrderBookView('sell');
         const v1 = await spotMarketBuyPage.isOrderBookVisible();
         const sellOb = await spotMarketBuyPage.getOrderBookTopBidAsk();
@@ -139,7 +139,7 @@ test.describe.serial('Spot Module — Market Buy Order Positive Flow', () => {
     });
 
     // ── TC-03d ────────────────────────────────────────────────────────────────
-    test('TC-03d: order book precision dropdown changes price decimal places across all views', async () => {
+    test('TC-03d: order book precision dropdown changes price decimal places across all views @sanity @regression', async () => {
         const maxDecimalsForPrec = (prec: string): number =>
             prec === '0.01' ? 2 : prec === '0.1' ? 1 : 0;
         const countDecimals = (text: string): number => {
@@ -178,7 +178,7 @@ test.describe.serial('Spot Module — Market Buy Order Positive Flow', () => {
     });
 
     // ── TC-03e ────────────────────────────────────────────────────────────────
-    test('TC-03e: order book LTP and buy/sell ratio bar (suggestions — not yet implemented)', async () => {
+    test('TC-03e: order book LTP and buy/sell ratio bar (suggestions — not yet implemented) @sanity @regression', async () => {
         const ltp   = await spotMarketBuyPage.getOrderBookLtp();
         const ratio = await spotMarketBuyPage.getOrderBookBuySellRatio();
         const sum   = parseFloat((ratio.buyPct + ratio.sellPct).toFixed(1));
@@ -197,7 +197,7 @@ test.describe.serial('Spot Module — Market Buy Order Positive Flow', () => {
     });
 
     // ── TC-03f ────────────────────────────────────────────────────────────────
-    test('TC-03f: order book has actual ask and bid rows', async () => {
+    test('TC-03f: order book has actual ask and bid rows @sanity @regression', async () => {
         const { askCount, bidCount, topAsk, topBid } = await spotMarketBuyPage.getOrderBookTopBidAsk();
         expect.soft(askCount, 'Ask row count should be >0').toBeGreaterThan(0);
         expect.soft(bidCount, 'Bid row count should be >0').toBeGreaterThan(0);
@@ -207,7 +207,7 @@ test.describe.serial('Spot Module — Market Buy Order Positive Flow', () => {
     });
 
     // ── TC-03g ────────────────────────────────────────────────────────────────
-    test('TC-03g: top bid < top ask (valid spread)', async () => {
+    test('TC-03g: top bid < top ask (valid spread) @sanity @regression', async () => {
         const { topAsk, topBid } = await spotMarketBuyPage.getOrderBookTopBidAsk();
         if (topAsk > 0 && topBid > 0) {
             expect.soft(topBid, `Top bid(${topBid}) must be < top ask(${topAsk})`).toBeLessThan(topAsk);
@@ -217,7 +217,7 @@ test.describe.serial('Spot Module — Market Buy Order Positive Flow', () => {
     });
 
     // ── TC-03h ────────────────────────────────────────────────────────────────
-    test('TC-03h: order book top bid/ask match Binance within 0.5%', async () => {
+    test('TC-03h: order book top bid/ask match Binance within 0.5% @sanity @regression', async () => {
         const [{ topAsk, topBid }, ob] = await Promise.all([
             spotMarketBuyPage.getOrderBookTopBidAsk(),
             BinanceHelper.getOrderBook(page, getTradeData().searchPair, 5),
@@ -234,7 +234,7 @@ test.describe.serial('Spot Module — Market Buy Order Positive Flow', () => {
     });
 
     // ── TC-03i ────────────────────────────────────────────────────────────────
-    test('TC-03i: order book LTP matches Binance last price within 0.5%', async () => {
+    test('TC-03i: order book LTP matches Binance last price within 0.5% @sanity @regression', async () => {
         const [ltp, b] = await Promise.all([
             spotMarketBuyPage.getOrderBookLtp(),
             BinanceHelper.get24hTicker(page, getTradeData().searchPair),
@@ -247,7 +247,7 @@ test.describe.serial('Spot Module — Market Buy Order Positive Flow', () => {
     });
 
     // ── TC-06a ────────────────────────────────────────────────────────────────
-    test('TC-06a: Market Buy tab Price field is visible but disabled', async () => {
+    test('TC-06a: Market Buy tab Price field is visible but disabled @sanity @regression', async () => {
         await spotMarketBuyPage.selectMarketBuyTab();
         const isDisabled = await spotMarketBuyPage.isPriceFieldDisabled();
         expect.soft(isDisabled ? 'disabled' : 'editable', 'Market Price field should be disabled (read-only) on Market tab').toBe('disabled');
@@ -255,7 +255,7 @@ test.describe.serial('Spot Module — Market Buy Order Positive Flow', () => {
     });
 
     // ── TC-06a1 ───────────────────────────────────────────────────────────────
-    test('TC-06a1: Buy button label shows "BUY {baseCoin}"', async () => {
+    test('TC-06a1: Buy button label shows "BUY {baseCoin}" @sanity @regression', async () => {
         const label = await spotMarketBuyPage.getMarketBuyButtonLabel();
         expect.soft(label.toUpperCase(), `Buy button label should contain "BUY"`).toContain('BUY');
         expect.soft(label.toUpperCase(), `Buy button label should contain "${baseCoin}"`).toContain(baseCoin.toUpperCase());
@@ -263,14 +263,14 @@ test.describe.serial('Spot Module — Market Buy Order Positive Flow', () => {
     });
 
     // ── TC-06a2 ───────────────────────────────────────────────────────────────
-    test('TC-06a2: quote currency (USDT) available balance is non-negative', async () => {
+    test('TC-06a2: quote currency (USDT) available balance is non-negative @sanity @regression', async () => {
         const buyAvlb = await spotMarketBuyPage.getBuyAvailableBalance();
         expect.soft(buyAvlb, `Buy Avlb (${quoteCoin}) should be non-negative`).toBeGreaterThanOrEqual(0);
         console.log(`[TC-06a2] ${quoteCoin} available balance for buy | Available Balance: ${buyAvlb}`);
     });
 
     // ── TC-06a3–TC-06a6: % buttons ────────────────────────────────────────────
-    test('TC-06a3: 25% button fills correct spend amount', async () => {
+    test('TC-06a3: 25% button fills correct spend amount @sanity @regression', async () => {
         const avlb   = await spotMarketBuyPage.getBuyAvailableBalance();
         const filled = await spotMarketBuyPage.clickPercentageButton(25);
         expect.soft(filled, '25% should fill a non-negative amount').toBeGreaterThanOrEqual(0);
@@ -282,7 +282,7 @@ test.describe.serial('Spot Module — Market Buy Order Positive Flow', () => {
         console.log(`[TC-06a3] 25% Button | Available Balance: ${avlb} | Expected: ${expected25} | Total Field: ${filled} | Diff%: ${avlb > 0 ? diffPct(filled, expected25) : 'N/A'}`);
     });
 
-    test('TC-06a4: 50% button fills correct spend amount', async () => {
+    test('TC-06a4: 50% button fills correct spend amount @sanity @regression', async () => {
         const avlb   = await spotMarketBuyPage.getBuyAvailableBalance();
         const filled = await spotMarketBuyPage.clickPercentageButton(50);
         expect.soft(filled, '50% should fill non-negative amount').toBeGreaterThanOrEqual(0);
@@ -291,7 +291,7 @@ test.describe.serial('Spot Module — Market Buy Order Positive Flow', () => {
         console.log(`[TC-06a4] 50% Button | Available Balance: ${avlb} | Expected: ${expected50} | Total Field: ${filled} | Diff%: ${avlb > 0 ? diffPct(filled, expected50) : 'N/A'}`);
     });
 
-    test('TC-06a5: 75% button fills correct spend amount', async () => {
+    test('TC-06a5: 75% button fills correct spend amount @sanity @regression', async () => {
         const avlb   = await spotMarketBuyPage.getBuyAvailableBalance();
         const filled = await spotMarketBuyPage.clickPercentageButton(75);
         expect.soft(filled, '75% should fill non-negative amount').toBeGreaterThanOrEqual(0);
@@ -300,7 +300,7 @@ test.describe.serial('Spot Module — Market Buy Order Positive Flow', () => {
         console.log(`[TC-06a5] 75% Button | Available Balance: ${avlb} | Expected: ${expected75} | Total Field: ${filled} | Diff%: ${avlb > 0 ? diffPct(filled, expected75) : 'N/A'}`);
     });
 
-    test('TC-06a6: 100% button fills correct spend amount', async () => {
+    test('TC-06a6: 100% button fills correct spend amount @sanity @regression', async () => {
         const avlb   = await spotMarketBuyPage.getBuyAvailableBalance();
         const filled = await spotMarketBuyPage.clickPercentageButton(100);
         expect.soft(filled, '100% should fill non-negative amount').toBeGreaterThanOrEqual(0);
@@ -310,7 +310,7 @@ test.describe.serial('Spot Module — Market Buy Order Positive Flow', () => {
     });
 
     // ── TC-06a7 ───────────────────────────────────────────────────────────────
-    test('TC-06a7: pair header displays the selected pair name', async () => {
+    test('TC-06a7: pair header displays the selected pair name @sanity @regression', async () => {
         const hdr = await spotMarketBuyPage.getPairHeaderText();
         if (hdr) {
             expect.soft(
@@ -322,7 +322,7 @@ test.describe.serial('Spot Module — Market Buy Order Positive Flow', () => {
     });
 
     // ── TC-06b ────────────────────────────────────────────────────────────────
-    test('TC-06b: capture full balance snapshot before placing market buy order', async () => {
+    test('TC-06b: capture full balance snapshot before placing market buy order @sanity @regression', async () => {
         snapshotBefore = await spotMarketBuyPage.captureFullSnapshot(portfolioSpotPage, getTradeData().searchPair);
         const portfolioQuote = snapshotBefore.portfolioCoins.find(c => c.coin === quoteCoin);
         const portfolioBase  = snapshotBefore.portfolioCoins.find(c => c.coin === baseCoin);
@@ -339,7 +339,7 @@ test.describe.serial('Spot Module — Market Buy Order Positive Flow', () => {
     });
 
     // ── TC-07 ─────────────────────────────────────────────────────────────────
-    test('TC-07: enter market buy order amount (total to spend), verify fee', async () => {
+    test('TC-07: enter market buy order amount (total to spend), verify fee @sanity @regression', async () => {
         await spotMarketBuyPage.selectMarketBuyTab(); // ensure Market tab is active — page may default to Limit after portfolio navigation
         const r = await spotMarketBuyPage.enterMarketBuyOrder(parseFloat(getTradeData().buyTotal), parseFloat(getTradeData().feePercent));
         if (r.feePresent) {
@@ -352,14 +352,14 @@ test.describe.serial('Spot Module — Market Buy Order Positive Flow', () => {
 
 
     // ── TC-08 ─────────────────────────────────────────────────────────────────
-    test('TC-08: USDT available balance before market buy noted', async () => {
+    test('TC-08: USDT available balance before market buy noted @sanity @regression', async () => {
         const avlb = snapshotBefore?.buyAvlb ?? await spotMarketBuyPage.getBuyAvailableBalance();
         console.log(`[TC-08] ${quoteCoin} available before market buy: ${avlb}`);
         expect.soft(avlb, `${quoteCoin} balance should be non-negative`).toBeGreaterThanOrEqual(0);
     });
 
     // ── TC-09 ─────────────────────────────────────────────────────────────────
-    test('TC-09: confirm market buy order — verify success message', async () => {
+    test('TC-09: confirm market buy order — verify success message @regression', async () => {
         await spotMarketBuyPage.selectMarketBuyTab();
         await spotMarketBuyPage.enterMarketBuyOrder(parseFloat(getTradeData().buyTotal), parseFloat(getTradeData().feePercent));
         // Check for Insufficient balance before confirming — order cannot proceed if shown
@@ -384,7 +384,7 @@ test.describe.serial('Spot Module — Market Buy Order Positive Flow', () => {
     });
 
     // ── TC-09b ────────────────────────────────────────────────────────────────
-    test('TC-09b: balance snapshot after fill — USDT decreased, BTC increased', async () => {
+    test('TC-09b: balance snapshot after fill — USDT decreased, BTC increased @regression', async () => {
         test.skip(!orderSucceeded, 'Order not placed — insufficient balance or order failed. Skipping balance comparison.');
         if (!snapshotBefore) {
             test.info().annotations.push({ type: 'suggestion', description: 'Balance comparison skipped — pre-order snapshot not available' });
@@ -418,7 +418,7 @@ test.describe.serial('Spot Module — Market Buy Order Positive Flow', () => {
     });
 
     // ── TC-09c ────────────────────────────────────────────────────────────────
-    test('TC-09c: Market Trades panel has Price, Amount and Time headers', async () => {
+    test('TC-09c: Market Trades panel has Price, Amount and Time headers @regression', async () => {
         await spotMarketBuyPage.switchToMarketTrades();
         const headers = await spotMarketBuyPage.getTradesPanelHeaders();
         const j = headers.join(' ').toLowerCase();
@@ -432,7 +432,7 @@ test.describe.serial('Spot Module — Market Buy Order Positive Flow', () => {
     });
 
     // ── TC-09d ────────────────────────────────────────────────────────────────
-    test('TC-09d: My Trades panel has Price, Amount and Time headers', async () => {
+    test('TC-09d: My Trades panel has Price, Amount and Time headers @regression', async () => {
         await spotMarketBuyPage.switchToMyTrades();
         const headers = await spotMarketBuyPage.getTradesPanelHeaders();
         const j = headers.join(' ').toLowerCase();
@@ -447,7 +447,7 @@ test.describe.serial('Spot Module — Market Buy Order Positive Flow', () => {
     });
 
     // ── TC-09e ────────────────────────────────────────────────────────────────
-    test('TC-09e: Market Trades has actual data rows', async () => {
+    test('TC-09e: Market Trades has actual data rows @regression', async () => {
         const rows = await spotMarketBuyPage.getMarketTradesRows();
         expect.soft(rows.length, 'Market Trades should have ≥1 row').toBeGreaterThan(0);
         if (rows.length > 0) {
@@ -458,7 +458,7 @@ test.describe.serial('Spot Module — Market Buy Order Positive Flow', () => {
     });
 
     // ── TC-09f ────────────────────────────────────────────────────────────────
-    test('TC-09f: Market Trades prices match Binance recent trades within 1%', async () => {
+    test('TC-09f: Market Trades prices match Binance recent trades within 1% @regression', async () => {
         const [rows, binance] = await Promise.all([
             spotMarketBuyPage.getMarketTradesRows(),
             BinanceHelper.getRecentTrades(page, getTradeData().searchPair, 20),
@@ -469,7 +469,7 @@ test.describe.serial('Spot Module — Market Buy Order Positive Flow', () => {
     });
 
     // ── TC-10 ─────────────────────────────────────────────────────────────────
-    test('TC-10: market buy order is NOT in Open Orders (fills immediately)', async () => {
+    test('TC-10: market buy order is NOT in Open Orders (fills immediately) @regression', async () => {
         test.skip(!orderSucceeded, 'Order not placed — insufficient balance or order failed. Skipping Open Orders check.');
         const { rowText, isAbsentOrFilled, isMarketOrder, failMsg } = await spotMarketBuyPage.checkOpenOrdersHasPendingEntry(getTradeData().searchPair);
         if (isMarketOrder) {
@@ -484,7 +484,7 @@ test.describe.serial('Spot Module — Market Buy Order Positive Flow', () => {
     });
 
     // ── TC-11 ─────────────────────────────────────────────────────────────────
-    test('TC-11: All Orders shows market buy as Filled', async () => {
+    test('TC-11: All Orders shows market buy as Filled @regression', async () => {
         test.skip(!orderSucceeded, 'Order not placed — insufficient balance or order failed. Skipping All Orders validation.');
         const data = getTradeData();
         const r = await spotMarketBuyPage.validateAllOrdersTab({
@@ -507,7 +507,7 @@ test.describe.serial('Spot Module — Market Buy Order Positive Flow', () => {
     });
 
     // ── TC-12 ─────────────────────────────────────────────────────────────────
-    test('TC-12: My Trades shows the executed market buy entry', async () => {
+    test('TC-12: My Trades shows the executed market buy entry @regression', async () => {
         test.skip(!orderSucceeded, 'Order not placed — insufficient balance or order failed. Skipping My Trades validation.');
         const r = await spotMarketBuyPage.validateMarketBuyInMyTrades(executedPrice, executedAmount, orderPlacedAt);
         expect.soft(r.hasEntry, 'My Trades should have at least 1 entry').toBe(true);
@@ -520,7 +520,7 @@ test.describe.serial('Spot Module — Market Buy Order Positive Flow', () => {
     });
 
     // ── TC-13 ─────────────────────────────────────────────────────────────────
-    test('TC-13: USDT decreases by actual total; BTC increases by filled minus fee', async () => {
+    test('TC-13: USDT decreases by actual total; BTC increases by filled minus fee @regression', async () => {
         test.skip(!orderSucceeded, 'Order not placed — insufficient balance or order failed. Skipping balance check.');
         const data         = getTradeData();
         const enteredTotal = parseFloat(data.buyTotal);
@@ -567,7 +567,7 @@ test.describe.serial('Spot Module — Market Buy Order Positive Flow', () => {
     });
 
     // ── TC-14 ─────────────────────────────────────────────────────────────────
-    test('TC-14: Trade History shows the market buy order', async () => {
+    test('TC-14: Trade History shows the market buy order @regression', async () => {
         test.skip(!orderSucceeded, 'Order not placed — insufficient balance or order failed. Skipping Trade History validation.');
         const data = getTradeData();
         const r = await spotMarketBuyPage.validateTransactionHistoryOrdersTab({
@@ -591,7 +591,7 @@ test.describe.serial('Spot Module — Market Buy Order Positive Flow', () => {
     });
 
     // ── TC-14b ────────────────────────────────────────────────────────────────
-    test('TC-14b: Trade History bottom tab shows the market buy entry', async () => {
+    test('TC-14b: Trade History bottom tab shows the market buy entry @regression', async () => {
         test.skip(!orderSucceeded, 'Order not placed — insufficient balance or order failed. Skipping Trade History bottom tab.');
         const entry = await spotMarketBuyPage.getTradeHistoryBottomTabFirstEntry();
         if (!entry) { console.warn('[TC-14b] No Trade History rows'); return; }

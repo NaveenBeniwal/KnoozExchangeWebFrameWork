@@ -61,7 +61,7 @@ test.describe('Portfolio Module — Coin Detail Page', () => {
 
 // ─── Header ──────────────────────────────────────────────────────────────────
 
-test('coin detail page shows coin name, Overview tab and Primary balance tab', async () => {
+test('coin detail page shows coin name, Overview tab and Primary balance tab @smoke @sanity @regression', async () => {
     for (const item of coinData) {
         await coinDetailPage.goToCoinDetail(item.name);
 
@@ -76,7 +76,7 @@ test('coin detail page shows coin name, Overview tab and Primary balance tab', a
 
 // ─── Price ───────────────────────────────────────────────────────────────────
 
-test('coin detail page shows a live price and a price change percentage', async () => {
+test('coin detail page shows a live price and a price change percentage @smoke @sanity @regression', async () => {
     for (const item of coinData) {
         await coinDetailPage.goToCoinDetail(item.name);
 
@@ -88,7 +88,7 @@ test('coin detail page shows a live price and a price change percentage', async 
     }
 });
 
-test('live price is within the expected range defined in CSV and must be positive', async () => {
+test('live price is within the expected range defined in CSV and must be positive @regression', async () => {
     // Arrange: fetch live Binance prices via CoinGecko once before any navigation
     const cgIds    = coinData.map(c => c.coingeckoId).filter(Boolean);
     const liveData = await MarketDataHelper.fetchMarketData(cgIds);
@@ -119,7 +119,7 @@ test('live price is within the expected range defined in CSV and must be positiv
 
 // ─── Chart time filters ───────────────────────────────────────────────────────
 
-test('all five chart time period buttons are visible', async () => {
+test('all five chart time period buttons are visible @sanity @regression', async () => {
     await coinDetailPage.goToCoinDetail(primaryCoin.name);
 
     for (const period of CHART_PERIODS) {
@@ -133,7 +133,7 @@ test('all five chart time period buttons are visible', async () => {
     await coinDetailPage.goBackToSpot();
 });
 
-test('clicking each chart time period keeps chart visible and marks period as active', async () => {
+test('clicking each chart time period keeps chart visible and marks period as active @regression', async () => {
     await coinDetailPage.goToCoinDetail(primaryCoin.name);
 
     for (const period of CHART_PERIODS) {
@@ -151,7 +151,7 @@ test('clicking each chart time period keeps chart visible and marks period as ac
 
 // ─── Market stats ─────────────────────────────────────────────────────────────
 
-test('market stats section with all four stat labels is visible', async () => {
+test('market stats section with all four stat labels is visible @sanity @regression', async () => {
     for (const item of coinData) {
         await coinDetailPage.goToCoinDetail(item.name);
 
@@ -167,7 +167,7 @@ test('market stats section with all four stat labels is visible', async () => {
     }
 });
 
-test('market stats info icons are visible, show a tooltip, and tooltip text matches CSV', async () => {
+test('market stats info icons are visible, show a tooltip, and tooltip text matches CSV @regression', async () => {
     test.setTimeout(120000);
 
     for (const item of coinData) {
@@ -227,7 +227,7 @@ test('market stats info icons are visible, show a tooltip, and tooltip text matc
 //      (no free API provides this directly — we parse it from the page display).
 //
 // Popularity is an admin-assigned rank stored per coin in the CSV.
-test('market stats show valid live values and popularity rank matches CSV', async () => {
+test('market stats show valid live values and popularity rank matches CSV @regression', async () => {
     test.setTimeout(90000);
 
     // Arrange: fetch live reference data once before any page navigation
@@ -272,7 +272,7 @@ test('market stats show valid live values and popularity rank matches CSV', asyn
 
 // ─── Overview text section ────────────────────────────────────────────────────
 
-test('overview text section is visible and content matches expected text from CSV', async () => {
+test('overview text section is visible and content matches expected text from CSV @sanity @regression', async () => {
     for (const item of coinData) {
         await coinDetailPage.goToCoinDetail(item.name);
 
@@ -313,7 +313,7 @@ test('overview text section is visible and content matches expected text from CS
 
 // ─── Resources section ────────────────────────────────────────────────────────
 
-test('Resources section shows Whitepaper and Official Website links', async () => {
+test('Resources section shows Whitepaper and Official Website links @sanity @regression', async () => {
     test.setTimeout(90000);
 
     for (const item of coinData) {
@@ -348,7 +348,7 @@ test('Resources section shows Whitepaper and Official Website links', async () =
 
 // ─── Whitepaper link opens in new tab ─────────────────────────────────────────
 
-test('clicking Whitepaper opens the document in a new browser tab', async () => {
+test('clicking Whitepaper opens the document in a new browser tab @regression', async () => {
     test.setTimeout(120000);
 
     for (const item of coinData) {
@@ -383,7 +383,7 @@ test('clicking Whitepaper opens the document in a new browser tab', async () => 
 
 // ─── Official Website link opens in new tab with correct coin branding ────────
 
-test('clicking Official Website opens the correct coin site in a new tab with its own favicon', async () => {
+test('clicking Official Website opens the correct coin site in a new tab with its own favicon @regression', async () => {
     test.setTimeout(120000);
 
     for (const item of coinData) {

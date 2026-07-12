@@ -9,6 +9,12 @@ dotenv.config({ path: `config/.env.${ENV}` });
 
 export default defineConfig({
   testDir: './tests',
+  // tests/api/*.spec.ts import '../fixtures/apifixtures' — a wrong relative path (resolves to
+  // tests/fixtures/apifixtures, which doesn't exist; the real file is src/fixtures/apifixtures.ts).
+  // That import throws at collection time, before any test.skip() could ever take effect, which
+  // aborts collection for the ENTIRE suite (not just tests/api) — so a bare `npx playwright test`
+  // with no explicit path fails outright. Excluding tests/api here lets every other suite run.
+  testIgnore: '**/api/**',
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */

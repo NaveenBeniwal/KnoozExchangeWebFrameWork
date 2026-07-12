@@ -10,6 +10,8 @@ import { PortfolioGridPage } from '../pages/portfolio/grid';
 import { PortfolioCopyPage } from '../pages/portfolio/copy';
 import { CoinDetailPage } from '../pages/portfolio/coinDetail';
 import { HomePage } from '../pages/HomePage';
+import { ChangePasswordPage } from '../pages/ChangePasswordPage';
+import { ChangePasswordValidationPage } from '../pages/ChangePasswordValidationPage';
 
 //define types for page fixtures:
 type pageFixtures = {
@@ -23,7 +25,9 @@ type pageFixtures = {
     portfolioGridPage: PortfolioGridPage,
     portfolioCopyPage: PortfolioCopyPage,
     coinDetailPage: CoinDetailPage,
-    homePage: HomePage
+    homePage: HomePage,
+    changePasswordPage: ChangePasswordPage,
+    changePasswordValidationPage: ChangePasswordValidationPage
 };
 
 //extend playwright base test:
@@ -82,6 +86,16 @@ export let test = baseTest.extend<pageFixtures>({
     homePage: async ({ page }, use) => {
         let homePage = new HomePage(page);
         await use(homePage);
+    },
+
+    changePasswordPage: async ({ page }, use) => {
+        let changePasswordPage = new ChangePasswordPage(page);
+        await use(changePasswordPage);
+    },
+
+    changePasswordValidationPage: async ({ page }, use) => {
+        let changePasswordValidationPage = new ChangePasswordValidationPage(page);
+        await use(changePasswordValidationPage);
     }
 
 });

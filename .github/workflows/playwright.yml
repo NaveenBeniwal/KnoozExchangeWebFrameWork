@@ -2,7 +2,7 @@ name: Playwright Tests
 
 on:
   schedule:
-    - cron: '30 14 * * 1-5' # Runs at 14:30 UTC = 8PM IST, Monday through Friday
+    - cron: '30 07 * * 1-5' # Runs at 07:30 UTC = 1:00 PM IST, Monday through Friday
   # push:
   #   branches: [main]
   # pull_request:

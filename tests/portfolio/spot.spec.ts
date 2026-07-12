@@ -13,7 +13,7 @@ test.beforeEach(async ({ loginPage, portfolioSpotPage }) => {
 
 // ─── Header ──────────────────────────────────────────────────────────────────
 
-test('estimated balance label is visible on Spot page', async ({ portfolioSpotPage }) => {
+test('estimated balance label is visible on Spot page @regression', async ({ portfolioSpotPage }) => {
     const isVisible = await portfolioSpotPage.isEstimatedBalanceLabelVisible();
     expect(
         isVisible ? 'visible' : 'not visible',
@@ -21,7 +21,7 @@ test('estimated balance label is visible on Spot page', async ({ portfolioSpotPa
     ).toBe('visible');
 });
 
-test('estimated balance shows a valid positive number on Spot page', async ({ portfolioSpotPage }) => {
+test('estimated balance shows a valid positive number on Spot page @regression', async ({ portfolioSpotPage }) => {
     const balance = await portfolioSpotPage.getEstimatedBalanceAmount();
     expect(
         balance,
@@ -29,7 +29,7 @@ test('estimated balance shows a valid positive number on Spot page', async ({ po
     ).toBeGreaterThan(0);
 });
 
-test('estimated balance amount element is visible on Spot page', async ({ portfolioSpotPage }) => {
+test('estimated balance amount element is visible on Spot page @regression', async ({ portfolioSpotPage }) => {
     const isVisible = await portfolioSpotPage.isEstimatedBalanceAmountVisible();
     expect(
         isVisible ? 'visible' : 'not visible',
@@ -37,7 +37,7 @@ test('estimated balance amount element is visible on Spot page', async ({ portfo
     ).toBe('visible');
 });
 
-test('Total PNL label is visible on Spot page', async ({ portfolioSpotPage }) => {
+test('Total PNL label is visible on Spot page @regression', async ({ portfolioSpotPage }) => {
     const isVisible = await portfolioSpotPage.isTotalPnlLabelVisible();
     expect(
         isVisible ? 'visible' : 'not visible',
@@ -45,7 +45,7 @@ test('Total PNL label is visible on Spot page', async ({ portfolioSpotPage }) =>
     ).toBe('visible');
 });
 
-test('Total PNL value is visible on Spot page', async ({ portfolioSpotPage }) => {
+test('Total PNL value is visible on Spot page @regression', async ({ portfolioSpotPage }) => {
     const isVisible = await portfolioSpotPage.isTotalPnlValueVisible();
     expect(
         isVisible ? 'visible' : 'not visible',
@@ -53,7 +53,7 @@ test('Total PNL value is visible on Spot page', async ({ portfolioSpotPage }) =>
     ).toBe('visible');
 });
 
-test('Deposit & Withdraw button is visible on Spot page', async ({ portfolioSpotPage }) => {
+test('Deposit & Withdraw button is visible on Spot page @regression', async ({ portfolioSpotPage }) => {
     const isVisible = await portfolioSpotPage.isDepositWithdrawButtonVisible();
     expect(
         isVisible ? 'visible' : 'not visible',
@@ -63,7 +63,7 @@ test('Deposit & Withdraw button is visible on Spot page', async ({ portfolioSpot
 
 // ─── Tab ──────────────────────────────────────────────────────────────────────
 
-test('Spot tab is visible', async ({ portfolioSpotPage }) => {
+test('Spot tab is visible @regression', async ({ portfolioSpotPage }) => {
     const isVisible = await portfolioSpotPage.isSpotTabVisible();
     expect(
         isVisible ? 'visible' : 'not visible',
@@ -73,7 +73,7 @@ test('Spot tab is visible', async ({ portfolioSpotPage }) => {
 
 // ─── Table Controls ───────────────────────────────────────────────────────────
 
-test('search currency field is visible', async ({ portfolioSpotPage }) => {
+test('search currency field is visible @regression', async ({ portfolioSpotPage }) => {
     const isVisible = await portfolioSpotPage.isSearchFieldVisible();
     expect(
         isVisible ? 'visible' : 'not visible',
@@ -81,7 +81,7 @@ test('search currency field is visible', async ({ portfolioSpotPage }) => {
     ).toBe('visible');
 });
 
-test('Hide Zero Balance toggle is visible', async ({ portfolioSpotPage }) => {
+test('Hide Zero Balance toggle is visible @regression', async ({ portfolioSpotPage }) => {
     const isVisible = await portfolioSpotPage.isHideZeroBalanceVisible();
     expect(
         isVisible ? 'visible' : 'not visible',
@@ -91,7 +91,7 @@ test('Hide Zero Balance toggle is visible', async ({ portfolioSpotPage }) => {
 
 // ─── Table Headers ────────────────────────────────────────────────────────────
 
-test('all table headers are visible', async ({ portfolioSpotPage }) => {
+test('all table headers are visible @regression', async ({ portfolioSpotPage }) => {
     for (const header of TABLE_HEADERS) {
         const isVisible = await portfolioSpotPage.isTableHeaderVisible(header);
         expect.soft(
@@ -103,7 +103,7 @@ test('all table headers are visible', async ({ portfolioSpotPage }) => {
 
 // ─── Coin Row Visibility ──────────────────────────────────────────────────────
 
-test('all coins from CSV are visible in spot table', async ({ portfolioSpotPage }) => {
+test('all coins from CSV are visible in spot table @regression', async ({ portfolioSpotPage }) => {
     for (const coin of allCoins) {
         const isVisible = await portfolioSpotPage.isCoinRowVisible(coin);
         expect.soft(
@@ -115,7 +115,7 @@ test('all coins from CSV are visible in spot table', async ({ portfolioSpotPage 
 
 // ─── Balance Math: Spot + In Order = Total ────────────────────────────────────
 
-test('spot balances are non-negative for all coins', async ({ portfolioSpotPage }) => {
+test('spot balances are non-negative for all coins @regression', async ({ portfolioSpotPage }) => {
     for (const coin of allCoins) {
         const { spotBalanceNative } = await portfolioSpotPage.getCoinRowData(coin);
         expect.soft(
@@ -125,7 +125,7 @@ test('spot balances are non-negative for all coins', async ({ portfolioSpotPage 
     }
 });
 
-test('in order balances are non-negative for all coins', async ({ portfolioSpotPage }) => {
+test('in order balances are non-negative for all coins @regression', async ({ portfolioSpotPage }) => {
     for (const coin of allCoins) {
         const { inOrderNative } = await portfolioSpotPage.getCoinRowData(coin);
         expect.soft(
@@ -135,7 +135,7 @@ test('in order balances are non-negative for all coins', async ({ portfolioSpotP
     }
 });
 
-test('total equals spot balance plus in order for each coin', async ({ portfolioSpotPage }) => {
+test('total equals spot balance plus in order for each coin @regression', async ({ portfolioSpotPage }) => {
     const TOLERANCE = 1e-6;
 
     for (const coin of allCoins) {
@@ -159,7 +159,7 @@ test('total equals spot balance plus in order for each coin', async ({ portfolio
 
 // ─── Action Buttons ───────────────────────────────────────────────────────────
 
-test('Deposit Withdraw Transfer actions are visible for every coin', async ({ portfolioSpotPage }) => {
+test('Deposit Withdraw Transfer actions are visible for every coin @regression', async ({ portfolioSpotPage }) => {
     const actions: Array<'Deposit' | 'Withdraw' | 'Transfer'> = ['Deposit', 'Withdraw', 'Transfer'];
     for (const coin of allCoins) {
         for (const action of actions) {
@@ -174,7 +174,7 @@ test('Deposit Withdraw Transfer actions are visible for every coin', async ({ po
 
 // ─── Search Functionality ─────────────────────────────────────────────────────
 
-test('search by coin name shows matching coins and hides unrelated ones', async ({ portfolioSpotPage }) => {
+test('search by coin name shows matching coins and hides unrelated ones @regression', async ({ portfolioSpotPage }) => {
     for (const item of spotData) {
         await portfolioSpotPage.searchCurrency(item.searchQuery);
 
@@ -208,7 +208,7 @@ test('search by coin name shows matching coins and hides unrelated ones', async 
     }
 });
 
-test('clearing the search field restores all coin rows', async ({ portfolioSpotPage }) => {
+test('clearing the search field restores all coin rows @regression', async ({ portfolioSpotPage }) => {
     await portfolioSpotPage.searchCurrency('USDT');
     await portfolioSpotPage.clearSearch();
 
@@ -223,7 +223,7 @@ test('clearing the search field restores all coin rows', async ({ portfolioSpotP
 
 // ─── Hide Zero Balance ────────────────────────────────────────────────────────
 
-test('Hide Zero Balance hides zero-total coins and toggle works correctly across 3 cycles', async ({ portfolioSpotPage }) => {
+test('Hide Zero Balance hides zero-total coins and toggle works correctly across 3 cycles @regression', async ({ portfolioSpotPage }) => {
     await portfolioSpotPage.setHideZeroBalance(false);
 
     // Dynamically detect zero/non-zero coins from live data
@@ -272,7 +272,7 @@ test('Hide Zero Balance hides zero-total coins and toggle works correctly across
     }
 });
 
-test('Hide Zero Balance checkbox state reflects the UI correctly', async ({ portfolioSpotPage }) => {
+test('Hide Zero Balance checkbox state reflects the UI correctly @regression', async ({ portfolioSpotPage }) => {
     await portfolioSpotPage.setHideZeroBalance(false);
     const afterUncheck = await portfolioSpotPage.isHideZeroBalanceChecked();
     expect(

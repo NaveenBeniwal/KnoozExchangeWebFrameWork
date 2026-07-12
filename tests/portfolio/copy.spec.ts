@@ -8,7 +8,7 @@ test.beforeEach(async ({ loginPage, portfolioCopyPage }) => {
 
 // ─── Copy Tab ─────────────────────────────────────────────────────────────────
 
-test('Copy tab is visible', async ({ portfolioCopyPage }) => {
+test('Copy tab is visible @regression', async ({ portfolioCopyPage }) => {
     // Arrange — Copy tab loaded in beforeEach
     // Act
     const isVisible = await portfolioCopyPage.isCopyTabVisible();
@@ -16,7 +16,7 @@ test('Copy tab is visible', async ({ portfolioCopyPage }) => {
     expect(isVisible).toBe(true);
 });
 
-test('Copy total balance is visible', async ({ portfolioCopyPage }) => {
+test('Copy total balance is visible @regression', async ({ portfolioCopyPage }) => {
     // Arrange — Copy tab loaded in beforeEach
     // Act
     const isVisible = await portfolioCopyPage.isCopyTotalBalanceVisible();
@@ -24,7 +24,7 @@ test('Copy total balance is visible', async ({ portfolioCopyPage }) => {
     expect(isVisible).toBe(true);
 });
 
-test('Copy balance contains USDT', async ({ portfolioCopyPage }) => {
+test('Copy balance contains USDT @regression', async ({ portfolioCopyPage }) => {
     // Arrange — Copy tab loaded in beforeEach
     // Act
     const balanceText = await portfolioCopyPage.getCopyBalanceText();
@@ -32,7 +32,7 @@ test('Copy balance contains USDT', async ({ portfolioCopyPage }) => {
     expect(balanceText).toContain('USDT');
 });
 
-test('Copy position table is visible', async ({ portfolioCopyPage }) => {
+test('Copy position table is visible @regression', async ({ portfolioCopyPage }) => {
     // Arrange — Copy tab loaded in beforeEach
     // Act
     const isVisible = await portfolioCopyPage.isCopyPositionTableVisible();
@@ -40,7 +40,7 @@ test('Copy position table is visible', async ({ portfolioCopyPage }) => {
     expect(isVisible).toBe(true);
 });
 
-test('Start Copying button is visible on Copy tab', async ({ portfolioCopyPage }) => {
+test('Start Copying button is visible on Copy tab @regression', async ({ portfolioCopyPage }) => {
     // Arrange — Copy tab loaded in beforeEach
     // Act
     const isVisible = await portfolioCopyPage.isStartCopyingButtonVisible();

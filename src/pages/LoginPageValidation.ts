@@ -38,51 +38,74 @@ export class LoginPageValidation extends BasePage {
         
     }
 
+    // Standard 3-line trace for every step: what we did, what we expected, what we got — so the
+    // HTML report's console output shows exactly what happened without needing to re-run headed.
+    private logStep(step: string, expected: string, actual: string): void {
+        console.log(
+            `[LoginValidation] Step     : ${step}\n` +
+            `[LoginValidation] Expected : ${expected}\n` +
+            `[LoginValidation] Actual   : ${actual}`
+        );
+    }
+
     //public page actions(methods)/behaviors:
     async doLogin(email: string, password: string): Promise<void> {
-        console.log(`${email} - ${password}`);
         await this.emailInput.fill(email);
         await this.passwordInput.fill(password);
         await this.continueButton.click();
+        this.logStep(`Filled credentials and clicked Continue (email: "${email}")`, 'Continue clicked', 'Continue clicked');
     }
 
     async getInvalidEmailValidation(email: string): Promise<void> {
-        console.log(`user creds: ${email}`);
         await this.continueButton.click();
         await this.emailInput.fill(email);
-    }
-        
-    async getEmptyEmailValidationMessage(): Promise<string | null> {
-        await this.continueButton.click();
-        return await this.emptyEmailValidation.textContent();
+        this.logStep('Filled Email field with an invalid value', `filled with "${email}"`, `filled with "${email}"`);
     }
 
-    async getEmptyPasswordValidationMessage(): Promise<string | null> {
+    // expectedMessage defaults to the literal validation text this field always shows when empty —
+    // pass a different value only if a caller genuinely expects something else.
+    async getEmptyEmailValidationMessage(expectedMessage = 'Email is required'): Promise<string | null> {
         await this.continueButton.click();
-        return await this.emptyPasswordValidation.textContent();
+        const text = await this.emptyEmailValidation.textContent();
+        this.logStep('Read empty-email validation message', `"${expectedMessage}"`, `"${text}"`);
+        return text;
     }
 
-    async getInvalidEmailValidationMessage(): Promise<string | null> {
+    async getEmptyPasswordValidationMessage(expectedMessage = 'Password is required'): Promise<string | null> {
         await this.continueButton.click();
+        const text = await this.emptyPasswordValidation.textContent();
+        this.logStep('Read empty-password validation message', `"${expectedMessage}"`, `"${text}"`);
+        return text;
+    }
+
+    // expectedMessage is optional — pass the CSV row's expectedError so the log shows a concrete
+    // Expected value next to Actual, instead of a vague description with nothing to compare against.
+    async getInvalidEmailValidationMessage(expectedMessage?: string): Promise<string | null> {
+        await this.continueButton.click();
+        const expectedText = expectedMessage ? `"${expectedMessage}"` : 'a validation message';
         try {
             await this.invalidEmailValidation.waitFor({ state: 'visible', timeout: 5000 });
-            return await this.invalidEmailValidation.textContent();
+            const text = await this.invalidEmailValidation.textContent();
+            this.logStep('Read invalid-email validation message', expectedText, `"${text}"`);
+            return text;
         } catch {
             // Validation message never appeared — page accepted the invalid email
+            this.logStep('Read invalid-email validation message', expectedText, 'no validation message appeared — email was accepted as valid');
             return null;
         }
     }
 
-    async getLoginErrorMessage(): Promise<string | null> {
+    async getLoginErrorMessage(expectedMessage?: string): Promise<string | null> {
         const error = this.loginErrorMessage.or(this.accountLockedMessage);
         await error.last().waitFor({ state: 'visible' });
         const text = await error.last().textContent();
+        this.logStep('Read login error message', expectedMessage ? `"${expectedMessage}"` : 'a login error message', `"${text}"`);
         await error.last().waitFor({ state: 'hidden' });
         return text;
     }
 
     async getOtpErrorMessage(){
         await this.continueButton.click();
-
+        this.logStep('Clicked Continue', 'Continue clicked', 'Continue clicked');
     }
 }

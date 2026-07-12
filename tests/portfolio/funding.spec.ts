@@ -53,7 +53,7 @@ test.describe('Portfolio Funding Page', () => {
     // ─── TC-F01 ───────────────────────────────────────────────────────────────────
     // Checked against the shared beforeAll login (not a second independent login) — repeating a
     // full login per test would mean 55 real "Get OTP" clicks against the same account.
-    test('TC-F01: Login with valid credentials lands on the home page', async () => {
+    test('TC-F01: Login with valid credentials lands on the home page @smoke @sanity @regression', async () => {
         expect(await loginPage.isUserOnHomePage()).toBe(true);
     });
 
@@ -71,14 +71,14 @@ test.describe('Portfolio Funding Page', () => {
         // ─── TC-F02 ─────────────────────────────────────────────────────────────
         // The only test that actually exercises the Spot hop — beforeEach uses the direct Funding
         // path for every other test (see goToFundingTab()'s comment in the page object for why).
-        test('TC-F02: Navigate Portfolio > Spot > Funding tab loads the Funding table', async () => {
+        test('TC-F02: Navigate Portfolio > Spot > Funding tab loads the Funding table @smoke @sanity @regression', async () => {
             await fundingPage.goToFundingTabViaSpot();
             expect(await fundingPage.isFundingTabVisible()).toBe(true);
             expect(await fundingPage.getVisibleRowCount()).toBeGreaterThan(0);
         });
 
         // ─── TC-F03 ─────────────────────────────────────────────────────────────
-        test('TC-F03: Top balance section shows Estimated Balance and equals the sum of all coins', async () => {
+        test('TC-F03: Top balance section shows Estimated Balance and equals the sum of all coins @sanity @regression', async () => {
             expect.soft(await fundingPage.isEstimatedBalanceLabelVisible(), 'Estimated Balance label should be visible').toBe(true);
             expect.soft(await fundingPage.isEstimatedBalanceAmountVisible(), 'Estimated Balance amount should be visible').toBe(true);
             expect.soft(await fundingPage.isEstimatedBalanceUsdValueVisible(), 'Estimated Balance $ value should be visible').toBe(true);
@@ -90,7 +90,7 @@ test.describe('Portfolio Funding Page', () => {
         });
 
         // ─── TC-F04 ─────────────────────────────────────────────────────────────
-        test('TC-F04: Eye icon masks and reveals the Estimated Balance', async () => {
+        test('TC-F04: Eye icon masks and reveals the Estimated Balance @sanity @regression', async () => {
             expect.soft(await fundingPage.isBalanceMasked(), 'Balance should start revealed').toBe(false);
             await fundingPage.clickBalanceToggle();
             expect.soft(await fundingPage.isBalanceMasked(), 'Balance should be masked after clicking the eye icon').toBe(true);
@@ -99,7 +99,7 @@ test.describe('Portfolio Funding Page', () => {
         });
 
         // ─── TC-F05 ─────────────────────────────────────────────────────────────
-        test('TC-F05: Funding table headers are all visible', async () => {
+        test('TC-F05: Funding table headers are all visible @sanity @regression', async () => {
             const headers = ['Coin', 'Funding Balance', 'In Order', 'Total', 'Action'] as const;
             for (const header of headers) {
                 expect.soft(await fundingPage.isTableHeaderVisible(header), `"${header}" header should be visible`).toBe(true);
@@ -114,7 +114,7 @@ test.describe('Portfolio Funding Page', () => {
 
         // ─── TC-F06 ─────────────────────────────────────────────────────────────
         for (const row of currencies) {
-            test(`TC-F06 [${row.coin}]: row shows numeric, self-consistent balances and all 3 actions`, async () => {
+            test(`TC-F06 [${row.coin}]: row shows numeric, self-consistent balances and all 3 actions @sanity @regression`, async () => {
                 expect.soft(await fundingPage.isCoinRowVisible(row.coin), `${row.coin} row should exist`).toBe(true);
 
                 const { fundingBalanceNative, inOrderNative, totalNative } = await fundingPage.getCoinRowData(row.coin);
@@ -131,7 +131,7 @@ test.describe('Portfolio Funding Page', () => {
 
         // ─── TC-F07 ─────────────────────────────────────────────────────────────
         for (const row of currencies) {
-            test(`TC-F07 [${row.coin}]: Deposit modal is bound to the correct coin and network`, async () => {
+            test(`TC-F07 [${row.coin}]: Deposit modal is bound to the correct coin and network @sanity @regression`, async () => {
                 await fundingPage.clickDepositAction(row.coin);
                 expect.soft(await fundingPage.isDepositModalVisible(), 'Deposit modal should be visible').toBe(true);
                 expect.soft(await fundingPage.getDepositAssetText(), `Deposit Asset should show ${row.coin}`).toContain(row.coin);
@@ -149,7 +149,7 @@ test.describe('Portfolio Funding Page', () => {
         // Only verifies the modal's fields/notices — never clicks Continue, since that would
         // attempt a real withdrawal (2FA + email confirmation) against a live account.
         for (const row of currencies) {
-            test(`TC-F08 [${row.coin}]: Withdraw modal is bound to the correct coin and network`, async () => {
+            test(`TC-F08 [${row.coin}]: Withdraw modal is bound to the correct coin and network @sanity @regression`, async () => {
                 await fundingPage.clickWithdrawAction(row.coin);
                 expect.soft(await fundingPage.isWithdrawModalVisible(), 'Withdraw modal should be visible').toBe(true);
                 expect.soft(await fundingPage.getWithdrawAssetText(), `Withdraw Asset should show ${row.coin}`).toContain(row.coin);
@@ -175,7 +175,7 @@ test.describe('Portfolio Funding Page', () => {
             let spotBalanceNative:    number;
 
             // ─── Step 1 ─────────────────────────────────────────────────────────────
-            test('TC-F09: snapshot the Funding and Spot Wallet balances', async () => {
+            test('TC-F09: snapshot the Funding and Spot Wallet balances @regression', async () => {
                 const funding = await fundingPage.getCoinRowData(transferCurrency.coin);
                 fundingBalanceNative = funding.fundingBalanceNative;
 
@@ -186,7 +186,7 @@ test.describe('Portfolio Funding Page', () => {
             });
 
             // ─── Step 2 ─────────────────────────────────────────────────────────────
-            test('TC-F10: Transfer modal opens, closes on (X), and reopens', async () => {
+            test('TC-F10: Transfer modal opens, closes on (X), and reopens @sanity @regression', async () => {
                 await fundingPage.clickTransferAction(transferCurrency.coin);
                 expect.soft(await fundingPage.isTransferModalVisible(), 'Transfer modal should be visible').toBe(true);
                 await fundingPage.closeModal();
@@ -205,7 +205,7 @@ test.describe('Portfolio Funding Page', () => {
             // live that mapping is fixed to wallet identity, not to whichever wallet is currently in
             // the From slot), so swapping changes the From/To labels but each wallet's own quantity
             // reading stays the same.
-            test('TC-F11: From/To default to Funding/Spot, swap exchanges them, and wallet balances stay correct', async () => {
+            test('TC-F11: From/To default to Funding/Spot, swap exchanges them, and wallet balances stay correct @sanity @regression', async () => {
                 await fundingPage.clickTransferAction(transferCurrency.coin);
                 expect.soft(await fundingPage.getTransferFromText('Funding'), 'From should default to Funding').toContain('Funding');
                 expect.soft(await fundingPage.getTransferToText('Spot'), 'To should default to Spot').toContain('Spot');
@@ -226,7 +226,7 @@ test.describe('Portfolio Funding Page', () => {
             });
 
             // ─── Step 4 ─────────────────────────────────────────────────────────────
-            test('TC-F12: Coin field shows the opened currency, with a clickable dropdown', async () => {
+            test('TC-F12: Coin field shows the opened currency, with a clickable dropdown @sanity @regression', async () => {
                 await fundingPage.clickTransferAction(transferCurrency.coin);
                 expect.soft(await fundingPage.getTransferCoinText(transferCurrency.coin), `Coin field should show ${transferCurrency.coin}`).toContain(transferCurrency.coin);
                 expect.soft(await fundingPage.isTransferCoinDropdownVisible(), 'Coin dropdown icon should be visible').toBe(true);
@@ -236,7 +236,7 @@ test.describe('Portfolio Funding Page', () => {
             });
 
             // ─── Step 5 ─────────────────────────────────────────────────────────────
-            test('TC-F13: Select Coin panel — close/back navigation, a full currency search sweep, and reselecting the coin', async () => {
+            test('TC-F13: Select Coin panel — close/back navigation, a full currency search sweep, and reselecting the coin @sanity @regression', async () => {
                 await fundingPage.clickTransferAction(transferCurrency.coin);
 
                 // Popup opens → close (X) → back on Funding tab → reopen Transfer → reopen popup
@@ -294,7 +294,7 @@ test.describe('Portfolio Funding Page', () => {
             });
 
             // ─── Step 6 ─────────────────────────────────────────────────────────────
-            test('TC-F14: Transfer modal quantity matches both wallet balances', async () => {
+            test('TC-F14: Transfer modal quantity matches both wallet balances @sanity @regression', async () => {
                 await fundingPage.clickTransferAction(transferCurrency.coin);
                 const walletQty = await fundingPage.getTransferWalletQuantities(spotBalanceNative, fundingBalanceNative);
                 expect.soft(walletQty.spotQty, `Spot wallet quantity shown (${walletQty.spotQty}) should match the Spot Wallet page balance (${spotBalanceNative})`).toBeCloseTo(spotBalanceNative, 4);
@@ -305,7 +305,7 @@ test.describe('Portfolio Funding Page', () => {
             });
 
             // ─── Step 7 ─────────────────────────────────────────────────────────────
-            test('TC-F15: Amount field has the "Amount" placeholder, the currency label, and a MAX button', async () => {
+            test('TC-F15: Amount field has the "Amount" placeholder, the currency label, and a MAX button @sanity @regression', async () => {
                 await fundingPage.clickTransferAction(transferCurrency.coin);
                 expect.soft(await fundingPage.getTransferAmountPlaceholder(), 'Amount field placeholder should read "Amount"').toBe('Amount');
                 expect.soft(await fundingPage.isTransferAmountCurrencyLabelVisible(transferCurrency.symbol), `Amount field should show the "${transferCurrency.symbol}" currency label`).toBe(true);
@@ -316,7 +316,7 @@ test.describe('Portfolio Funding Page', () => {
             });
 
             // ─── Step 8 ─────────────────────────────────────────────────────────────
-            test('TC-F16: MAX fills the available balance of the active (From) wallet, both directions', async () => {
+            test('TC-F16: MAX fills the available balance of the active (From) wallet, both directions @sanity @regression', async () => {
                 await fundingPage.clickTransferAction(transferCurrency.coin);
 
                 await fundingPage.clickTransferMax();
@@ -334,7 +334,7 @@ test.describe('Portfolio Funding Page', () => {
 
             // ─── Step 9 ─────────────────────────────────────────────────────────────
             // fillTransferAmount() already waits out the app's async auto-clamp.
-            test('TC-F17: An over-limit amount auto-clamps down to the available balance, both directions', async () => {
+            test('TC-F17: An over-limit amount auto-clamps down to the available balance, both directions @sanity @regression', async () => {
                 await fundingPage.clickTransferAction(transferCurrency.coin);
 
                 const overLimitFunding = (fundingBalanceNative * 2 + 1).toFixed(8);
@@ -351,7 +351,7 @@ test.describe('Portfolio Funding Page', () => {
             });
 
             // ─── Step 10 ────────────────────────────────────────────────────────────
-            test('TC-F18: "0" amount is rejected in both directions, and the Amount field clears on swap', async () => {
+            test('TC-F18: "0" amount is rejected in both directions, and the Amount field clears on swap @sanity @regression', async () => {
                 await fundingPage.clickTransferAction(transferCurrency.coin);
 
                 await fundingPage.fillTransferAmount('0');
@@ -379,7 +379,7 @@ test.describe('Portfolio Funding Page', () => {
             // Funding/Spot rows already reflect the transfer correctly. Amount is the fixed, CSV-
             // configured native amount (not a balance percentage) — skips cleanly rather than failing
             // when the live balance is below that configured amount.
-            test('TC-F19: a real Funding → Spot then Spot → Funding transfer updates both wallet balances exactly', async () => {
+            test('TC-F19: a real Funding → Spot then Spot → Funding transfer updates both wallet balances exactly @regression', async () => {
                 const fundingBefore1 = await fundingPage.getCoinRowData(transferCurrency.coin);
                 const fundingToSpotAmount = parseFloat(transferCurrency.fundingToSpotAmount);
                 test.skip(fundingBefore1.fundingBalanceNative < fundingToSpotAmount, `${transferCurrency.coin} Funding balance (${fundingBefore1.fundingBalanceNative}) is below the configured transfer amount (${fundingToSpotAmount}) — skipping the real transfer`);
@@ -433,7 +433,7 @@ test.describe('Portfolio Funding Page', () => {
         });
 
         // ─── TC-F20 ─────────────────────────────────────────────────────────────
-        test('TC-F20: Hide Zero Balance hides zero-total rows and restores them on uncheck', async () => {
+        test('TC-F20: Hide Zero Balance hides zero-total rows and restores them on uncheck @sanity @regression', async () => {
             const baseline = await fundingPage.getAllCoinBalances();
 
             await fundingPage.setHideZeroBalance(true);
@@ -454,7 +454,7 @@ test.describe('Portfolio Funding Page', () => {
         // filtering behavior across both states, not two unrelated things, so it stays one
         // self-contained, independent test per coin rather than splitting further.
         for (const row of currencies) {
-            test(`TC-F21 [${row.coin}]: search currency filters correctly with Hide Zero Balance on and off`, async () => {
+            test(`TC-F21 [${row.coin}]: search currency filters correctly with Hide Zero Balance on and off @sanity @regression`, async () => {
                 expect.soft(await fundingPage.isSearchFieldVisible(), 'Search currency field should be visible').toBe(true);
                 expect.soft(await fundingPage.isSearchIconVisible(), 'Search icon should be visible').toBe(true);
 
@@ -481,7 +481,7 @@ test.describe('Portfolio Funding Page', () => {
         }
 
         // ─── TC-F22 ─────────────────────────────────────────────────────────────
-        test('TC-F22: Footer is visible', async () => {
+        test('TC-F22: Footer is visible @sanity @regression', async () => {
             expect(await fundingPage.isFooterVisible()).toBe(true);
         });
     });

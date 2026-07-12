@@ -1,21 +1,18 @@
 import { test, expect } from '../src/fixtures/pagefixtures';
-import { CsvHelper } from '../src/utils/CsvHelper';
-import { ExcelHelper } from '../src/utils/ExcelHelper';
-import { JsonHelper } from '../src/utils/JsonHelper';
 
 test.beforeEach(async ({ loginPage }) => {
     await loginPage.goToLoginPage();
 });
 
-test('login page title test', async ({ loginPage }) => {
+test('login page title test @sanity @regression', async ({ loginPage }) => {
     const pageTitle = await loginPage.getLoginPageTitle();
     console.log('login page title:', pageTitle);
     expect(await loginPage.isLogoVisible()).toBeTruthy();
-    expect(pageTitle).toBe('KNOOZ');   
+    expect(pageTitle).toBe('KNOOZ');
     expect(await loginPage.isForgotPasswordLinkExist()).toBeTruthy();
 });
 
-test('login test', async({ loginPage }) => {
+test('login test @smoke @sanity @regression', async({ loginPage }) => {
     await loginPage.doLogin(process.env.EMAIL!, process.env.PASSWORD!, process.env.OTP!);
     let isUserOnHomePage = await loginPage.isUserOnHomePage();
     expect(isUserOnHomePage).toBeTruthy();

@@ -1,0 +1,174 @@
+# ═══════════════════════════════════════════════════════════════
+# FILE: .github/workflows/sharded-tests.yml
+# REPO: NaveenBeniwal/KnoozExchangeWebFrameWork
+#
+# Adapted from a reference template (originally built around a separate
+# QA-framework repo). This repo checks out itself — no external repo,
+# no Maven build. The test command is scoped to the same explicit,
+# non-api file list e2e.yml uses (tests/api/users.api.schema.spec.ts has a
+# pre-existing broken import that aborts collection if Playwright's
+# default testDir scan tries to include it — see e2e.yml's header).
+# ═══════════════════════════════════════════════════════════════
+
+name: Sharded Playwright Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      shards:
+        description: 'Number of shards'
+        required: true
+        default: '4'
+        type: choice
+        options:
+          - '2'
+          - '4'
+
+jobs:
+  test:
+    name: Shard ${{ matrix.shard }}/${{ inputs.shards }}
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+    runs-on: ubuntu-latest
+    environment: qa
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'npm'
+
+      - name: Cache Playwright browsers
+        id: pw-cache-shard
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ hashFiles('package-lock.json') }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        if: steps.pw-cache-shard.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps chromium
+
+      - name: Install Playwright OS deps only
+        if: steps.pw-cache-shard.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium
+
+      - name: Run shard ${{ matrix.shard }}/${{ inputs.shards }}
+        run: npx playwright test tests/homepage.spec.ts tests/loginpage.spec.ts tests/loginpagevalidation.spec.ts tests/otppagevalidation.spec.ts tests/changepassword.spec.ts tests/changepasswordvalidation.spec.ts tests/portfolio tests/trade --project=chromium --shard=${{ matrix.shard }}/${{ inputs.shards }}
+        env:
+          ENV: qa
+          BASE_URL: ${{ secrets.BASE_URL }}
+          EMAIL: ${{ secrets.EMAIL }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+          OTP: ${{ secrets.OTP }}
+          TRADE_BASE_URL: ${{ secrets.TRADE_BASE_URL }}
+          TRADE_USER_EMAIL: ${{ secrets.TRADE_USER_EMAIL }}
+          TRADE_USER_PASSWORD: ${{ secrets.TRADE_USER_PASSWORD }}
+          TRADE_2FA_SECRET: ${{ secrets.TRADE_2FA_SECRET }}
+          TRADE_BUY_MARKET: ${{ secrets.TRADE_BUY_MARKET }}
+          TRADE_BUY_VOLUME: ${{ secrets.TRADE_BUY_VOLUME }}
+          TRADE_BUY_PRICE: ${{ secrets.TRADE_BUY_PRICE }}
+          TRADE_SELL_MARKET: ${{ secrets.TRADE_SELL_MARKET }}
+          TRADE_SELL_VOLUME: ${{ secrets.TRADE_SELL_VOLUME }}
+          TRADE_SELL_PRICE: ${{ secrets.TRADE_SELL_PRICE }}
+
+      # Per-shard HTML report
+      - name: Upload shard HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: html-report-shard-${{ matrix.shard }}
+          path: reports/html-report/
+          retention-days: 7
+
+      # Per-shard Allure results (raw JSON — for merging later)
+      - name: Upload shard Allure results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-shard-${{ matrix.shard }}
+          path: allure-results/
+          retention-days: 7
+
+      # Blob report (for PW HTML merge)
+      - name: Upload blob report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: blob-report-shard-${{ matrix.shard }}
+          path: blob-report/
+          retention-days: 1
+
+  merge-reports:
+    name: Merge All Reports
+    needs: test
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      # ─── MERGE PW HTML REPORT ──────────────────────────
+      - name: Download all blob reports
+        uses: actions/download-artifact@v4
+        with:
+          path: all-blob-reports
+          pattern: blob-report-*
+          merge-multiple: true
+
+      - name: Merge PW HTML report
+        run: npx playwright merge-reports --reporter=html ./all-blob-reports
+
+      - name: Upload merged PW HTML report
+        uses: actions/upload-artifact@v4
+        with:
+          name: merged-pw-html-report
+          path: playwright-report/
+          retention-days: 30
+
+      # ─── MERGE ALLURE REPORT ───────────────────────────
+      - name: Install Allure
+        run: npm install -g allure-commandline
+
+      - name: Download all Allure results
+        uses: actions/download-artifact@v4
+        with:
+          path: all-allure-results
+          pattern: allure-results-shard-*
+
+      - name: Combine Allure results into single folder
+        run: |
+          mkdir -p combined-allure-results
+          for dir in all-allure-results/allure-results-shard-*/; do
+            cp -r "$dir"* combined-allure-results/ 2>/dev/null || true
+          done
+          echo "Total allure result files:"
+          ls combined-allure-results/ | wc -l
+
+      - name: Generate merged Allure report
+        run: allure generate combined-allure-results --clean -o merged-allure-report
+
+      - name: Upload merged Allure report
+        uses: actions/upload-artifact@v4
+        with:
+          name: merged-allure-report
+          path: merged-allure-report/
+          retention-days: 30
