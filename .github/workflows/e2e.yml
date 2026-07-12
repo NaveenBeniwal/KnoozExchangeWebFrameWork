@@ -38,12 +38,12 @@ on:
       environment:
         description: 'Run up to environment'
         required: true
-        default: 'QA'
+        default: 'stage'
         type: choice
         options:
           - dev
-          - QA
           - stage
+          - QA
           - Prod
 
 jobs:
@@ -267,7 +267,7 @@ jobs:
   # ═════════════════════════════════════════════════════
   # STEP 4: DEPLOY QA + SANITY TESTS
   # ════════════════════════════════════════════════
-  deploy-stage:
+  deploy-qa:
     name: Deploy to QA
     needs: regression-stage
     runs-on: ubuntu-latest
@@ -277,7 +277,7 @@ jobs:
 
   sanity-stage:
     name: QA - Sanity Tests
-    needs: deploy-stage
+    needs: deploy-qa
     runs-on: ubuntu-latest
     environment: stage
     steps:
@@ -452,7 +452,7 @@ jobs:
   # ═════════════════════════════════════════════════════
   notify:
     name: Publish Reports + Notify
-    needs: [build, sanity-dev, regression-qa, sanity-stage, smoke-prod]
+    needs: [build, sanity-dev, regression-stage, sanity-stage, smoke-prod]
     if: always()
     runs-on: ubuntu-latest
     permissions:
@@ -465,7 +465,7 @@ jobs:
         run: |
           BUILD="${{ needs.build.result }}"
           DEV="${{ needs.sanity-dev.result }}"
-          QA="${{ needs.regression-qa.result }}"
+          QA="${{ needs.regression-stage.result }}"
           STAGE="${{ needs.sanity-stage.result }}"
           PROD="${{ needs.smoke-prod.result }}"
 
@@ -708,7 +708,7 @@ jobs:
           echo "═══════════════════════════════════════════"
           echo "  Build + Unit:    ${{ needs.build.result }}"
           echo "  DEV Sanity:      ${{ needs.sanity-dev.result }}"
-          echo "  QA Regression:   ${{ needs.regression-qa.result }}"
+          echo "  QA Regression:   ${{ needs.regression-stage.result }}"
           echo "  STAGE Sanity:    ${{ needs.sanity-stage.result }}"
           echo "  PROD Smoke:      ${{ needs.smoke-prod.result }}"
           echo "  Reports:         ${{ steps.status.outputs.report_url }}/index.html"
