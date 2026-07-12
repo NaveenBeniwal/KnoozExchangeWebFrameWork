@@ -1,0 +1,42 @@
+[HomePage] Step     : Clicked "Exchange"
+[HomePage] Expected : URL contains "/advanceTrading/"
+[HomePage] Actual   : landed on: "https://stage-exchange.knooz.com/advanceTrading/ethusdt"
+[HomePage] Step     : Read the available balance on the Exchange page without logging in
+[HomePage] Expected : balance shows 0
+[HomePage] Actual   : balance text: "Avlb - 0.0  USDT"
+[HomePage] Step     : Checked "Log In" link (first) on the Exchange page
+[HomePage] Expected : visible
+[HomePage] Actual   : visible
+[HomePage] Step     : Clicked "Log In" link (first) on the Exchange page
+[HomePage] Expected : redirected to the login page
+[HomePage] Actual   : landed on: "https://stage-exchange.knooz.com/login"
+[HomePage] Step     : Clicked "Exchange"
+[HomePage] Expected : URL contains "/advanceTrading/"
+[HomePage] Actual   : landed on: "https://stage-exchange.knooz.com/advanceTrading/ethusdt"
+[HomePage] Step     : Checked "Log In" link (last) on the Exchange page
+[HomePage] Expected : visible
+[HomePage] Actual   : visible
+[HomePage] Step     : Clicked "Log In" link (last) on the Exchange page
+[HomePage] Expected : redirected to the login page
+[HomePage] Actual   : landed on: "https://stage-exchange.knooz.com/login"
+[HomePage] Step     : Clicked "Exchange"
+[HomePage] Expected : URL contains "/advanceTrading/"
+[HomePage] Actual   : landed on: "https://stage-exchange.knooz.com/advanceTrading/ethusdt"
+[HomePage] Step     : Checked "Register" link (first) on the Exchange page
+[HomePage] Expected : visible
+[HomePage] Actual   : visible
+[HomePage] Step     : Clicked "Register" link (first) on the Exchange page
+[HomePage] Expected : redirected to the create-account page
+[HomePage] Actual   : landed on: "https://stage-exchange.knooz.com/createAccount"
+[HomePage] Step     : Clicked "Exchange"
+[HomePage] Expected : URL contains "/advanceTrading/"
+[HomePage] Actual   : landed on: "https://stage-exchange.knooz.com/advanceTrading/ethusdt"
+[HomePage] Step     : Checked "Register" link (last) on the Exchange page
+[HomePage] Expected : visible
+[HomePage] Actual   : visible
+[HomePage] Step     : Clicked "Register" link (last) on the Exchange page
+[HomePage] Expected : redirected to the create-account page
+[HomePage] Actual   : landed on: "https://stage-exchange.knooz.com/createAccount"
+[HomePage] Step     : Clicked "Exchange"
+[HomePage] Expected : URL contains "/advanceTrading/"
+[HomePage] Actual   : landed on: "https://stage-exchange.knooz.com/advanceTrading/ethusdt"

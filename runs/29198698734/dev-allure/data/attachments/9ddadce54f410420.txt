@@ -1,0 +1,6 @@
+[HomePage] Step     : Clicked "Register"
+[HomePage] Expected : redirected to the create-account page
+[HomePage] Actual   : landed on: "https://stage-exchange.knooz.com/createAccount"
+[HomePage] Step     : Read the current page URL
+[HomePage] Expected : "https://stage-exchange.knooz.com/"
+[HomePage] Actual   : "https://stage-exchange.knooz.com/"

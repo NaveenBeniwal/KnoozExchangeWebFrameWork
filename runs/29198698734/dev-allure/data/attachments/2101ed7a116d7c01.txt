@@ -1,0 +1,18 @@
+[HomePage] Step     : Read the current theme class
+[HomePage] Expected : "theme-dark"
+[HomePage] Actual   : "theme-dark"
+[HomePage] Step     : Scrolled the page down and back up while theme was "theme-dark"
+[HomePage] Expected : theme stays "theme-dark"
+[HomePage] Actual   : theme after scrolling: "theme-dark"
+[HomePage] Step     : Clicked the theme toggle icon
+[HomePage] Expected : theme class changes
+[HomePage] Actual   : before: "theme-dark" → after: "theme-light"
+[HomePage] Step     : Scrolled the page down and back up while theme was "theme-light"
+[HomePage] Expected : theme stays "theme-light"
+[HomePage] Actual   : theme after scrolling: "theme-light"
+[HomePage] Step     : Clicked the theme toggle icon
+[HomePage] Expected : theme class changes
+[HomePage] Actual   : before: "theme-light" → after: "theme-dark"
+[HomePage] Step     : Scrolled the page down and back up while theme was "theme-dark"
+[HomePage] Expected : theme stays "theme-dark"
+[HomePage] Actual   : theme after scrolling: "theme-dark"

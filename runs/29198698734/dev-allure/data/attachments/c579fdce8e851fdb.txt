@@ -1,0 +1,6 @@
+[LoginValidation] Step     : Filled credentials and clicked Continue (email: "naveen@antiersolutions.com")
+[LoginValidation] Expected : Continue clicked
+[LoginValidation] Actual   : Continue clicked
+[LoginValidation] Step     : Read login error message
+[LoginValidation] Expected : "Incorrect email or password. Please try again."
+[LoginValidation] Actual   : "Incorrect email or password. Please try again."

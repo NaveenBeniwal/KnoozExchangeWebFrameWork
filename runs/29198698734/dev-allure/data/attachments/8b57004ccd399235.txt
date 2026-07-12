@@ -1,0 +1,3 @@
+[ChangePassword] Step     : Waited for redirect to the login page after password change
+[ChangePassword] Expected : URL contains "/login"
+[ChangePassword] Actual   : URL is "https://stage-exchange.knooz.com/login"

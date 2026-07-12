@@ -1,0 +1,21 @@
+[HomePage] Step     : Checked "Exchange" on the home page
+[HomePage] Expected : visible
+[HomePage] Actual   : visible
+[HomePage] Step     : Checked "Sign In" on the home page
+[HomePage] Expected : visible
+[HomePage] Actual   : visible
+[HomePage] Step     : Checked "Register" on the home page
+[HomePage] Expected : visible
+[HomePage] Actual   : visible
+[HomePage] Step     : Checked "Contact Us" on the home page
+[HomePage] Expected : visible
+[HomePage] Actual   : visible
+[HomePage] Step     : Checked "Language icon" on the home page
+[HomePage] Expected : visible
+[HomePage] Actual   : visible
+[HomePage] Step     : Checked "Theme toggle" on the home page
+[HomePage] Expected : visible
+[HomePage] Actual   : visible
+[HomePage] Step     : Checked "Logo" on the home page
+[HomePage] Expected : visible
+[HomePage] Actual   : visible

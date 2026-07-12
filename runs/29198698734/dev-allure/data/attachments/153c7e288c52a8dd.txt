@@ -1,0 +1,12 @@
+[HomePage] Step     : Clicked "Contact Us"
+[HomePage] Expected : redirected to the support page
+[HomePage] Actual   : landed on: "https://stage-exchange.knooz.com/support"
+[HomePage] Step     : Checked "Sign In" on the current page
+[HomePage] Expected : visible
+[HomePage] Actual   : visible
+[HomePage] Step     : Clicked "Sign In" on the current page
+[HomePage] Expected : redirected to the login page
+[HomePage] Actual   : landed on: "https://stage-exchange.knooz.com/login"
+[HomePage] Step     : Clicked the KNOOZ logo
+[HomePage] Expected : redirected to the home page
+[HomePage] Actual   : landed on: "https://stage-exchange.knooz.com/"

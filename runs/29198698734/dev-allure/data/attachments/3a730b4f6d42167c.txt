@@ -1,0 +1,6 @@
+[LoginValidation] Step     : Filled Email field with an invalid value
+[LoginValidation] Expected : filled with "abc@exam_ple.com"
+[LoginValidation] Actual   : filled with "abc@exam_ple.com"
+[LoginValidation] Step     : Read invalid-email validation message
+[LoginValidation] Expected : "Please enter valid email"
+[LoginValidation] Actual   : "Please enter valid email"

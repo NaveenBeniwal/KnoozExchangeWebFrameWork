@@ -1,0 +1,12 @@
+[HomePage] Step     : Checked "English" option in the language dropdown
+[HomePage] Expected : visible
+[HomePage] Actual   : visible
+[HomePage] Step     : Checked "Arabic" option in the language dropdown
+[HomePage] Expected : visible
+[HomePage] Actual   : visible
+[HomePage] Step     : Selected "English" language and read all 21 page content blocks
+[HomePage] Expected : text contains "CRYPTOCURRENCY EXCHANGE"
+[HomePage] Actual   : found "CRYPTOCURRENCY EXCHANGE"
+[HomePage] Step     : Selected "Arabic" language and read all 21 page content blocks
+[HomePage] Expected : text contains "كنوز"
+[HomePage] Actual   : found "كنوز"

@@ -1,0 +1,25 @@
+user creds: naveen.beniwal@antiersolutions.com : Test@1234 : 12345
+[ChangePassword] Step     : Navigated to Change Password
+[ChangePassword] Expected : Change Password form visible
+[ChangePassword] Actual   : navigation clicked through Settings > Profile Settings > Security settings > Change Password
+[ChangePassword] Step     : Filled Old Password field
+[ChangePassword] Expected : filled with "Test@1234"
+[ChangePassword] Actual   : filled with "Test@1234"
+[ChangePassword] Step     : Filled New Password field
+[ChangePassword] Expected : filled with "Test@123"
+[ChangePassword] Actual   : filled with "Test@123"
+[ChangePassword] Step     : Filled Confirm Password field
+[ChangePassword] Expected : filled with "Test@123"
+[ChangePassword] Actual   : filled with "Test@123"
+[ChangePassword] Step     : Clicked "Get OTP"
+[ChangePassword] Expected : Get OTP clicked
+[ChangePassword] Actual   : Get OTP clicked
+[ChangePassword] Step     : Filled OTP field
+[ChangePassword] Expected : filled with "12345"
+[ChangePassword] Actual   : filled with "12345"
+[ChangePassword] Step     : Clicked "Change"
+[ChangePassword] Expected : Change clicked
+[ChangePassword] Actual   : Change clicked
+[ChangePassword] Step     : Read "password changed successfully" message
+[ChangePassword] Expected : "Password changed successfully"
+[ChangePassword] Actual   : "Password changed successfully"

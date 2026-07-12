@@ -1,0 +1,36 @@
+[LoginValidation] Step     : Filled credentials and clicked Continue (email: "naveen.beniwal@antiersolutions.com")
+[LoginValidation] Expected : Continue clicked
+[LoginValidation] Actual   : Continue clicked
+[LoginValidation] Step     : Read login error message
+[LoginValidation] Expected : "Invalid Credentials. Total 4 attempts allowed"
+[LoginValidation] Actual   : "Invalid Credentials. Total 4 attempts allowed"
+[LoginValidation] Step     : Filled credentials and clicked Continue (email: "naveen.beniwal@antiersolutions.com")
+[LoginValidation] Expected : Continue clicked
+[LoginValidation] Actual   : Continue clicked
+[LoginValidation] Step     : Read login error message
+[LoginValidation] Expected : "Invalid Credentials. Total 3 attempts allowed"
+[LoginValidation] Actual   : "Invalid Credentials. Total 3 attempts allowed"
+[LoginValidation] Step     : Filled credentials and clicked Continue (email: "naveen.beniwal@antiersolutions.com")
+[LoginValidation] Expected : Continue clicked
+[LoginValidation] Actual   : Continue clicked
+[LoginValidation] Step     : Read login error message
+[LoginValidation] Expected : "Invalid Credentials. Total 2 attempts allowed"
+[LoginValidation] Actual   : "Invalid Credentials. Total 2 attempts allowed"
+[LoginValidation] Step     : Filled credentials and clicked Continue (email: "naveen.beniwal@antiersolutions.com")
+[LoginValidation] Expected : Continue clicked
+[LoginValidation] Actual   : Continue clicked
+[LoginValidation] Step     : Read login error message
+[LoginValidation] Expected : "Invalid Credentials. Total 1 attempts allowed"
+[LoginValidation] Actual   : "Invalid Credentials. Total 1 attempts allowed"
+[LoginValidation] Step     : Filled credentials and clicked Continue (email: "naveen.beniwal@antiersolutions.com")
+[LoginValidation] Expected : Continue clicked
+[LoginValidation] Actual   : Continue clicked
+[LoginValidation] Step     : Read login error message
+[LoginValidation] Expected : "Invalid Credentials. Total 0 attempts allowed"
+[LoginValidation] Actual   : "Invalid Credentials. Total 0 attempts allowed"
+[LoginValidation] Step     : Filled credentials and clicked Continue (email: "naveen.beniwal@antiersolutions.com")
+[LoginValidation] Expected : Continue clicked
+[LoginValidation] Actual   : Continue clicked
+[LoginValidation] Step     : Read login error message
+[LoginValidation] Expected : "Your acount is locked due to multiple failed login attempts"
+[LoginValidation] Actual   : "Your acount is locked due to multiple failed login attempts"
