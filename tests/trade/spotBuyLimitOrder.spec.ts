@@ -119,7 +119,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     // ── TC-07 ────────────────────────────────────────────────────────────────
     // NOTE: positioned after TC-06 so the page is showing tradeData.searchPair before
     // we compare its ticker against the Binance API for that same pair.
-    test('TC-07: 24h ticker header values match Binance reference data (exact match) @sanity', async () => {
+    test('TC-07: 24h ticker header values match Binance reference data (exact match)', async () => {
         const [binance, ticker] = await Promise.all([
             BinanceHelper.get24hTicker(page, tradeData.searchPair),
             spotBuyPage.getTickerHeaderData(),

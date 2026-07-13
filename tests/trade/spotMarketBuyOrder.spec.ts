@@ -96,7 +96,7 @@ test.describe.serial('Spot Module — Market Buy Order Positive Flow', () => {
 
     // ── TC-02b ────────────────────────────────────────────────────────────────
     // Positioned after TC-06 so the page shows the selected pair before comparing with Binance
-    test('TC-02b: 24h ticker header matches Binance reference data (exact match) @sanity', async () => {
+    test('TC-02b: 24h ticker header matches Binance reference data (exact match)', async () => {
         const [binance, ticker] = await Promise.all([
             BinanceHelper.get24hTicker(page, getTradeData().searchPair),
             spotMarketBuyPage.getTickerHeaderData(),
