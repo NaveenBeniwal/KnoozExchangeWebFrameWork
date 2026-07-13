@@ -221,7 +221,7 @@ test('market stats info icons are visible, show a tooltip, and tooltip text matc
 //      Volume (24h) is checked against CoinMarketCap, Market cap/Circulating supply against
 //      CoinGecko (those already match well there).
 //   3. Compares what the page displays against the live reference value within ±25%
-//      (Market cap/Circulating supply) or ±2% (Volume, now a same-methodology comparison).
+//      (Market cap/Circulating supply) or ±4% (Volume, now a same-methodology comparison).
 //   4. Still asserts a non-empty numeric value for every coin regardless of API data.
 //   5. Validates the Volume 24h change % is a real number within a sane range
 //      (no free API provides this directly — we parse it from the page display).

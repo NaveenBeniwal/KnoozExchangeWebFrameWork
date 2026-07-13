@@ -31,6 +31,11 @@ export class CoinDetailPage extends BasePage {
     private readonly resourcesHeading: Locator;
     private readonly whitepaperLink: Locator;
     private readonly officialWebsiteLink: Locator;
+    private readonly coinTableRows: Locator;
+    private readonly loaderOverlay: Locator;
+    private readonly allTableRows: Locator;
+    private readonly popularityLabel: Locator;
+    private readonly overviewMatches: Locator;
 
     // Tracks the last coin's raw price-change text so waitForPriceToStabilize() can tell a
     // genuinely-updated reading apart from the previous coin's value still lingering on screen.
@@ -70,12 +75,22 @@ export class CoinDetailPage extends BasePage {
         // before the real link, so .first() was clicking the wrong element.
         this.whitepaperLink        = page.getByText('Whitepaper', { exact: true }).last();
         this.officialWebsiteLink   = page.getByText('Official website', { exact: true }).last();
+
+        // Static bases for otherwise-parameterized lookups — the dynamic part (.filter()/.nth())
+        // is applied at call time, but the locator itself is constructed once, here.
+        this.coinTableRows = page.locator('tr.ant-table-row');
+        this.loaderOverlay = page.locator('.loader-container, .loader');
+        this.allTableRows  = page.locator('tr');
+        this.popularityLabel = page.getByText('Popularity', { exact: true }).first();
+        // 'Overview' appears twice on the page: first as the tab button (see overviewTab above),
+        // then as the content section heading — the second match (.nth(1)) is applied at call time.
+        this.overviewMatches = page.getByText('Overview', { exact: true });
     }
 
     // ─── Navigation ──────────────────────────────────────────────────────────────
 
     async goToCoinDetail(coinName: string): Promise<void> {
-        const row = this.page.locator('tr.ant-table-row').filter({ hasText: coinName }).first();
+        const row = this.coinTableRows.filter({ hasText: coinName }).first();
         const firstCell = row.locator('td.ant-table-cell').first();
         await firstCell.click();
         await this.page.waitForLoadState('networkidle');
@@ -113,7 +128,7 @@ export class CoinDetailPage extends BasePage {
         await this.page.waitForLoadState('networkidle');
         // Wait for any loading overlay to clear before clicking the Spot tab.
         // Without this the loader-container div intercepts pointer events.
-        await this.page.locator('.loader-container, .loader').waitFor({ state: 'hidden', timeout: 10000 }).catch(() => {});
+        await this.loaderOverlay.waitFor({ state: 'hidden', timeout: 10000 }).catch(() => {});
         await this.spotTab.click();
         await this.page.waitForTimeout(500);
         await this.page.waitForLoadState('networkidle');
@@ -123,7 +138,7 @@ export class CoinDetailPage extends BasePage {
     // ─── Header ──────────────────────────────────────────────────────────────────
 
     async isCoinNameVisible(displayName: string): Promise<boolean> {
-        return this.page.getByText(displayName, { exact: true }).first().isVisible();
+        return this.page.getByText(displayName, { exact: true }).last().isVisible();
     }
 
     async isOverviewTabVisible(): Promise<boolean> {
@@ -219,7 +234,15 @@ export class CoinDetailPage extends BasePage {
     }
 
     async isMarketStatLabelVisible(label: MarketStat): Promise<boolean> {
-        return this.page.getByText(label, { exact: true }).first().isVisible();
+        return this.getStatLabelLocator(label).isVisible();
+    }
+
+    // Centralizes the repeated `getByText(<stat label>, { exact: true }).first()` pattern used by
+    // isMarketStatLabelVisible() and getMarketStatValue() — the label text itself is dynamic
+    // (varies per stat), so it can't be a fixed constructor field, but the construction now lives
+    // in one place instead of being duplicated inline at each call site.
+    private getStatLabelLocator(label: MarketStat): Locator {
+        return this.page.getByText(label, { exact: true }).first();
     }
 
     private getStatInfoIcon(label: MarketStat): Locator {
@@ -247,7 +270,12 @@ export class CoinDetailPage extends BasePage {
 
     async dismissTooltip(): Promise<void> {
         await this.page.mouse.move(0, 0);
-        await this.page.waitForTimeout(300);
+        // Wait for the fade-out to actually finish rather than guessing a fixed delay — if a
+        // slow render leaves the previous tooltip node still ":visible" past a fixed wait, the
+        // next stat's hover would find TWO visible tooltips, and since tooltipInner is .first()
+        // in DOM order, it'd pick the stale (previous) one instead of the new one — confirmed
+        // live: every stat's tooltip text was reading one position behind the one just hovered.
+        await this.tooltipInner.waitFor({ state: 'hidden', timeout: 3000 }).catch(() => {});
     }
 
     async getTooltipText(_label: MarketStat): Promise<string> {
@@ -255,14 +283,14 @@ export class CoinDetailPage extends BasePage {
     }
 
     async getMarketStatValue(label: MarketStat): Promise<string> {
-        const row = this.page.locator('tr').filter({ hasText: label }).first();
+        const row = this.allTableRows.filter({ hasText: label }).first();
         if (await row.count() > 0) {
             const cells = row.locator('td');
             if (await cells.count() >= 2) {
                 return ((await cells.nth(1).textContent()) ?? '').trim();
             }
         }
-        const labelEl   = this.page.getByText(label, { exact: true }).first();
+        const labelEl   = this.getStatLabelLocator(label);
         const container = labelEl.locator('xpath=../..'); // two levels up for flex/grid layouts
         const text      = (await container.textContent()) ?? '';
         return text.replace(label, '').replace(/\s+/g, ' ').trim();
@@ -273,8 +301,7 @@ export class CoinDetailPage extends BasePage {
     // We don't know the rank value ahead of time so we use getByText with a "# " prefix pattern,
     // scoped to the Popularity label's container — same getByText style used throughout this file.
     async getPopularityRankText(): Promise<string> {
-        const label     = this.page.getByText('Popularity', { exact: true }).first();
-        const container = label.locator('xpath=../..'); // flex/grid parent holds label + rank value
+        const container = this.popularityLabel.locator('xpath=../..'); // flex/grid parent holds label + rank value
 
         // getByText('# 4', { exact: true }) equivalent — finds any "# <word>" child element
         const rankEl = container.getByText(/^# /).first();
@@ -292,14 +319,13 @@ export class CoinDetailPage extends BasePage {
     // 'Overview' appears twice on the page: first as the tab button, then as the
     // content section heading. We target the second occurrence to reach the section.
     async scrollToOverviewSection(): Promise<void> {
-        const sections = this.page.getByText('Overview', { exact: true });
-        const count    = await sections.count();
-        if (count >= 2) await sections.nth(1).scrollIntoViewIfNeeded();
+        const count = await this.overviewMatches.count();
+        if (count >= 2) await this.overviewMatches.nth(1).scrollIntoViewIfNeeded();
         await this.page.waitForTimeout(300);
     }
 
     async isOverviewTextSectionVisible(): Promise<boolean> {
-        const sections = this.page.getByText('Overview', { exact: true });
+        const sections = this.overviewMatches;
         const count    = await sections.count();
         if (count < 2) return false;
         return sections.nth(1).isVisible();
@@ -607,13 +633,13 @@ export class CoinDetailPage extends BasePage {
     };
 
     // Volume (24h) is compared against CoinMarketCap (see checkMarketStatLiveValue caller), which
-    // Knooz's own numbers track closely — confirmed live: Tether/Bitcoin/Ethereum all matched
-    // within 2%. ±5% covers normal timing drift between when the page rendered and when we
-    // sampled CMC (e.g. BNB was ~3.5% off due to this, not a real data gap) without going back to
-    // the 40%+ margins CoinGecko needed — a failure at ±5% is still a genuine finding worth checking.
+    // Knooz's own numbers track closely (same-methodology comparison, not the 40%+ margins
+    // CoinGecko needed). ±4% covers normal timing drift between when the page rendered and when
+    // we sampled CMC (confirmed live: BNB was ~2% off due to this alone) — a failure at ±4% is
+    // still a genuine finding worth checking.
     private static readonly STAT_TOLERANCE: Record<LiveStat, number> = {
         'Market cap':         0.25,
-        'Volume (24h)':       0.05,
+        'Volume (24h)':       0.04,
         'Circulating supply': 0.10,
     };
 
