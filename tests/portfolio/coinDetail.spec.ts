@@ -313,7 +313,7 @@ test('overview text section is visible and content matches expected text from CS
 
 // ─── Resources section ────────────────────────────────────────────────────────
 
-test('Resources section shows Whitepaper and Official Website links @sanity', async () => {
+test('Resources section shows Whitepaper and Official Website links', async () => {
     test.setTimeout(90000);
 
     for (const item of coinData) {
