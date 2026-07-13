@@ -175,7 +175,7 @@ test.describe('Portfolio Funding Page', () => {
             let spotBalanceNative:    number;
 
             // ─── Step 1 ─────────────────────────────────────────────────────────────
-            test('TC-F09: snapshot the Funding and Spot Wallet balances', async () => {
+            test('TC-F09: snapshot the Funding and Spot Wallet balances @sanity', async () => {
                 const funding = await fundingPage.getCoinRowData(transferCurrency.coin);
                 fundingBalanceNative = funding.fundingBalanceNative;
 

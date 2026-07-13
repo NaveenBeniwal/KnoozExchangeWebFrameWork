@@ -74,8 +74,15 @@ export class LoginPage extends BasePage {
     }
 
     async isUserOnHomePage(): Promise<boolean> {
-        await this.page.waitForTimeout(2000);
-        const isVisible = await this.homePage.isVisible();
+        // A one-time post-login popup ("Later" to dismiss) can cover the Home nav item on a
+        // fresh browser session with no prior history — dismiss it the same way
+        // dismissPostLoginDialogsAndWaitForHome() does, otherwise a plain isVisible() snapshot
+        // taken while it's still up reports "not on home page" even though login succeeded.
+        if (await this.laterButton.isVisible({ timeout: 3000 }).catch(() => false)) {
+            await this.laterButton.click();
+            await this.page.waitForLoadState('domcontentloaded').catch(() => {});
+        }
+        const isVisible = await this.homePage.isVisible({ timeout: 10000 }).catch(() => false);
         console.log(isVisible ? '[LoginPage] Login successful — Home page loaded' : '[LoginPage] Login failed — Home page not visible');
         return isVisible;
     }
