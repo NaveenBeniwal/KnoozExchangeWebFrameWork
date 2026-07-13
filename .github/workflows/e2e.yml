@@ -121,7 +121,7 @@ jobs:
           echo "========================================="
           echo "  Running @smoke on DEV"
           echo "========================================="
-          npx playwright test --project=chromium -- grep @smoke
+          npx playwright test --project=chromium --grep @smoke
         env:
           ENV: dev
           BASE_URL: ${{ secrets.BASE_URL }}
@@ -152,7 +152,7 @@ jobs:
           retention-days: 30
 
   # ═════════════════════════════════════════════════════
-  # STEP 3: DEPLOY QA + REGRESSION TESTS
+  # STEP 3: DEPLOY QA + SMOKE TESTS
   # ═════════════════════════════════════════════════════
   deploy-qa:
     name: Deploy to QA
@@ -163,7 +163,7 @@ jobs:
         run: echo "Deployed to QA ✅"
 
   regression-qa:
-    name: QA - Regression Tests
+    name: QA - Smoke Tests
     needs: deploy-qa
     runs-on: ubuntu-latest
     environment: QA
@@ -197,10 +197,10 @@ jobs:
         if: steps.pw-cache-qa.outputs.cache-hit == 'true'
         run: npx playwright install-deps chromium
 
-      - name: Run Regression Tests on QA
+      - name: Run Smoke Tests on QA
         run: |
           echo "========================================="
-          echo "  Running REGRESSION (all tests) on QA"
+          echo "  Running SMOKE (all tests) on QA"
           echo "========================================="
           npx playwright test --project=chromium --grep @smoke
         env:
@@ -220,7 +220,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: qa-regression-html-report
+          name: qa-smoke-html-report
           path: reports/html-report/
           retention-days: 30
 
@@ -228,12 +228,12 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: qa-regression-allure-report
+          name: qa-smoke-allure-report
           path: allure-report/
           retention-days: 30
 
   # ═════════════════════════════════════════════════════
-  # STEP 4: DEPLOY STAGE + SANITY TESTS
+  # STEP 4: DEPLOY STAGE + Regression TESTS
   # ═════════════════════════════════════════════════════
   deploy-stage:
     name: Deploy to STAGE
@@ -243,8 +243,8 @@ jobs:
       - name: Deploy to STAGE
         run: echo "Deployed to STAGE ✅"
 
-  sanity-stage:
-    name: STAGE - Sanity Tests
+  regression-stage:
+    name: STAGE - Regression Tests
     needs: deploy-stage
     runs-on: ubuntu-latest
     environment: stage
@@ -278,10 +278,10 @@ jobs:
         if: steps.pw-cache-stage.outputs.cache-hit == 'true'
         run: npx playwright install-deps chromium
 
-      - name: Run Sanity Tests on STAGE
+      - name: Run Regression Tests on STAGE
         run: |
           echo "========================================="
-          echo "  Running SANITY @smoke on STAGE"
+          echo "  Running Regression (all tests) on STAGE"
           echo "========================================="
           npx playwright test --project=chromium
         env:
@@ -311,7 +311,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: stage-sanity-html-report
+          name: stage-regression-html-report
           path: reports/html-report/
           retention-days: 30
 
@@ -319,7 +319,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: stage-sanity-allure-report
+          name: stage-regression-allure-report
           path: allure-report/
           retention-days: 30
 
@@ -328,7 +328,7 @@ jobs:
   # ═════════════════════════════════════════════════════
   deploy-prod:
     name: Deploy to PROD
-    needs: sanity-stage
+    needs: regression-stage
     runs-on: ubuntu-latest
     environment: Prod
     steps:
@@ -410,7 +410,7 @@ jobs:
   # ═════════════════════════════════════════════════════
   notify:
     name: Publish Reports + Notify
-    needs: [build, smoke-dev, regression-qa, sanity-stage, smoke-prod]
+    needs: [build, smoke-dev, regression-qa, regression-stage, smoke-prod]
     if: always()
     runs-on: ubuntu-latest
     permissions:
@@ -424,7 +424,7 @@ jobs:
           BUILD="${{ needs.build.result }}"
           DEV="${{ needs.smoke-dev.result }}"
           QA="${{ needs.regression-qa.result }}"
-          STAGE="${{ needs.sanity-stage.result }}"
+          STAGE="${{ needs.regression-stage.result }}"
           PROD="${{ needs.smoke-prod.result }}"
 
           get_emoji() { if [ "$1" = "success" ]; then echo "✅"; elif [ "$1" = "skipped" ]; then echo "⏭️"; else echo "❌"; fi; }
@@ -494,7 +494,7 @@ jobs:
               </div>
 
               <div class="card">
-                <h2>🟡 STAGE — Sanity</h2>
+                <h2>🟡 STAGE — Regression</h2>
                 <div class="links">
                   <a class="btn html-btn" href="stage-html/index.html">📊 HTML Report</a>
                   <a class="btn allure-btn" href="stage-allure/index.html">📈 Allure Report</a>
@@ -522,8 +522,8 @@ jobs:
           cp -r all-reports/dev-sanity-allure-report/ pages-deploy/runs/${{ github.run_id }}/dev-allure/ 2>/dev/null || true
           cp -r all-reports/qa-regression-html-report/ pages-deploy/runs/${{ github.run_id }}/qa-html/ 2>/dev/null || true
           cp -r all-reports/qa-regression-allure-report/ pages-deploy/runs/${{ github.run_id }}/qa-allure/ 2>/dev/null || true
-          cp -r all-reports/stage-sanity-html-report/ pages-deploy/runs/${{ github.run_id }}/stage-html/ 2>/dev/null || true
-          cp -r all-reports/stage-sanity-allure-report/ pages-deploy/runs/${{ github.run_id }}/stage-allure/ 2>/dev/null || true
+          cp -r all-reports/stage-regression-html-report/ pages-deploy/runs/${{ github.run_id }}/stage-html/ 2>/dev/null || true
+          cp -r all-reports/stage-regression-allure-report/ pages-deploy/runs/${{ github.run_id }}/stage-allure/ 2>/dev/null || true
           cp -r all-reports/prod-smoke-html-report/ pages-deploy/runs/${{ github.run_id }}/prod-html/ 2>/dev/null || true
           cp -r all-reports/prod-smoke-allure-report/ pages-deploy/runs/${{ github.run_id }}/prod-allure/ 2>/dev/null || true
 
@@ -585,7 +585,7 @@ jobs:
                   <tr><td class="env-name">🔨 Build</td><td class="test-type">Maven Unit Tests</td><td class="status">${{ steps.status.outputs.build }}</td></tr>
                   <tr><td class="env-name">🟢 DEV</td><td class="test-type">Sanity (@smoke)</td><td class="status">${{ steps.status.outputs.dev }}</td></tr>
                   <tr><td class="env-name">🔵 QA</td><td class="test-type">Regression (All Tests)</td><td class="status">${{ steps.status.outputs.qa }}</td></tr>
-                  <tr><td class="env-name">🟡 STAGE</td><td class="test-type">Sanity (@smoke)</td><td class="status">${{ steps.status.outputs.stage }}</td></tr>
+                  <tr><td class="env-name">🟡 STAGE</td><td class="test-type">Regression (All Tests)</td><td class="status">${{ steps.status.outputs.stage }}</td></tr>
                   <tr><td class="env-name">🔴 PROD</td><td class="test-type">Smoke (@smoke)</td><td class="status">${{ steps.status.outputs.prod }}</td></tr>
                 </table>
               </div>
