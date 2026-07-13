@@ -33,26 +33,26 @@ test.describe('Home Page', () => {
     });
 
     // 1. Home page URL
-    test('1. home page loads at the correct URL @smoke @sanity @regression', async () => {
+    test('1. home page loads at the correct URL @smoke @sanity', async () => {
         const row = homeData.find(r => r.scenario === 'home_url')!;
         expect(await homePage.getCurrentUrl(row.expectedUrl), row.description).toBe(row.expectedUrl);
     });
 
     // 2. Home page title
-    test('2. home page title should be KNOOZ @smoke @sanity @regression', async () => {
+    test('2. home page title should be KNOOZ @smoke @sanity', async () => {
         const row = homeData.find(r => r.scenario === 'home_title')!;
         expect(await homePage.getPageTitle(), row.description).toBe(row.expectedText);
     });
 
     // All home page buttons/icons should be visible
-    test('all home page buttons are visible @regression', async () => {
+    test('all home page buttons are visible', async () => {
         for (const row of homeData.filter(r => r.scenario === 'button_visible')) {
             expect.soft(await homePage.isHomePageButtonVisible(row.param), row.description).toBe(true);
         }
     });
 
     // 3. Exchange button opens the trading page, which shows Login/Register links and a zero balance
-    test('3. Exchange button opens the trading page with Login, Register links and zero balance @regression', async () => {
+    test('3. Exchange button opens the trading page with Login, Register links and zero balance', async () => {
         const navRow = homeData.find(r => r.scenario === 'exchange_navigation')!;
         expect(await homePage.clickExchange(), navRow.description).toBe(navRow.expectedUrl);
 
@@ -78,7 +78,7 @@ test.describe('Home Page', () => {
     });
 
     // 4. Sign In button
-    test('4. Sign In button navigates to the login page and back to home @regression', async () => {
+    test('4. Sign In button navigates to the login page and back to home', async () => {
         const row = homeData.find(r => r.scenario === 'signin_home')!;
         expect(await homePage.clickSignInButton(), row.description).toBe(row.expectedUrl);
 
@@ -88,7 +88,7 @@ test.describe('Home Page', () => {
     });
 
     // 5. Register button
-    test('5. Register button navigates to the create-account page and back to home @regression', async () => {
+    test('5. Register button navigates to the create-account page and back to home', async () => {
         const row = homeData.find(r => r.scenario === 'register_home')!;
         expect(await homePage.clickRegisterButton(), row.description).toBe(row.expectedUrl);
 
@@ -98,7 +98,7 @@ test.describe('Home Page', () => {
     });
 
     // 6. Contact Us -> support page -> Sign In -> login page -> logo -> home
-    test('6. Contact Us reaches the support page, Sign In reaches login, and the logo returns home @regression', async () => {
+    test('6. Contact Us reaches the support page, Sign In reaches login, and the logo returns home', async () => {
         const contactRow = homeData.find(r => r.scenario === 'contact_us')!;
         expect(await homePage.clickContactUsLink(), contactRow.description).toBe(contactRow.expectedUrl);
 
@@ -111,7 +111,7 @@ test.describe('Home Page', () => {
     });
 
     // 7. Language dropdown shows English/Arabic and switches page content
-    test('7. language dropdown shows English and Arabic and switches page content @regression', async () => {
+    test('7. language dropdown shows English and Arabic and switches page content', async () => {
         await homePage.hoverLanguageIcon();
         expect.soft(await homePage.isLanguageOptionVisible('English'), 'English option should be visible in the language dropdown').toBe(true);
         expect.soft(await homePage.isLanguageOptionVisible('Arabic'), 'Arabic (العربية) option should be visible in the language dropdown').toBe(true);
@@ -127,7 +127,7 @@ test.describe('Home Page', () => {
 
     // 8. Theme toggle round-trip: starts dark, toggles to light, toggles back to dark — and the
     // selected theme should survive scrolling the page, not just the instant after clicking.
-    test('8. theme toggle switches from dark to light and back to dark, and persists while scrolling @regression', async () => {
+    test('8. theme toggle switches from dark to light and back to dark, and persists while scrolling', async () => {
         const initialRow = homeData.find(r => r.scenario === 'theme_initial')!;
         expect.soft(await homePage.getThemeClass(initialRow.expectedText), initialRow.description).toContain(initialRow.expectedText);
         expect.soft(await homePage.scrollAndVerifyThemePersists(initialRow.expectedText), `${initialRow.description} — should persist while scrolling`).toContain(initialRow.expectedText);

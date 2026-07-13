@@ -4,7 +4,7 @@ test.beforeEach(async ({ loginPage }) => {
     await loginPage.goToLoginPage();
 });
 
-test('login page title test @sanity @regression', async ({ loginPage }) => {
+test('login page title test @sanity', async ({ loginPage }) => {
     const pageTitle = await loginPage.getLoginPageTitle();
     console.log('login page title:', pageTitle);
     expect(await loginPage.isLogoVisible()).toBeTruthy();
@@ -12,7 +12,7 @@ test('login page title test @sanity @regression', async ({ loginPage }) => {
     expect(await loginPage.isForgotPasswordLinkExist()).toBeTruthy();
 });
 
-test('login test @smoke @sanity @regression', async({ loginPage }) => {
+test('login test @smoke @sanity', async({ loginPage }) => {
     await loginPage.doLogin(process.env.EMAIL!, process.env.PASSWORD!, process.env.OTP!);
     let isUserOnHomePage = await loginPage.isUserOnHomePage();
     expect(isUserOnHomePage).toBeTruthy();

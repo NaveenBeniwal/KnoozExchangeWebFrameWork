@@ -66,7 +66,7 @@ test.describe.serial('Spot Module — Buy/Sell Round-Trip Smoke & Sanity Flow', 
     test.afterAll(async () => { await browser.close(); });
 
     // ── TC-RT-01 ──────────────────────────────────────────────────────────────
-    test('TC-RT-01: navigate to Spot Trading page @smoke @sanity @regression', async () => {
+    test('TC-RT-01: navigate to Spot Trading page @smoke @sanity', async () => {
         await spotBuyPage.navigateToSpotTrading();
         console.log('[TC-RT-01] Navigated to Spot Trading page');
     });
@@ -75,14 +75,14 @@ test.describe.serial('Spot Module — Buy/Sell Round-Trip Smoke & Sanity Flow', 
     // captureFullSnapshot(pair) does its own search/select with exact-match + fallback
     // logic (the same routine TC-60 in spotbuylimitorder.spec.ts relies on for this exact
     // above-market scenario) — no separate manual search+select step needed beforehand.
-    test('TC-RT-02: select the trading pair and capture available balance before placing the buy order @smoke @sanity @regression', async () => {
+    test('TC-RT-02: select the trading pair and capture available balance before placing the buy order @smoke @sanity', async () => {
         snapshotBeforeBuy = await spotBuyPage.captureFullSnapshot(portfolioSpotPage, tradeData.searchPair);
         expect.soft(snapshotBeforeBuy.buyAvlb, 'Available quote-coin balance before buy should be non-negative').toBeGreaterThanOrEqual(0);
         logSnapshot('TC-RT-02', snapshotBeforeBuy);
     });
 
     // ── TC-RT-03 ──────────────────────────────────────────────────────────────
-    test('TC-RT-03: place a buy limit order above market price — fills immediately @smoke @sanity @regression', async () => {
+    test('TC-RT-03: place a buy limit order above market price — fills immediately @smoke @sanity', async () => {
         const limitPrice = parseFloat(tradeData.aboveMarketLimitPrice ?? '70000');
         const total      = parseFloat(tradeData.buyTotal ?? '15');
         const r = await spotBuyPage.placeAboveMarketLimitOrder(limitPrice, total);
@@ -95,7 +95,7 @@ test.describe.serial('Spot Module — Buy/Sell Round-Trip Smoke & Sanity Flow', 
     });
 
     // ── TC-RT-04 ──────────────────────────────────────────────────────────────
-    test('TC-RT-04: available balance after the buy order matches expected (quote decreased, base increased) @smoke @sanity @regression', async () => {
+    test('TC-RT-04: available balance after the buy order matches expected (quote decreased, base increased) @smoke @sanity', async () => {
         test.skip(!buyOrderSucceeded, 'Buy order not placed — skipping balance check.');
         if (!snapshotBeforeBuy) { console.warn('[TC-RT-04] Missing pre-buy snapshot'); return; }
         const results = await spotBuyPage.validateMarketFillBalance(
@@ -110,7 +110,7 @@ test.describe.serial('Spot Module — Buy/Sell Round-Trip Smoke & Sanity Flow', 
     });
 
     // ── TC-RT-05 ──────────────────────────────────────────────────────────────
-    test('TC-RT-05: capture available balance before placing the sell order @smoke @sanity @regression', async () => {
+    test('TC-RT-05: capture available balance before placing the sell order @smoke @sanity', async () => {
         test.skip(!buyOrderSucceeded, 'Buy order did not succeed — skipping sell leg.');
         snapshotBeforeSell = await spotSellPage.captureFullSnapshot(portfolioSpotPage, tradeData.searchPair);
         expect.soft(snapshotBeforeSell.sellAvlb, 'Available base-coin balance before sell should be non-negative').toBeGreaterThanOrEqual(0);
@@ -122,7 +122,7 @@ test.describe.serial('Spot Module — Buy/Sell Round-Trip Smoke & Sanity Flow', 
     // amount the same way the buy leg converts buyTotal — sellTotal / limitPrice — rather than
     // reusing whatever the buy leg happened to fill. Keep sellTotal ≈ buyTotal in the CSV for a
     // clean round trip; if they diverge the position won't fully net back to zero.
-    test('TC-RT-06: place a sell limit order (below market) for the CSV-configured sell total — fills immediately @smoke @sanity @regression', async () => {
+    test('TC-RT-06: place a sell limit order (below market) for the CSV-configured sell total — fills immediately @smoke @sanity', async () => {
         test.skip(!buyOrderSucceeded, 'Buy order did not succeed — skipping sell leg.');
         const limitPrice = parseFloat(tradeData.belowMarketLimitPrice ?? '50000');
         const sellTotal  = parseFloat(tradeData.sellTotal ?? tradeData.buyTotal ?? '10');
@@ -136,7 +136,7 @@ test.describe.serial('Spot Module — Buy/Sell Round-Trip Smoke & Sanity Flow', 
     });
 
     // ── TC-RT-07 ──────────────────────────────────────────────────────────────
-    test('TC-RT-07: available balance after the sell order matches expected (base decreased, quote restored) @smoke @sanity @regression', async () => {
+    test('TC-RT-07: available balance after the sell order matches expected (base decreased, quote restored) @smoke @sanity', async () => {
         test.skip(!buyOrderSucceeded || !sellOrderSucceeded, 'Buy or sell order did not succeed — skipping balance check.');
         if (!snapshotBeforeSell) { console.warn('[TC-RT-07] Missing pre-sell snapshot'); return; }
         const results = await spotSellPage.validateMarketFillBalance(

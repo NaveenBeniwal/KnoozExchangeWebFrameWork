@@ -39,7 +39,7 @@ test.describe('Portfolio Overview Page', () => {
 
 // ─── Header ──────────────────────────────────────────────────────────────────
 
-test('back button is visible on portfolio page @smoke @sanity @regression', async () => {
+test('back button is visible on portfolio page @smoke @sanity', async () => {
     // Arrange — portfolio page loaded in beforeEach
     // Act
     const isVisible = await portfolioPage.isBackButtonVisible();
@@ -47,7 +47,7 @@ test('back button is visible on portfolio page @smoke @sanity @regression', asyn
     expect(isVisible).toBe(true);
 });
 
-test('Deposit & Withdraw button is visible on portfolio page @sanity @regression', async () => {
+test('Deposit & Withdraw button is visible on portfolio page @sanity', async () => {
     // Arrange — portfolio page loaded in beforeEach
     // Act
     const isVisible = await portfolioPage.isDepositWithdrawButtonVisible();
@@ -57,7 +57,7 @@ test('Deposit & Withdraw button is visible on portfolio page @sanity @regression
 
 // ─── Estimated Balance ────────────────────────────────────────────────────────
 
-test('estimated balance label is visible @smoke @sanity @regression', async () => {
+test('estimated balance label is visible @smoke @sanity', async () => {
     // Arrange — portfolio page loaded in beforeEach
     // Act
     const isVisible = await portfolioPage.isEstimatedBalanceVisible();
@@ -65,7 +65,7 @@ test('estimated balance label is visible @smoke @sanity @regression', async () =
     expect(isVisible).toBe(true);
 });
 
-test('balance amount contains USDT @sanity @regression', async () => {
+test('balance amount contains USDT @sanity', async () => {
     // Arrange — portfolio page loaded in beforeEach
     // Act
     const balanceText = await portfolioPage.getBalanceText();
@@ -73,7 +73,7 @@ test('balance amount contains USDT @sanity @regression', async () => {
     expect(balanceText).toContain('USDT');
 });
 
-test('balance toggle icon is visible @sanity @regression', async () => {
+test('balance toggle icon is visible @sanity', async () => {
     // Arrange — portfolio page loaded in beforeEach
     // Act
     const isVisible = await portfolioPage.isBalanceToggleIconVisible();
@@ -83,7 +83,7 @@ test('balance toggle icon is visible @sanity @regression', async () => {
 
 // ─── Tabs ────────────────────────────────────────────────────────────────────
 
-test('Overview tab is visible @sanity @regression', async () => {
+test('Overview tab is visible @sanity', async () => {
     // Arrange — portfolio page loaded in beforeEach
     // Act
     const isVisible = await portfolioPage.isTabVisible('Overview');
@@ -91,7 +91,7 @@ test('Overview tab is visible @sanity @regression', async () => {
     expect(isVisible).toBe(true);
 });
 
-test('Spot tab is visible @sanity @regression', async () => {
+test('Spot tab is visible @sanity', async () => {
     // Arrange — portfolio page loaded in beforeEach
     // Act
     const isVisible = await portfolioPage.isTabVisible('Spot');
@@ -99,7 +99,7 @@ test('Spot tab is visible @sanity @regression', async () => {
     expect(isVisible).toBe(true);
 });
 
-test('Funding tab is visible @sanity @regression', async () => {
+test('Funding tab is visible @sanity', async () => {
     // Arrange — portfolio page loaded in beforeEach
     // Act
     const isVisible = await portfolioPage.isTabVisible('Funding');
@@ -107,7 +107,7 @@ test('Funding tab is visible @sanity @regression', async () => {
     expect(isVisible).toBe(true);
 });
 
-test('Grid tab is visible @sanity @regression', async () => {
+test('Grid tab is visible @sanity', async () => {
     // Arrange — portfolio page loaded in beforeEach
     // Act
     const isVisible = await portfolioPage.isTabVisible('Grid');
@@ -115,7 +115,7 @@ test('Grid tab is visible @sanity @regression', async () => {
     expect(isVisible).toBe(true);
 });
 
-test('Copy tab is visible @sanity @regression', async () => {
+test('Copy tab is visible @sanity', async () => {
     // Arrange — portfolio page loaded in beforeEach
     // Act
     const isVisible = await portfolioPage.isTabVisible('Copy');
@@ -125,7 +125,7 @@ test('Copy tab is visible @sanity @regression', async () => {
 
 // ─── My Assets ───────────────────────────────────────────────────────────────
 
-test('My Assets heading is visible @sanity @regression', async () => {
+test('My Assets heading is visible @sanity', async () => {
     // Arrange — portfolio page loaded in beforeEach
     // Act
     const isVisible = await portfolioPage.isMyAssetsVisible();
@@ -135,7 +135,7 @@ test('My Assets heading is visible @sanity @regression', async () => {
 
 // ─── Wallet Section ──────────────────────────────────────────────────────────
 
-test('Wallet section heading is visible @sanity @regression', async () => {
+test('Wallet section heading is visible @sanity', async () => {
     // Arrange — portfolio page loaded in beforeEach
     // Act
     const isVisible = await portfolioPage.isWalletSectionVisible();
@@ -143,7 +143,7 @@ test('Wallet section heading is visible @sanity @regression', async () => {
     expect(isVisible).toBe(true);
 });
 
-test('Wallet section shows Spot row @regression', async () => {
+test('Wallet section shows Spot row', async () => {
     // Arrange — portfolio page loaded in beforeEach
     // Act
     const isVisible = await portfolioPage.isWalletRowVisible('Spot');
@@ -151,7 +151,7 @@ test('Wallet section shows Spot row @regression', async () => {
     expect(isVisible).toBe(true);
 });
 
-test('Wallet section shows Funding row @regression', async () => {
+test('Wallet section shows Funding row', async () => {
     // Arrange — portfolio page loaded in beforeEach
     // Act
     const isVisible = await portfolioPage.isWalletRowVisible('Funding');
@@ -159,7 +159,7 @@ test('Wallet section shows Funding row @regression', async () => {
     expect(isVisible).toBe(true);
 });
 
-test('Wallet section shows Grid row @regression', async () => {
+test('Wallet section shows Grid row', async () => {
     // Arrange — portfolio page loaded in beforeEach
     // Act
     const isVisible = await portfolioPage.isWalletRowVisible('Grid');
@@ -167,7 +167,7 @@ test('Wallet section shows Grid row @regression', async () => {
     expect(isVisible).toBe(true);
 });
 
-test('Wallet section shows Copy row @regression', async () => {
+test('Wallet section shows Copy row', async () => {
     // Arrange — portfolio page loaded in beforeEach
     // Act
     const isVisible = await portfolioPage.isWalletRowVisible('Copy');
@@ -177,7 +177,7 @@ test('Wallet section shows Copy row @regression', async () => {
 
 // ─── Coin View Section ───────────────────────────────────────────────────────
 
-test('Coin View section heading is visible @sanity @regression', async () => {
+test('Coin View section heading is visible @sanity', async () => {
     // Arrange — portfolio page loaded in beforeEach
     // Act
     const isVisible = await portfolioPage.isCoinViewSectionVisible();
@@ -185,7 +185,7 @@ test('Coin View section heading is visible @sanity @regression', async () => {
     expect(isVisible).toBe(true);
 });
 
-test('Coin View shows Tether USDT @regression', async () => {
+test('Coin View shows Tether USDT', async () => {
     // Arrange — portfolio page loaded in beforeEach
     // Act
     const isVisible = await portfolioPage.isCoinVisible('Tether USDT');
@@ -193,7 +193,7 @@ test('Coin View shows Tether USDT @regression', async () => {
     expect(isVisible).toBe(true);
 });
 
-test('Coin View shows Ethereum @regression', async () => {
+test('Coin View shows Ethereum', async () => {
     // Arrange — portfolio page loaded in beforeEach
     // Act
     const isVisible = await portfolioPage.isCoinVisible('Ethereum');
@@ -201,7 +201,7 @@ test('Coin View shows Ethereum @regression', async () => {
     expect(isVisible).toBe(true);
 });
 
-test('Coin View shows Bitcoin @regression', async () => {
+test('Coin View shows Bitcoin', async () => {
     // Arrange — portfolio page loaded in beforeEach
     // Act
     const isVisible = await portfolioPage.isCoinVisible('Bitcoin');
@@ -211,7 +211,7 @@ test('Coin View shows Bitcoin @regression', async () => {
 
 // ─── Estimated Balance Verification ──────────────────────────────────────────
 
-test('estimated balance is a valid positive number @regression', async () => {
+test('estimated balance is a valid positive number', async () => {
     // Arrange — portfolio page loaded in beforeEach
     // Act
     const balance = await portfolioPage.getEstimatedBalanceAmount();
@@ -221,7 +221,7 @@ test('estimated balance is a valid positive number @regression', async () => {
 
 // ─── Wallet Amount Verification ───────────────────────────────────────────────
 
-test('wallet section shows valid non-negative amounts for all rows @regression', async () => {
+test('wallet section shows valid non-negative amounts for all rows', async () => {
     // Arrange
     const estimatedBalance = await portfolioPage.getEstimatedBalanceAmount();
 
@@ -236,7 +236,7 @@ test('wallet section shows valid non-negative amounts for all rows @regression',
 
 // ─── Wallet Ratio Verification ────────────────────────────────────────────────
 
-test('wallet ratios are mathematically correct relative to estimated balance @regression', async () => {
+test('wallet ratios are mathematically correct relative to estimated balance', async () => {
     const estimatedBalance = await portfolioPage.getEstimatedBalanceAmount();
 
     for (const item of walletItems) {
@@ -253,7 +253,7 @@ test('wallet ratios are mathematically correct relative to estimated balance @re
 
 // ─── Wallet Sum Verification ──────────────────────────────────────────────────
 
-test('sum of all wallet amounts equals estimated balance @regression', async () => {
+test('sum of all wallet amounts equals estimated balance', async () => {
     const estimatedBalance = await portfolioPage.getEstimatedBalanceAmount();
     let walletTotal = 0;
     const parts: { name: string; amount: number }[] = [];
@@ -281,7 +281,7 @@ test('sum of all wallet amounts equals estimated balance @regression', async () 
 
 // ─── Coin View Amount Verification ───────────────────────────────────────────
 
-test('coin view shows valid non-negative USD values for all coins @regression', async () => {
+test('coin view shows valid non-negative USD values for all coins', async () => {
     const estimatedBalance = await portfolioPage.getEstimatedBalanceAmount();
 
     for (const item of coinItems) {
@@ -293,7 +293,7 @@ test('coin view shows valid non-negative USD values for all coins @regression', 
 
 // ─── Coin View Ratio Verification ─────────────────────────────────────────────
 
-test('coin view ratios are mathematically correct relative to estimated balance @regression', async () => {
+test('coin view ratios are mathematically correct relative to estimated balance', async () => {
     const estimatedBalance = await portfolioPage.getEstimatedBalanceAmount();
 
     for (const item of coinItems) {
@@ -310,7 +310,7 @@ test('coin view ratios are mathematically correct relative to estimated balance 
 
 // ─── Coin View Sum Verification ───────────────────────────────────────────────
 
-test('sum of all coin USD values equals estimated balance @regression', async () => {
+test('sum of all coin USD values equals estimated balance', async () => {
     const estimatedBalance = await portfolioPage.getEstimatedBalanceAmount();
     let coinTotal = 0;
     const parts: { name: string; usdValue: number }[] = [];

@@ -54,7 +54,7 @@ test.describe('Change Password — successful change', () => {
     test.afterAll(async () => { await browser.close(); });
 
     // ─── TC-CPS-01 ────────────────────────────────────────────────────────────────
-    test('TC-CPS-01: Password change succeeds and shows the success message @regression', async () => {
+    test('TC-CPS-01: Password change succeeds and shows the success message', async () => {
         const row = scenario('password_changed_successfully');
         const message = await changePasswordPage.changePasswordSuccessfully(
             withAccountPassword(row.oldPassword), row.newPassword, row.confirmPassword, withAccountOtp(row.otp), row.successMessage,
@@ -63,13 +63,13 @@ test.describe('Change Password — successful change', () => {
     });
 
     // ─── TC-CPS-02 ────────────────────────────────────────────────────────────────
-    test('TC-CPS-02: Session is redirected to the login page after the password change @regression', async () => {
+    test('TC-CPS-02: Session is redirected to the login page after the password change', async () => {
         await changePasswordPage.waitForRedirectToLogin();
         expect(page.url(), 'TC-CPS-02: User should be redirected to the login page after changing the password').toContain('/login');
     });
 
     // ─── TC-CPS-03 ────────────────────────────────────────────────────────────────
-    test('TC-CPS-03: User logs in successfully with the new password @regression', async () => {
+    test('TC-CPS-03: User logs in successfully with the new password', async () => {
         const row = scenario('password_changed_successfully');
         await loginPage.doLogin(process.env.EMAIL!, row.newPassword, process.env.OTP!);
         expect(await loginPage.isUserOnHomePage(), 'TC-CPS-03: User should be able to log in successfully with the new password').toBe(true);

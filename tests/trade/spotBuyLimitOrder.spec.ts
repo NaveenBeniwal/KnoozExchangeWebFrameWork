@@ -63,13 +63,13 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     test.afterAll(async () => { await browser.close(); });
 
     // ── TC-01 ─────────────────────────────────────────────────────────────────
-    test('TC-01: navigate to Spot Trading page @smoke @sanity @regression', async () => {
+    test('TC-01: navigate to Spot Trading page @smoke @sanity', async () => {
         await spotBuyPage.navigateToSpotTrading();
         console.log('[TC-01] Navigated to Spot Trading page');
     });
 
     // ── TC-02 ─────────────────────────────────────────────────────────────────
-    test('TC-02: Spot Trading page shows all expected labels @smoke @sanity @regression', async () => {
+    test('TC-02: Spot Trading page shows all expected labels @smoke @sanity', async () => {
         const r = await spotBuyPage.getSpotPageLabelsStatus();
         expect.soft(r.tradingText,       'Trading page heading').toBe('Trading');
         expect.soft(r.spotText,          'Spot label').toBe('Spot');
@@ -89,20 +89,20 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-03 ─────────────────────────────────────────────────────────────────
-    test('TC-03: search currency pair in the market dropdown @sanity @regression', async () => {
+    test('TC-03: search currency pair in the market dropdown @sanity', async () => {
         await spotBuyPage.searchCurrencyPair(tradeData.searchPair);
         console.log(`[TC-03] Searched pair: ${tradeData.searchPair}`);
     });
 
     // ── TC-04 ─────────────────────────────────────────────────────────────────
-    test('TC-04: mark currency pair as favorite and verify it appears in Favorites tab @sanity @regression', async () => {
+    test('TC-04: mark currency pair as favorite and verify it appears in Favorites tab @sanity', async () => {
         const r = await spotBuyPage.markAsFavorite(tradeData.searchPair);
         expect.soft(r.favoriteAddedStatus, r.favoriteMsg).toBe('added');
         console.log(`[TC-04] Marked ${tradeData.searchPair} as favorite | Status: "${r.favoriteAddedStatus}" | Message: "${r.favoriteMsg}"`);
     });
 
     // ── TC-05 ─────────────────────────────────────────────────────────────────
-    test('TC-05: unmark currency pair from favorites and verify "No records found" @sanity @regression', async () => {
+    test('TC-05: unmark currency pair from favorites and verify "No records found" @sanity', async () => {
         const r = await spotBuyPage.unmarkFavorite(tradeData.searchPair);
         expect.soft(r.noRecordsStatus,    r.noRecordsMsg).toBe('visible');
         expect.soft(r.favoriteRemovedStatus, r.favoriteMsg).toBe('removed');
@@ -111,7 +111,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
 
     // ── TC-06 ─────────────────────────────────────────────────────────────────
     // Pair is now active — all price/OB comparisons with Binance run after this point
-    test('TC-06: select currency pair from ALL tab @sanity @regression', async () => {
+    test('TC-06: select currency pair from ALL tab @sanity', async () => {
         await spotBuyPage.selectCurrencyPair();
         console.log('[TC-06] Currency pair selected from ALL tab');
     });
@@ -119,7 +119,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     // ── TC-07 ────────────────────────────────────────────────────────────────
     // NOTE: positioned after TC-06 so the page is showing tradeData.searchPair before
     // we compare its ticker against the Binance API for that same pair.
-    test('TC-07: 24h ticker header values match Binance reference data (exact match) @sanity @regression', async () => {
+    test('TC-07: 24h ticker header values match Binance reference data (exact match) @sanity', async () => {
         const [binance, ticker] = await Promise.all([
             BinanceHelper.get24hTicker(page, tradeData.searchPair),
             spotBuyPage.getTickerHeaderData(),
@@ -136,7 +136,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-08 ────────────────────────────────────────────────────────────────
-    test('TC-08: order book column headers show Price, Amount and Total @sanity @regression', async () => {
+    test('TC-08: order book column headers show Price, Amount and Total @sanity', async () => {
         const h = await spotBuyPage.getOrderBookColumnHeaders();
         expect.soft(h.price,  'Order book Price header should be visible').not.toBe('');
         expect.soft(h.amount, 'Order book Amount header should be visible').not.toBe('');
@@ -145,7 +145,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-09 ────────────────────────────────────────────────────────────────
-    test('TC-09: order book view switches — all / sell-only / buy-only @sanity @regression', async () => {
+    test('TC-09: order book view switches — all / sell-only / buy-only @sanity', async () => {
         await spotBuyPage.setOrderBookView('sell');
         const v1 = await spotBuyPage.isOrderBookVisible();
         expect.soft(v1 ? 'visible' : 'not visible', 'Order book should remain visible in sell-only view').toBe('visible');
@@ -157,7 +157,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-10 ─────────────────────────────────────────────────────────────────
-    test('TC-10: order book precision dropdown changes price decimal places across all views @sanity @regression', async () => {
+    test('TC-10: order book precision dropdown changes price decimal places across all views @sanity', async () => {
         const precisions: string[]                    = ['0.01', '0.1', '1', '0.01'];
         const views: Array<'all' | 'sell' | 'buy'>   = ['all', 'sell', 'buy'];
         const r = await spotBuyPage.validateOrderBookPrecisionDecimals(precisions, views);
@@ -168,7 +168,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-11 ─────────────────────────────────────────────────────────────────
-    test('TC-11: order book LTP and buy/sell ratio bar (suggestions — not yet implemented) @sanity @regression', async () => {
+    test('TC-11: order book LTP and buy/sell ratio bar (suggestions — not yet implemented) @sanity', async () => {
         const ltp   = await spotBuyPage.getOrderBookLtp();
         const ratio = await spotBuyPage.getOrderBookBuySellRatio();
         const sum   = parseFloat((ratio.buyPct + ratio.sellPct).toFixed(1));
@@ -189,7 +189,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-12 ─────────────────────────────────────────────────────────────────
-    test('TC-12: order book has actual ask and bid data rows @sanity @regression', async () => {
+    test('TC-12: order book has actual ask and bid data rows @sanity', async () => {
         const { topAsk, topBid, askCount, bidCount } = await spotBuyPage.getOrderBookTopBidAsk();
         expect.soft(askCount, 'Ask row count should be >0').toBeGreaterThan(0);
         expect.soft(bidCount, 'Bid row count should be >0').toBeGreaterThan(0);
@@ -199,7 +199,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-13 ─────────────────────────────────────────────────────────────────
-    test('TC-13: top bid price is less than top ask price (valid spread) @sanity @regression', async () => {
+    test('TC-13: top bid price is less than top ask price (valid spread) @sanity', async () => {
         const { topAsk, topBid } = await spotBuyPage.getOrderBookTopBidAsk();
         if (topAsk > 0 && topBid > 0) {
             expect.soft(topBid, `Top bid(${topBid}) must be < top ask(${topAsk})`).toBeLessThan(topAsk);
@@ -209,7 +209,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-14 ─────────────────────────────────────────────────────────────────
-    test('TC-14: order book top bid/ask match Binance within 0.5% @sanity @regression', async () => {
+    test('TC-14: order book top bid/ask match Binance within 0.5% @sanity', async () => {
         const [{ topAsk, topBid }, binanceOb] = await Promise.all([
             spotBuyPage.getOrderBookTopBidAsk(),
             BinanceHelper.getOrderBook(page, tradeData.searchPair, 5),
@@ -232,7 +232,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-15 ─────────────────────────────────────────────────────────────────
-    test('TC-15: order book LTP matches Binance last price within 0.5% @sanity @regression', async () => {
+    test('TC-15: order book LTP matches Binance last price within 0.5% @sanity', async () => {
         const [ltp, binance] = await Promise.all([
             spotBuyPage.getOrderBookLtp(),
             BinanceHelper.get24hTicker(page, tradeData.searchPair),
@@ -248,7 +248,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-16 ─────────────────────────────────────────────────────────────────
-    test('TC-16: precision change alters LTP decimal display and restores cleanly @sanity @regression', async () => {
+    test('TC-16: precision change alters LTP decimal display and restores cleanly @sanity', async () => {
         const origPrec = await spotBuyPage.getOrderBookPrecision();
         const altPrec  = origPrec.startsWith('0.0') ? '0.1' : '0.01';
         await spotBuyPage.setOrderBookPrecision(altPrec).catch(() => {});
@@ -260,7 +260,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-17 ─────────────────────────────────────────────────────────────────
-    test('TC-17: clicking order book ask rows (5 rows) pre-fills Price and Amount inputs @sanity @regression', async () => {
+    test('TC-17: clicking order book ask rows (5 rows) pre-fills Price and Amount inputs @sanity', async () => {
         await spotBuyPage.selectLimitBuyTab();
         const { rows, passCount } = await spotBuyPage.validateOrderBookAskRowsFillForm(5);
         for (const row of rows) {
@@ -271,7 +271,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-18 ─────────────────────────────────────────────────────────────────
-    test('TC-18: Buy button label shows "BUY {baseCoin}" dynamically @sanity @regression', async () => {
+    test('TC-18: Buy button label shows "BUY {baseCoin}" dynamically @sanity', async () => {
         const label = await spotBuyPage.getBuyButtonLabel();
         expect.soft(label.toUpperCase(), `Buy button label should contain "BUY"`).toContain('BUY');
         expect.soft(label.toUpperCase(), `Buy button label should contain "${baseCoin}"`).toContain(baseCoin.toUpperCase());
@@ -279,14 +279,14 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-19 ─────────────────────────────────────────────────────────────────
-    test('TC-19: Sell tab shows base currency available balance @sanity @regression', async () => {
+    test('TC-19: Sell tab shows base currency available balance @sanity', async () => {
         const sellAvlb = await spotBuyPage.getSellAvailableBalance();
         expect.soft(sellAvlb, `Sell tab Avlb (${baseCoin}) should be non-negative`).toBeGreaterThanOrEqual(0);
         console.log(`[TC-19] ${baseCoin} available balance on Sell tab | Available Balance: ${sellAvlb}`);
     });
 
     // ── TC-20–TC-23: Percentage buttons ───────────────────────────────────────
-    test('TC-20: 25% button fills the amount with 25% of available balance @sanity @regression', async () => {
+    test('TC-20: 25% button fills the amount with 25% of available balance @sanity', async () => {
         // TC-19 leaves us on sell tab — switch back to buy+limit before testing percentage buttons
         await spotBuyPage.selectLimitBuyTab();
         const avlb   = snapshotBeforeOrder?.buyAvlb ?? await spotBuyPage.fetchAvailableBalance();
@@ -304,7 +304,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
         console.log(`[TC-20] 25% Button | Available Balance: ${avlb} | Total Field: ${filled} | Diff%: ${avlb > 0 && expected > 0 ? diffPct(filled, expected) : 'N/A'}`);
     });
 
-    test('TC-21: 50% button fills the amount with 50% of available balance @sanity @regression', async () => {
+    test('TC-21: 50% button fills the amount with 50% of available balance @sanity', async () => {
         const avlb     = snapshotBeforeOrder?.buyAvlb ?? await spotBuyPage.fetchAvailableBalance();
         const price    = parseFloat(tradeData.buyLimitPrice);
         const filled   = await spotBuyPage.clickPercentageButton(50);
@@ -316,7 +316,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
         console.log(`[TC-21] 50% Button | Available Balance: ${avlb} | Total Field: ${filled} | Diff%: ${avlb > 0 && expected > 0 ? diffPct(filled, expected) : 'N/A'}`);
     });
 
-    test('TC-22: 75% button fills the amount with 75% of available balance @sanity @regression', async () => {
+    test('TC-22: 75% button fills the amount with 75% of available balance @sanity', async () => {
         const avlb     = snapshotBeforeOrder?.buyAvlb ?? await spotBuyPage.fetchAvailableBalance();
         const price    = parseFloat(tradeData.buyLimitPrice);
         const filled   = await spotBuyPage.clickPercentageButton(75);
@@ -328,7 +328,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
         console.log(`[TC-22] 75% Button | Available Balance: ${avlb} | Total Field: ${filled} | Diff%: ${avlb > 0 && expected > 0 ? diffPct(filled, expected) : 'N/A'}`);
     });
 
-    test('TC-23: 100% button fills the amount with 100% of available balance @sanity @regression', async () => {
+    test('TC-23: 100% button fills the amount with 100% of available balance @sanity', async () => {
         const avlb     = snapshotBeforeOrder?.buyAvlb ?? await spotBuyPage.fetchAvailableBalance();
         const price    = parseFloat(tradeData.buyLimitPrice);
         const filled   = await spotBuyPage.clickPercentageButton(100);
@@ -341,7 +341,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-24 ────────────────────────────────────────────────────────────────
-    test('TC-24: pair header displays the correct pair name after selection @sanity @regression', async () => {
+    test('TC-24: pair header displays the correct pair name after selection @sanity', async () => {
         const headerText = await spotBuyPage.getPairHeaderText();
         if (headerText) {
             expect.soft(
@@ -354,7 +354,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-25 ─────────────────────────────────────────────────────────────────
-    test('TC-25: capture full balance snapshot before placing order @sanity @regression', async () => {
+    test('TC-25: capture full balance snapshot before placing order @sanity', async () => {
         const r = await spotBuyPage.captureAndValidatePreOrderSnapshot(portfolioSpotPage, tradeData.searchPair, quoteCoin, baseCoin);
         snapshotBeforeOrder = r.snapshot;
         expect.soft(r.snapshot.buyAvlb, 'Pre-order buyAvlb should be non-negative').toBeGreaterThanOrEqual(0);
@@ -368,7 +368,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-26 ────────────────────────────────────────────────────────────────
-    test('TC-26: enter limit price and total, verify estimated fee matches UI @sanity @regression', async () => {
+    test('TC-26: enter limit price and total, verify estimated fee matches UI @sanity', async () => {
         const price = parseFloat(tradeData.buyLimitPrice);
         const total = parseFloat(tradeData.total);
         const feePercent = parseFloat(tradeData.feePercent);
@@ -384,7 +384,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-27 ────────────────────────────────────────────────────────────────
-    test('TC-27: Total field auto-calculates as price × amount @sanity @regression', async () => {
+    test('TC-27: Total field auto-calculates as price × amount @sanity', async () => {
         const price      = parseFloat(tradeData.buyLimitPrice);
         const amount     = await spotBuyPage.getAmountFieldValue();
         const totalField = await spotBuyPage.getTotalFieldValue();
@@ -401,13 +401,13 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-28 ────────────────────────────────────────────────────────────────
-    test('TC-28: fetch available balance before placing order @sanity @regression', async () => {
+    test('TC-28: fetch available balance before placing order @sanity', async () => {
         availableBalanceBefore = snapshotBeforeOrder?.buyAvlb ?? await spotBuyPage.fetchAvailableBalance();
         console.log(`[TC-28] Balance before order: ${availableBalanceBefore}`);
     });
 
     // ── TC-29 ────────────────────────────────────────────────────────────────
-    test('TC-29: confirm buy order and verify success message @regression', async () => {
+    test('TC-29: confirm buy order and verify success message', async () => {
         // Check for Insufficient balance before confirming — order cannot proceed if shown
         const hasInsufficientBalance = await page.getByText('Insufficient balance', { exact: true }).isVisible({ timeout: 2000 }).catch(() => false);
         if (hasInsufficientBalance) {
@@ -438,7 +438,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-30 ─────────────────────────────────────────────────────────────────
-    test('TC-30: balance snapshot after placing order — pending lock or immediate fill @regression', async () => {
+    test('TC-30: balance snapshot after placing order — pending lock or immediate fill', async () => {
         test.setTimeout(60000); // captureFullSnapshot round-trips Trading → Portfolio → Trading; can run close to the default 30s on a slow staging response
         test.skip(!orderSucceeded, 'Order not placed — insufficient balance or order failed. Skipping balance comparison.');
         if (!snapshotBeforeOrder) {
@@ -462,7 +462,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-31 ─────────────────────────────────────────────────────────────────
-    test('TC-31: Market Trades panel has Price, Amount and Time headers @regression', async () => {
+    test('TC-31: Market Trades panel has Price, Amount and Time headers', async () => {
         await spotBuyPage.switchToMarketTrades();
         const headers = await spotBuyPage.getTradesPanelHeaders();
         const joined  = headers.join(' ').toLowerCase();
@@ -476,7 +476,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-32 ─────────────────────────────────────────────────────────────────
-    test('TC-32: My Trades panel has Price, Amount and Time headers @regression', async () => {
+    test('TC-32: My Trades panel has Price, Amount and Time headers', async () => {
         await spotBuyPage.switchToMyTrades();
         const headers = await spotBuyPage.getTradesPanelHeaders();
         const joined  = headers.join(' ').toLowerCase();
@@ -491,7 +491,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-33 ─────────────────────────────────────────────────────────────────
-    test('TC-33: Market Trades panel has actual data rows @regression', async () => {
+    test('TC-33: Market Trades panel has actual data rows', async () => {
         const rows = await spotBuyPage.getMarketTradesRows();
         expect.soft(rows.length, 'Market Trades should display at least 1 data row').toBeGreaterThan(0);
         if (rows.length > 0) {
@@ -504,7 +504,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-34 ─────────────────────────────────────────────────────────────────
-    test('TC-34: Market Trades prices match Binance recent trades within 1% @regression', async () => {
+    test('TC-34: Market Trades prices match Binance recent trades within 1%', async () => {
         const [rows, binanceTrades] = await Promise.all([
             spotBuyPage.getMarketTradesRows(),
             BinanceHelper.getRecentTrades(page, tradeData.searchPair, 20),
@@ -518,7 +518,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-35 ─────────────────────────────────────────────────────────────────
-    test('TC-35: Open Orders section shows "Open Orders" tab and "View All" button @regression', async () => {
+    test('TC-35: Open Orders section shows "Open Orders" tab and "View All" button', async () => {
         const r = await spotBuyPage.getOpenOrdersTabStatus();
         expect.soft(r.viewAllText,       'Should have "View All" button').toBe('View All');
         expect.soft(r.openOrdersTabText, 'Should have "Open Orders" tab').toBe('Open Orders');
@@ -526,7 +526,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-36 ─────────────────────────────────────────────────────────────────
-    test('TC-36: latest open order row matches the placed order details @regression', async () => {
+    test('TC-36: latest open order row matches the placed order details', async () => {
         test.skip(!orderSucceeded, 'Order not placed — insufficient balance or order failed. Skipping Open Orders validation.');
         if (orderFilledImmediately) {
             test.info().annotations.push({ type: 'suggestion', description: `TC-36: Limit price (${tradeData.buyLimitPrice}) was above market (${marketPriceAtOrder}) — order filled immediately, no pending entry in Open Orders.` });
@@ -550,7 +550,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-37 ─────────────────────────────────────────────────────────────────
-    test('TC-37: latest entry in All Orders tab matches the placed order details @regression', async () => {
+    test('TC-37: latest entry in All Orders tab matches the placed order details', async () => {
         test.skip(!orderSucceeded, 'Order not placed — insufficient balance or order failed. Skipping All Orders validation.');
         const r = await spotBuyPage.validateAllOrdersTab(orderDetails);
         expect.soft(r.pairActual?.replace('/', ''),  `All Orders — pair`).toContain(orderDetails.pair.replace('/', ''));
@@ -573,7 +573,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-38 ─────────────────────────────────────────────────────────────────
-    test('TC-38: available balance decreases by the order total after placing the order @regression', async () => {
+    test('TC-38: available balance decreases by the order total after placing the order', async () => {
         test.skip(!orderSucceeded, 'Order not placed — insufficient balance or order failed. Skipping balance check.');
         const v = spotBuyPage.validateOrderTotalRange(orderDetails.total, allOrdersTotalActual);
         expect.soft(v.actual,      `TC-38: All Orders total must not exceed placed total (${orderDetails.total})`).toBeLessThanOrEqual(orderDetails.total * 1.001);
@@ -584,7 +584,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-39 ─────────────────────────────────────────────────────────────────
-    test('TC-39: Trade History tab shows the placed order (skipped if pending) @regression', async () => {
+    test('TC-39: Trade History tab shows the placed order (skipped if pending)', async () => {
         test.skip(!orderSucceeded, 'Order not placed — insufficient balance or order failed. Skipping Trade History validation.');
         const r = await spotBuyPage.validateTransactionHistoryOrdersTab(orderDetails);
         if (!r.orderId || !orderDetails.orderId || r.orderId !== orderDetails.orderId) {
@@ -603,7 +603,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-40 ─────────────────────────────────────────────────────────────────
-    test('TC-40: Trade History bottom tab shows the placed order @regression', async () => {
+    test('TC-40: Trade History bottom tab shows the placed order', async () => {
         test.skip(!orderSucceeded, 'Order not placed — insufficient balance or order failed. Skipping Trade History bottom tab.');
         const entry = await spotBuyPage.getTradeHistoryBottomTabFirstEntry();
         if (!entry) { console.warn('[TC-40] Trade History returned no rows'); return; }
@@ -624,7 +624,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-41 ─────────────────────────────────────────────────────────────────
-    test('TC-41: cancel latest open order and verify balance is fully restored @regression', async () => {
+    test('TC-41: cancel latest open order and verify balance is fully restored', async () => {
         test.skip(!orderSucceeded, 'Order not placed — insufficient balance or order failed. Nothing to cancel.');
         if (orderFilledImmediately) {
             test.info().annotations.push({ type: 'suggestion', description: `TC-41: Limit price (${tradeData.buyLimitPrice}) was above market (${marketPriceAtOrder}) — order filled immediately, nothing to cancel.` });
@@ -638,7 +638,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-42 ─────────────────────────────────────────────────────────────────
-    test('TC-42: full balance snapshot after cancel confirms quote coin fully restored @regression', async () => {
+    test('TC-42: full balance snapshot after cancel confirms quote coin fully restored', async () => {
         test.skip(!orderSucceeded, 'Order not placed — insufficient balance or order failed. Skipping post-cancel balance check.');
         if (orderFilledImmediately) {
             test.info().annotations.push({ type: 'suggestion', description: 'TC-42: Order filled immediately — no cancel took place, inOrder restore check skipped.' });
@@ -659,7 +659,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     // ────────────────────────────────────────────────────────────────────────────
 
     // ── TC-43 ─────────────────────────────────────────────────────────────────
-    test('TC-43: snapshot before placing multiple pending orders (Cancel All test) @regression', async () => {
+    test('TC-43: snapshot before placing multiple pending orders (Cancel All test)', async () => {
         test.skip(!orderSucceeded, 'Prior order not placed — skipping Cancel All scenario.');
         // Reset actual-total trackers each time this scenario starts
         multiOrderActualBuyTotals   = [];
@@ -671,7 +671,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-44: 1st pending buy limit order ─────────────────────────────────
-    test('TC-44: place 1st pending buy limit order and verify state after placement @regression', async () => {
+    test('TC-44: place 1st pending buy limit order and verify state after placement', async () => {
         test.skip(!orderSucceeded, 'Prior order not placed — skipping TC-44.');
         const price2 = parseFloat(tradeData.buyLimitPrice2 ?? '');
         const total2 = parseFloat(tradeData.buyLimitTotal2 ?? '');
@@ -691,7 +691,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-45: 2nd pending buy limit order ─────────────────────────────────
-    test('TC-45: place 2nd pending buy limit order and verify state after placement @regression', async () => {
+    test('TC-45: place 2nd pending buy limit order and verify state after placement', async () => {
         test.skip(!multiOrdersSucceeded, 'Previous order failed — skipping TC-45.');
         const price3 = parseFloat(tradeData.buyLimitPrice3 ?? '');
         const total3 = parseFloat(tradeData.buyLimitTotal3 ?? '');
@@ -710,7 +710,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-46: 3rd pending buy limit order ─────────────────────────────────
-    test('TC-46: place 3rd pending buy limit order and verify state after placement @regression', async () => {
+    test('TC-46: place 3rd pending buy limit order and verify state after placement', async () => {
         test.skip(!multiOrdersSucceeded, 'Previous order failed — skipping TC-46.');
         const price4 = parseFloat(tradeData.buyLimitPrice4 ?? '');
         const total4 = parseFloat(tradeData.buyLimitTotal4 ?? '');
@@ -729,7 +729,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-47: 4th pending buy limit order ─────────────────────────────────
-    test('TC-47: place 4th pending buy limit order and verify state after placement @regression', async () => {
+    test('TC-47: place 4th pending buy limit order and verify state after placement', async () => {
         test.skip(!multiOrdersSucceeded, 'Previous order failed — skipping TC-47.');
         const price5 = parseFloat(tradeData.buyLimitPrice5 ?? '');
         const total5 = parseFloat(tradeData.buyLimitTotal5 ?? '');
@@ -748,7 +748,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-48: 1st pending sell limit order (for cancel-all) ───────────────
-    test('TC-48: place 1st pending sell limit order and verify state after placement @regression', async () => {
+    test('TC-48: place 1st pending sell limit order and verify state after placement', async () => {
         test.skip(!multiOrdersSucceeded, 'Previous order failed — skipping TC-48.');
         const sellPrice1  = parseFloat(tradeData.cancelAllSellPrice1  ?? '');
         const sellAmount1 = parseFloat(tradeData.cancelAllSellAmount1 ?? '');
@@ -767,7 +767,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-49: 2nd pending sell limit order (for cancel-all) ───────────────
-    test('TC-49: place 2nd pending sell limit order and verify state after placement @regression', async () => {
+    test('TC-49: place 2nd pending sell limit order and verify state after placement', async () => {
         test.skip(!multiOrdersSucceeded, 'Previous order failed — skipping TC-49.');
         const sellPrice2  = parseFloat(tradeData.cancelAllSellPrice2  ?? '');
         const sellAmount2 = parseFloat(tradeData.cancelAllSellAmount2 ?? '');
@@ -786,7 +786,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-50 ─────────────────────────────────────────────────────────────────
-    test('TC-50: Open Orders shows all 6 pending orders and Cancel All button @regression', async () => {
+    test('TC-50: Open Orders shows all 6 pending orders and Cancel All button', async () => {
         test.skip(!multiOrdersSucceeded || !snapshotBeforeMultiOrders, 'No orders or no snapshot — skipping TC-50.');
         const r = await spotBuyPage.getOpenOrdersWithCancelAllStatus();
         expect.soft(r.rowCount,                                          'Open Orders should show 6 rows (4 buy + 2 sell)').toBeGreaterThanOrEqual(6);
@@ -795,7 +795,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-51 ─────────────────────────────────────────────────────────────────
-    test('TC-51: balance shows buy orders locked in buyAvlb inOrder and sell orders locked in sellAvlb inOrder @regression', async () => {
+    test('TC-51: balance shows buy orders locked in buyAvlb inOrder and sell orders locked in sellAvlb inOrder', async () => {
         test.skip(!multiOrdersSucceeded || !snapshotBeforeMultiOrders, 'No orders or no snapshot — skipping TC-51.');
         const results = await spotBuyPage.validateMultiOrderBalanceLock(
             portfolioSpotPage, tradeData.searchPair, snapshotBeforeMultiOrders!,
@@ -806,7 +806,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-52 ─────────────────────────────────────────────────────────────────
-    test('TC-52: Trade History does NOT show pending/open limit orders @regression', async () => {
+    test('TC-52: Trade History does NOT show pending/open limit orders', async () => {
         test.skip(!multiOrdersSucceeded, 'No multi-orders — skipping TC-52.');
         const tradeHistTab = page.getByText('Trade History', { exact: true }).first();
         await tradeHistTab.click().catch(() => {});
@@ -819,7 +819,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-53: cancel one order individually ───────────────────────────────
-    test('TC-53: cancel one order individually by clicking its row Cancel button @regression', async () => {
+    test('TC-53: cancel one order individually by clicking its row Cancel button', async () => {
         test.skip(!multiOrdersSucceeded, 'No multi-orders placed — skipping TC-53.');
         await spotBuyPage.openOrdersTab.click();
         await page.waitForTimeout(1000);
@@ -829,7 +829,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-54 ─────────────────────────────────────────────────────────────────
-    test('TC-54: 5 orders remain in Open Orders after individual cancel @regression', async () => {
+    test('TC-54: 5 orders remain in Open Orders after individual cancel', async () => {
         test.skip(!multiOrdersSucceeded, 'No multi-orders — skipping TC-54.');
         await spotBuyPage.openOrdersTab.click();
         await page.waitForTimeout(1000);
@@ -839,7 +839,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-55: Cancel All ──────────────────────────────────────────────────
-    test('TC-55: Cancel All button removes all remaining open orders @regression', async () => {
+    test('TC-55: Cancel All button removes all remaining open orders', async () => {
         test.skip(!multiOrdersSucceeded, 'No multi-orders placed — skipping TC-55.');
         const result = await spotBuyPage.cancelAllOpenOrders();
         const v = spotBuyPage.validateCancelAllMessage(result.toastMsg, tradeData.cancelAllMsg ?? undefined);
@@ -849,7 +849,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-56 ─────────────────────────────────────────────────────────────────
-    test('TC-56: Open Orders shows "No data" after Cancel All @regression', async () => {
+    test('TC-56: Open Orders shows "No data" after Cancel All', async () => {
         test.skip(!multiOrdersSucceeded, 'No multi-orders — skipping TC-56.');
         const r = await spotBuyPage.validateOpenOrdersEmpty(tradeData.noDataText ?? undefined);
         expect.soft(r.isVisible ? 'visible' : 'hidden', `Open Orders should show "${tradeData.noDataText ?? 'No data'}" after Cancel All`).toBe('visible');
@@ -858,7 +858,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-57 ─────────────────────────────────────────────────────────────────
-    test('TC-57: All Orders shows cancelled/done status for the cancelled orders @regression', async () => {
+    test('TC-57: All Orders shows cancelled/done status for the cancelled orders', async () => {
         test.skip(!multiOrdersSucceeded, 'No multi-orders placed — skipping TC-57.');
         const r = await spotBuyPage.validateAllOrdersCancelled(tradeData.searchPair);
         expect.soft(r.statusResult,                          'TC-57: All Orders row after Cancel All should show cancelled/done status').toBe('cancelled/done');
@@ -867,7 +867,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-58 ─────────────────────────────────────────────────────────────────
-    test('TC-58: Trade History does not show the cancelled pending orders @regression', async () => {
+    test('TC-58: Trade History does not show the cancelled pending orders', async () => {
         test.skip(!multiOrdersSucceeded, 'No multi-orders placed — skipping TC-58.');
         const r = await spotBuyPage.validateTradeHistoryAfterCancelAll();
         test.info().annotations.push({ type: 'info', description: `TC-58: Trade History rows after Cancel All: ${r.rowCount}. Cancelled pending orders should not appear here.` });
@@ -875,7 +875,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-59 ─────────────────────────────────────────────────────────────────
-    test('TC-59: balance fully restored after Cancel All — inOrder returns to 0, both coins restored @regression', async () => {
+    test('TC-59: balance fully restored after Cancel All — inOrder returns to 0, both coins restored', async () => {
         test.skip(!multiOrdersSucceeded || !snapshotBeforeMultiOrders, 'No orders or no pre-snapshot — skipping TC-59.');
         const results = await spotBuyPage.validateBalanceRestoredAfterCancelAll(
             portfolioSpotPage, tradeData.searchPair, snapshotBeforeMultiOrders!, quoteCoin, baseCoin,
@@ -885,7 +885,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-60 ─────────────────────────────────────────────────────────────────
-    test('TC-60: capture full balance snapshot before placing above-market order @regression', async () => {
+    test('TC-60: capture full balance snapshot before placing above-market order', async () => {
         test.skip(!orderSucceeded, 'Order not placed — insufficient balance or order failed. Skipping above-market scenario.');
         snapshotBeforeAboveMarket = await spotBuyPage.captureFullSnapshot(portfolioSpotPage, tradeData.searchPair);
         expect.soft(snapshotBeforeAboveMarket.buyAvlb, 'Pre-above-market buyAvlb should be non-negative').toBeGreaterThanOrEqual(0);
@@ -897,7 +897,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     // ────────────────────────────────────────────────────────────────────────────
 
     // ── TC-61 ─────────────────────────────────────────────────────────────────
-    test('TC-61: place buy limit order above market price — executes immediately at market @regression', async () => {
+    test('TC-61: place buy limit order above market price — executes immediately at market', async () => {
         test.skip(!orderSucceeded, 'Order not placed — insufficient balance or order failed. Skipping above-market order test.');
         const limitPrice = parseFloat(tradeData.aboveMarketLimitPrice ?? '70000');
         const total      = parseFloat(tradeData.aboveMarketTotal      ?? '15');
@@ -913,7 +913,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-62 ─────────────────────────────────────────────────────────────────
-    test('TC-62: above-market order is NOT in Open Orders (filled immediately) @regression', async () => {
+    test('TC-62: above-market order is NOT in Open Orders (filled immediately)', async () => {
         test.skip(!orderSucceeded, 'Order not placed — insufficient balance or order failed. Skipping TC-62.');
         if (!aboveMarketOrderDetails) { console.warn('[TC-62] No above-market order data'); return; }
         const { rowText, isAbsent, isFilled } = await spotBuyPage.checkOpenOrdersHasPendingEntry(tradeData.searchPair);
@@ -925,7 +925,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-63 ─────────────────────────────────────────────────────────────────
-    test('TC-63: All Orders shows correct limit price and executed price for above-market order @regression', async () => {
+    test('TC-63: All Orders shows correct limit price and executed price for above-market order', async () => {
         test.skip(!orderSucceeded, 'Order not placed — insufficient balance or order failed. Skipping TC-63.');
         if (!aboveMarketOrderDetails) { console.warn('[TC-63] No above-market order data'); return; }
         const { limitPrice, executedPrice, amount } = aboveMarketOrderDetails;
@@ -939,7 +939,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-64 ─────────────────────────────────────────────────────────────────
-    test('TC-64: Trade History shows the above-market buy order with side "buy" @regression', async () => {
+    test('TC-64: Trade History shows the above-market buy order with side "buy"', async () => {
         test.skip(!orderSucceeded, 'Order not placed — insufficient balance or order failed. Skipping TC-64.');
         if (!aboveMarketOrderDetails) { console.warn('[TC-64] No above-market order data'); return; }
         const { limitPrice, executedPrice, amount, placedAt, orderId } = aboveMarketOrderDetails;
@@ -966,7 +966,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-65 ─────────────────────────────────────────────────────────────────
-    test('TC-65: My Trades shows executed price (market price) — NOT the limit price @regression', async () => {
+    test('TC-65: My Trades shows executed price (market price) — NOT the limit price', async () => {
         test.skip(!orderSucceeded, 'Order not placed — insufficient balance or order failed. Skipping TC-65.');
         if (!aboveMarketOrderDetails) { console.warn('[TC-65] No above-market order data'); return; }
         const { executedPrice } = aboveMarketOrderDetails;
@@ -993,7 +993,7 @@ test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation',
     });
 
     // ── TC-66 ─────────────────────────────────────────────────────────────────
-    test('TC-66: balance after above-market fill — quote coin decreased, base coin increased @regression', async () => {
+    test('TC-66: balance after above-market fill — quote coin decreased, base coin increased', async () => {
         test.skip(!orderSucceeded, 'Order not placed — insufficient balance or order failed. Skipping TC-66.');
         if (!snapshotBeforeAboveMarket || !aboveMarketOrderDetails) { console.warn('[TC-66] Missing data'); return; }
         const { executedPrice, amount, limitPrice } = aboveMarketOrderDetails;

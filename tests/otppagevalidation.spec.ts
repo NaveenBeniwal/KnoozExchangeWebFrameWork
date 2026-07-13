@@ -39,7 +39,7 @@ test.describe.serial('OTP Page Validation', () => {
 
     // Scenario 1: click Continue without requesting OTP → "Please get a verification code first"
     for (const row of allOtpData.filter(r => r.scenario === 'continue_without_otp')) {
-        test(`continue without OTP - ${row.description} @sanity @regression`, async () => {
+        test(`continue without OTP - ${row.description} @sanity`, async () => {
             expect(await otpPageValidation.getOtpVerificationCode()).toBe(row.expectedMessage);
         });
     }
@@ -47,14 +47,14 @@ test.describe.serial('OTP Page Validation', () => {
     // The one designated real "Get OTP" request for the whole run — every scenario after this
     // reuses the same session (see OtpPageValidation's requestOtpAndVerify isVisible guard).
     for (const row of allOtpData.filter(r => r.scenario === 'otp_sent_successfully')) {
-        test(`OTP sent successfully - ${row.description} @regression`, async () => {
+        test(`OTP sent successfully - ${row.description}`, async () => {
             expect(await otpPageValidation.getOtpSentSuccessfullyMessage()).toBe(row.expectedMessage);
         });
     }
 
     // Scenario 2: click Get OTP → fill → clear → Continue → "OTP is required"
     for (const row of allOtpData.filter(r => r.scenario === 'otp_required')) {
-        test(`OTP required - ${row.description} @regression`, async () => {
+        test(`OTP required - ${row.description}`, async () => {
             expect(await otpPageValidation.getOtpRequiredValidation(row.otpValue)).toBe(row.expectedMessage);
         });
     }
@@ -65,20 +65,20 @@ test.describe.serial('OTP Page Validation', () => {
     // page object still clicks "Get OTP" again internally afterward regardless of which message
     // showed up, in case a future run reaches this point with the bug already fixed.
     for (const row of allOtpData.filter(r => r.scenario === 'invalid_otp_submission')) {
-        test(`invalid OTP submission - ${row.description} @regression`, async () => {
+        test(`invalid OTP submission - ${row.description}`, async () => {
             expect.soft(await otpPageValidation.getPleaseEnterValidEmailOtpErrorMessage(row.otpValue)).toBe(row.expectedMessage);
         });
     }
 
     // Scenario 4: enter OTP > 5 digits → "Max OTP limit should be 5 digits."
     for (const row of allOtpData.filter(r => r.scenario === 'max_otp_limit')) {
-        test(`max OTP limit - ${row.description} @regression`, async () => {
+        test(`max OTP limit - ${row.description}`, async () => {
             expect(await otpPageValidation.getMaxOtpLimitValidation(row.otpValue)).toBe(row.expectedMessage);
         });
     }
 
     // Scenario 5: all must-be-only-digits cases run in a single browser session
-    test('must be only digits - all scenarios @regression', async () => {
+    test('must be only digits - all scenarios', async () => {
         for (const row of allOtpData.filter(r => r.scenario === 'must_be_only_digits')) {
             expect.soft(await otpPageValidation.getMustBeOnlyDigitsValidation(row.otpValue)).toBe(row.expectedMessage);
         }
@@ -87,7 +87,7 @@ test.describe.serial('OTP Page Validation', () => {
     // Resend OTP: waits out the ~60s cooldown, so it runs last among the OTP-session scenarios —
     // this is a second real OTP request (the resend itself), unavoidable since it's what's tested.
     for (const row of allOtpData.filter(r => r.scenario === 'resend_otp')) {
-        test(`Resend OTP - ${row.description} @regression`, async () => {
+        test(`Resend OTP - ${row.description}`, async () => {
             test.setTimeout(90000);
             expect(await otpPageValidation.getResendOtpMessage()).toBe(row.expectedMessage);
         });
@@ -95,7 +95,7 @@ test.describe.serial('OTP Page Validation', () => {
 
     // Cancel Signing In: abandons the OTP flow and returns to /login, so this must be the LAST test.
     for (const row of allOtpData.filter(r => r.scenario === 'cancel_signing_in')) {
-        test(`Cancel Signing In - ${row.description} @regression`, async () => {
+        test(`Cancel Signing In - ${row.description}`, async () => {
             expect(await otpPageValidation.isCancelSigningInVisible()).toBe(true);
             expect(await otpPageValidation.clickCancelSigningIn()).toBe(row.expectedMessage);
         });

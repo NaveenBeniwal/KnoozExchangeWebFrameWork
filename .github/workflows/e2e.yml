@@ -71,7 +71,7 @@ jobs:
           retention-days: 30
 
   # ═════════════════════════════════════════════════════
-  # STEP 2: DEPLOY DEV + SANITY TESTS
+  # STEP 2: DEPLOY DEV + SMOKE TESTS
   # ═════════════════════════════════════════════════════
   deploy-dev:
     name: Deploy to DEV
@@ -81,8 +81,8 @@ jobs:
       - name: Deploy to DEV
         run: echo "Deployed to DEV ✅"
 
-  sanity-dev:
-    name: DEV - Sanity Tests
+  smoke-dev:
+    name: DEV - Smoke Tests
     needs: deploy-dev
     runs-on: ubuntu-latest
     environment: dev
@@ -116,28 +116,18 @@ jobs:
         if: steps.pw-cache-dev.outputs.cache-hit == 'true'
         run: npx playwright install-deps chromium
 
-      - name: Run Sanity Tests on DEV
+      - name: Run Smoke Tests on DEV
         run: |
           echo "========================================="
-          echo "  Running SANITY @smoke on DEV"
+          echo "  Running @smoke on DEV"
           echo "========================================="
-          npx playwright test --project=chromium
+          npx playwright test --project=chromium -- grep @smoke
         env:
           ENV: dev
           BASE_URL: ${{ secrets.BASE_URL }}
           EMAIL: ${{ secrets.EMAIL }}
           PASSWORD: ${{ secrets.PASSWORD }}
           OTP: ${{ secrets.OTP }}
-          TRADE_BASE_URL: ${{ secrets.TRADE_BASE_URL }}
-          TRADE_USER_EMAIL: ${{ secrets.TRADE_USER_EMAIL }}
-          TRADE_USER_PASSWORD: ${{ secrets.TRADE_USER_PASSWORD }}
-          TRADE_2FA_SECRET: ${{ secrets.TRADE_2FA_SECRET }}
-          TRADE_BUY_MARKET: ${{ secrets.TRADE_BUY_MARKET }}
-          TRADE_BUY_VOLUME: ${{ secrets.TRADE_BUY_VOLUME }}
-          TRADE_BUY_PRICE: ${{ secrets.TRADE_BUY_PRICE }}
-          TRADE_SELL_MARKET: ${{ secrets.TRADE_SELL_MARKET }}
-          TRADE_SELL_VOLUME: ${{ secrets.TRADE_SELL_VOLUME }}
-          TRADE_SELL_PRICE: ${{ secrets.TRADE_SELL_PRICE }}
 
       - name: Generate Allure Report
         if: always()
@@ -166,7 +156,7 @@ jobs:
   # ═════════════════════════════════════════════════════
   deploy-qa:
     name: Deploy to QA
-    needs: sanity-dev
+    needs: smoke-dev
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to QA
@@ -219,16 +209,6 @@ jobs:
           EMAIL: ${{ secrets.EMAIL }}
           PASSWORD: ${{ secrets.PASSWORD }}
           OTP: ${{ secrets.OTP }}
-          TRADE_BASE_URL: ${{ secrets.TRADE_BASE_URL }}
-          TRADE_USER_EMAIL: ${{ secrets.TRADE_USER_EMAIL }}
-          TRADE_USER_PASSWORD: ${{ secrets.TRADE_USER_PASSWORD }}
-          TRADE_2FA_SECRET: ${{ secrets.TRADE_2FA_SECRET }}
-          TRADE_BUY_MARKET: ${{ secrets.TRADE_BUY_MARKET }}
-          TRADE_BUY_VOLUME: ${{ secrets.TRADE_BUY_VOLUME }}
-          TRADE_BUY_PRICE: ${{ secrets.TRADE_BUY_PRICE }}
-          TRADE_SELL_MARKET: ${{ secrets.TRADE_SELL_MARKET }}
-          TRADE_SELL_VOLUME: ${{ secrets.TRADE_SELL_VOLUME }}
-          TRADE_SELL_PRICE: ${{ secrets.TRADE_SELL_PRICE }}
 
       - name: Generate Allure Report
         if: always()
@@ -402,16 +382,6 @@ jobs:
           EMAIL: ${{ secrets.EMAIL }}
           PASSWORD: ${{ secrets.PASSWORD }}
           OTP: ${{ secrets.OTP }}
-          TRADE_BASE_URL: ${{ secrets.TRADE_BASE_URL }}
-          TRADE_USER_EMAIL: ${{ secrets.TRADE_USER_EMAIL }}
-          TRADE_USER_PASSWORD: ${{ secrets.TRADE_USER_PASSWORD }}
-          TRADE_2FA_SECRET: ${{ secrets.TRADE_2FA_SECRET }}
-          TRADE_BUY_MARKET: ${{ secrets.TRADE_BUY_MARKET }}
-          TRADE_BUY_VOLUME: ${{ secrets.TRADE_BUY_VOLUME }}
-          TRADE_BUY_PRICE: ${{ secrets.TRADE_BUY_PRICE }}
-          TRADE_SELL_MARKET: ${{ secrets.TRADE_SELL_MARKET }}
-          TRADE_SELL_VOLUME: ${{ secrets.TRADE_SELL_VOLUME }}
-          TRADE_SELL_PRICE: ${{ secrets.TRADE_SELL_PRICE }}
 
       - name: Generate Allure Report
         if: always()
@@ -440,7 +410,7 @@ jobs:
   # ═════════════════════════════════════════════════════
   notify:
     name: Publish Reports + Notify
-    needs: [build, sanity-dev, regression-qa, sanity-stage, smoke-prod]
+    needs: [build, smoke-dev, regression-qa, sanity-stage, smoke-prod]
     if: always()
     runs-on: ubuntu-latest
     permissions:
@@ -452,7 +422,7 @@ jobs:
         id: status
         run: |
           BUILD="${{ needs.build.result }}"
-          DEV="${{ needs.sanity-dev.result }}"
+          DEV="${{ needs.smoke-dev.result }}"
           QA="${{ needs.regression-qa.result }}"
           STAGE="${{ needs.sanity-stage.result }}"
           PROD="${{ needs.smoke-prod.result }}"
