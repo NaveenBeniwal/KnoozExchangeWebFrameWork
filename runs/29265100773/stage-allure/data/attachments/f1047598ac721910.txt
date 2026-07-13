@@ -1,0 +1,20 @@
+[CoinDetail] Opened detail page for "Tether USDT"
+[CoinDetail] Step     : Opened "TETHER USDT" detail page and checked the price display
+[CoinDetail] Expected : live price and 24h change % both visible
+[CoinDetail] Actual   : price visible: true | change % visible: true
+[CoinDetail] Returned to Spot page
+[CoinDetail] Opened detail page for "Bitcoin"
+[CoinDetail] Step     : Opened "BITCOIN" detail page and checked the price display
+[CoinDetail] Expected : live price and 24h change % both visible
+[CoinDetail] Actual   : price visible: true | change % visible: true
+[CoinDetail] Returned to Spot page
+[CoinDetail] Opened detail page for "Ethereum"
+[CoinDetail] Step     : Opened "ETHEREUM" detail page and checked the price display
+[CoinDetail] Expected : live price and 24h change % both visible
+[CoinDetail] Actual   : price visible: true | change % visible: true
+[CoinDetail] Returned to Spot page
+[CoinDetail] Opened detail page for "BNB"
+[CoinDetail] Step     : Opened "BNB" detail page and checked the price display
+[CoinDetail] Expected : live price and 24h change % both visible
+[CoinDetail] Actual   : price visible: true | change % visible: true
+[CoinDetail] Returned to Spot page

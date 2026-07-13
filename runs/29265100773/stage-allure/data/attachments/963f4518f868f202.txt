@@ -1,0 +1,1 @@
+[TC-27] Total field auto-calc | Price: 57000 | Amount: 0.00014 | Total Field: 8.7236814 | Diff%: 9.319

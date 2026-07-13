@@ -1,0 +1,3 @@
+[HomePage] Step     : Read the page title
+[HomePage] Expected : "KNOOZ"
+[HomePage] Actual   : "KNOOZ"

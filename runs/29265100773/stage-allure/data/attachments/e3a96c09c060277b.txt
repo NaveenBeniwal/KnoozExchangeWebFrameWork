@@ -1,0 +1,13 @@
+[validateOrderBookPrecisionDecimals] prec=0.01 view=all maxDec=2 ask=["62314.00","62314.01"] bid=["62313.99","62313.98"]
+[validateOrderBookPrecisionDecimals] prec=0.01 view=sell maxDec=2 ask=["62314.00","62314.01"] bid=["62313.99","62313.98"]
+[validateOrderBookPrecisionDecimals] prec=0.01 view=buy maxDec=2 ask=["62314.00","62314.01"] bid=["62313.99","62313.98"]
+[validateOrderBookPrecisionDecimals] prec=0.1 view=all maxDec=1 ask=["62314.0","62314.1"] bid=["62313.9","62313.5"]
+[validateOrderBookPrecisionDecimals] prec=0.1 view=sell maxDec=1 ask=["62314.0","62314.1"] bid=["62313.9","62313.5"]
+[validateOrderBookPrecisionDecimals] prec=0.1 view=buy maxDec=1 ask=["62314.0","62314.1"] bid=["62313.9","62313.5"]
+[validateOrderBookPrecisionDecimals] prec=1 view=all maxDec=0 ask=["62303","62304"] bid=["62302","62301"]
+[validateOrderBookPrecisionDecimals] prec=1 view=sell maxDec=0 ask=["62303","62304"] bid=["62302","62301"]
+[validateOrderBookPrecisionDecimals] prec=1 view=buy maxDec=0 ask=["62301","62302"] bid=["62300","62299"]
+[validateOrderBookPrecisionDecimals] prec=0.01 view=all maxDec=2 ask=["62300.47","62300.48"] bid=["62300.46","62300.45"]
+[validateOrderBookPrecisionDecimals] prec=0.01 view=sell maxDec=2 ask=["62300.47","62300.48"] bid=["62300.46","62300.45"]
+[validateOrderBookPrecisionDecimals] prec=0.01 view=buy maxDec=2 ask=["62300.47","62300.48"] bid=["62300.46","62300.45"]
+[TC-10] Precision validation | Passed: true | Failures: 0

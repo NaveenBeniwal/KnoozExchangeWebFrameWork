@@ -1,0 +1,3 @@
+[LoginValidation] Step     : Read empty-email validation message
+[LoginValidation] Expected : "Email is required"
+[LoginValidation] Actual   : "Email is required"

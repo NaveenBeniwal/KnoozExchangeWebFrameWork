@@ -1,0 +1,1 @@
+[TC-06a1] Sell button label | Label: "SELL  BTC"

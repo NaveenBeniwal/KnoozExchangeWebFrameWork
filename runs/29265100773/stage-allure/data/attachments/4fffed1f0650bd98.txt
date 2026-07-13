@@ -1,0 +1,1 @@
+[TC-18] Buy button label | Label: "BUY  BTC"

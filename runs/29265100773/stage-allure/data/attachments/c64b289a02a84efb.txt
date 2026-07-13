@@ -1,0 +1,1 @@
+[TC-03h] Bid/Ask vs Binance | Page Bid: 62325.31 | Page Ask: 62325.32 | Binance Bid: 0 | Binance Ask: 0 | Bid Diff%: 0 | Ask Diff%: 0

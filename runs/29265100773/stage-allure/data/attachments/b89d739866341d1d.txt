@@ -1,0 +1,1 @@
+[TC-04] Marked BTC/USDT as favorite | Status: "added" | Message: ""BTC/USDT" should appear in the Favorites tab after clicking the star"

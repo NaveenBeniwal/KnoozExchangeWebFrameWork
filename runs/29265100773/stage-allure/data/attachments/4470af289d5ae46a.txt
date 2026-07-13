@@ -1,0 +1,1 @@
+[TC-03c] Sell-only: Ask Count: 500 | Top Ask: 62325.29 | Bid Count: 500 | Buy-only: Bid Count: 500 | Top Bid: 62325.28 | Ask Count: 500 | All: Ask Count: 500 | Bid Count: 500

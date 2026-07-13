@@ -1,0 +1,1 @@
+[TC-18] Sell button label | Label: "SELL BTC"

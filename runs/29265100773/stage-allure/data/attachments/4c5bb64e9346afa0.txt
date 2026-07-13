@@ -1,0 +1,1 @@
+[TC-27] Total field auto-calc | Executed Price: 70000 | Executed Amount: 0.00014 | Total Field: 9.8 | Expected: 9.8 | Diff%: 0

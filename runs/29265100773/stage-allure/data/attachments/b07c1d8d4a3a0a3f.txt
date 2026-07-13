@@ -1,0 +1,57 @@
+[Funding] Step     : Navigated to Portfolio > Funding tab
+[Funding] Expected : Funding page loaded
+[Funding] Actual   : Funding page loaded
+[Funding] Step     : Checked "Search currency" field
+[Funding] Expected : visible
+[Funding] Actual   : visible
+[Funding] Step     : Checked search icon next to "Search currency"
+[Funding] Expected : visible
+[Funding] Actual   : visible
+[Funding] Step     : Read Bitcoin row data
+[Funding] Expected : funding/inOrder/total amounts
+[Funding] Actual   : funding: 0, inOrder: 0, total: 0, ≈$0
+[Funding] Step     : Disabled "Hide Zero Balance"
+[Funding] Expected : unchecked
+[Funding] Actual   : unchecked
+[Funding] Step     : Searched currency: "BTC"
+[Funding] Expected : search applied
+[Funding] Actual   : search applied
+[Funding] Step     : Checked "Bitcoin" row
+[Funding] Expected : visible
+[Funding] Actual   : visible
+[Funding] Step     : Cleared the search field
+[Funding] Expected : search cleared
+[Funding] Actual   : search cleared
+[Funding] Step     : Searched currency: "zzz-no-such-coin-999"
+[Funding] Expected : search applied
+[Funding] Actual   : search applied
+[Funding] Step     : Checked "No data" empty state
+[Funding] Expected : visible
+[Funding] Actual   : visible
+[Funding] Step     : Cleared the search field
+[Funding] Expected : search cleared
+[Funding] Actual   : search cleared
+[Funding] Step     : Enabled "Hide Zero Balance"
+[Funding] Expected : checked
+[Funding] Actual   : checked
+[Funding] Step     : Searched currency: "BTC"
+[Funding] Expected : search applied
+[Funding] Actual   : search applied
+[Funding] Step     : Checked "No data" empty state
+[Funding] Expected : visible
+[Funding] Actual   : visible
+[Funding] Step     : Cleared the search field
+[Funding] Expected : search cleared
+[Funding] Actual   : search cleared
+[Funding] Step     : Searched currency: "zzz-no-such-coin-999"
+[Funding] Expected : search applied
+[Funding] Actual   : search applied
+[Funding] Step     : Checked "No data" empty state
+[Funding] Expected : visible
+[Funding] Actual   : visible
+[Funding] Step     : Cleared the search field
+[Funding] Expected : search cleared
+[Funding] Actual   : search cleared
+[Funding] Step     : Disabled "Hide Zero Balance"
+[Funding] Expected : unchecked
+[Funding] Actual   : unchecked

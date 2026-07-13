@@ -1,0 +1,9 @@
+[Funding] Step     : Navigated to Portfolio > Spot > Funding tab
+[Funding] Expected : Funding page loaded
+[Funding] Actual   : Funding page loaded
+[Funding] Step     : Checked "Funding" tab
+[Funding] Expected : visible
+[Funding] Actual   : visible
+[Funding] Step     : Counted visible rows in the Funding table
+[Funding] Expected : row count
+[Funding] Actual   : 6 row(s)

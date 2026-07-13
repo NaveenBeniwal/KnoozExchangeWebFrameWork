@@ -1,0 +1,2 @@
+[SpotSellLimit] placeBelowMarketLimitSell | LimitPrice: 60000 | ExecutedPrice: 62317.99 | Amount: 0.000167 | OrderId: 13514
+[TC-RT-06] Sell order placed | Limit: 60000 | Sell Total (USDT): 10 | Executed Price: 62317.99 | Amount: 0.000167 | Message: "Order created successfully"

@@ -1,0 +1,7 @@
+user creds: naveen.beniwal@antiersolutions.com : Test@123
+[OtpPageValidation] Step     : Filled email + password and clicked Continue
+[OtpPageValidation] Expected : "Get OTP" button visible — OTP entry screen reached
+[OtpPageValidation] Actual   : OTP entry screen reached
+[OtpPageValidation] Step     : Clicked Continue without requesting an OTP
+[OtpPageValidation] Expected : validation message: "Please get a verification code first"
+[OtpPageValidation] Actual   : validation message: "Please get a verification code first"

@@ -1,0 +1,33 @@
+[Funding] Step     : Navigated to Portfolio > Funding tab
+[Funding] Expected : Funding page loaded
+[Funding] Actual   : Funding page loaded
+[Funding] Step     : Checked "Estimated Balance:" label
+[Funding] Expected : visible
+[Funding] Actual   : visible
+[Funding] Step     : Checked Estimated Balance amount
+[Funding] Expected : visible
+[Funding] Actual   : visible
+[Funding] Step     : Checked Estimated Balance $ value
+[Funding] Expected : visible
+[Funding] Actual   : visible
+[Funding] Step     : Read row 1/6 (69490335) on page 1 of the Funding table
+[Funding] Expected : funding/inOrder/total amounts
+[Funding] Actual   : 69490335: funding=33.69490335, inOrder=29.03333333, total=62.72823668, ~$62.73
+[Funding] Step     : Read row 2/6 (0212682) on page 1 of the Funding table
+[Funding] Expected : funding/inOrder/total amounts
+[Funding] Actual   : 0212682: funding=0.0212682, inOrder=0, total=0.0212682, ~$37.73
+[Funding] Step     : Read row 3/6 (0) on page 1 of the Funding table
+[Funding] Expected : funding/inOrder/total amounts
+[Funding] Actual   : 0: funding=0, inOrder=0, total=0, ~$0
+[Funding] Step     : Read row 4/6 (0) on page 1 of the Funding table
+[Funding] Expected : funding/inOrder/total amounts
+[Funding] Actual   : 0: funding=0, inOrder=0, total=0, ~$0
+[Funding] Step     : Read row 5/6 (0) on page 1 of the Funding table
+[Funding] Expected : funding/inOrder/total amounts
+[Funding] Actual   : 0: funding=0, inOrder=0, total=0, ~$0
+[Funding] Step     : Read row 6/6 (0) on page 1 of the Funding table
+[Funding] Expected : funding/inOrder/total amounts
+[Funding] Actual   : 0: funding=0, inOrder=0, total=0, ~$0
+[Funding] Step     : Read Estimated Balance amount
+[Funding] Expected : ≈ 100.4600 USDT (sum of all coin rows)
+[Funding] Actual   : 100.4578108 USDT

@@ -1,0 +1,33 @@
+[Funding] Step     : Navigated to Portfolio > Funding tab
+[Funding] Expected : Funding page loaded
+[Funding] Actual   : Funding page loaded
+[Funding] Step     : Clicked "Deposit" for Ethereum
+[Funding] Expected : Deposit modal opens
+[Funding] Actual   : Deposit modal opened
+[Funding] Step     : Checked Deposit modal
+[Funding] Expected : visible
+[Funding] Actual   : visible
+[Funding] Step     : Read Deposit modal Asset field
+[Funding] Expected : the selected coin name
+[Funding] Actual   : "Ethereum"
+[Funding] Step     : Read Deposit modal Network field
+[Funding] Expected : the selected coin's network
+[Funding] Actual   : "ETH"
+[Funding] Step     : Checked Deposit QR code
+[Funding] Expected : visible
+[Funding] Actual   : visible
+[Funding] Step     : Checked Deposit "Important" notes section
+[Funding] Expected : visible
+[Funding] Actual   : visible
+[Funding] Step     : Read Deposit address
+[Funding] Expected : a non-empty address string
+[Funding] Actual   : "0x283346279a098b35305a8e7f828033098f08d5f4"
+[Funding] Step     : Checked copy icon on the deposit address
+[Funding] Expected : visible
+[Funding] Actual   : visible
+[Funding] Step     : Closed the open modal
+[Funding] Expected : modal closes (or was already closed)
+[Funding] Actual   : closed
+[Funding] Step     : Checked "Funding" tab
+[Funding] Expected : visible
+[Funding] Actual   : visible

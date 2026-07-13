@@ -1,0 +1,3 @@
+[LoginValidation] Step     : Read empty-password validation message
+[LoginValidation] Expected : "Password is required"
+[LoginValidation] Actual   : "Password is required"

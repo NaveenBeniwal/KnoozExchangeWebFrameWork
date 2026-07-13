@@ -1,0 +1,7 @@
+[validateOrderBookAskRowsFillForm] Row 0 | Ask:62300.47 Qty:2.4192 | Price:62300.47 Amt:2.4192 | priceOk:true amtOk:true
+[validateOrderBookAskRowsFillForm] Row 1 | Ask:62300.48 Qty:0.00035 | Price:62300.48 Amt:0.00035 | priceOk:true amtOk:true
+[validateOrderBookAskRowsFillForm] Row 2 | Ask:62300.49 Qty:0.00017 | Price:62300.49 Amt:0.00017 | priceOk:true amtOk:true
+[validateOrderBookAskRowsFillForm] Row 3 | Ask:62300.88 Qty:0.00087 | Price:62300.88 Amt:0.00087 | priceOk:true amtOk:true
+[validateOrderBookAskRowsFillForm] Row 4 | Ask:62300.96 Qty:0.00009 | Price:62300.96 Amt:0.00009 | priceOk:true amtOk:true
+[validateOrderBookAskRowsFillForm] Summary: 5/5 passed
+[TC-17] Summary: 5/5 ask rows matched price+amount in form

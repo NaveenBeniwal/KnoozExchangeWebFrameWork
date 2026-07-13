@@ -1,0 +1,22 @@
+user creds: naveen.beniwal@antiersolutions.com : Test@123 : 12345
+[Spot] Spot page loaded
+[CoinDetail] Opened detail page for "Tether USDT"
+[CoinDetail] Step     : Scrolled to the Resources section for "TETHER USDT"
+[CoinDetail] Expected : "RESOURCES" heading, "Whitepaper" link and "Official website" link all visible
+[CoinDetail] Actual   : section: true | whitepaper link: true | website link: true
+[CoinDetail] Returned to Spot page
+[CoinDetail] Opened detail page for "Bitcoin"
+[CoinDetail] Step     : Scrolled to the Resources section for "BITCOIN"
+[CoinDetail] Expected : "RESOURCES" heading, "Whitepaper" link and "Official website" link all visible
+[CoinDetail] Actual   : section: true | whitepaper link: true | website link: true
+[CoinDetail] Returned to Spot page
+[CoinDetail] Opened detail page for "Ethereum"
+[CoinDetail] Step     : Scrolled to the Resources section for "ETHEREUM"
+[CoinDetail] Expected : "RESOURCES" heading, "Whitepaper" link and "Official website" link all visible
+[CoinDetail] Actual   : section: true | whitepaper link: true | website link: false
+[CoinDetail] Returned to Spot page
+[CoinDetail] Opened detail page for "BNB"
+[CoinDetail] Step     : Scrolled to the Resources section for "BNB"
+[CoinDetail] Expected : "RESOURCES" heading, "Whitepaper" link and "Official website" link all visible
+[CoinDetail] Actual   : section: true | whitepaper link: false | website link: false
+[CoinDetail] Returned to Spot page

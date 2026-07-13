@@ -1,0 +1,6 @@
+[Funding] Step     : Navigated to Portfolio > Funding tab
+[Funding] Expected : Funding page loaded
+[Funding] Actual   : Funding page loaded
+[Funding] Step     : Checked footer text
+[Funding] Expected : visible
+[Funding] Actual   : visible
