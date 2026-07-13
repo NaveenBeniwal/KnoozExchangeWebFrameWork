@@ -1,0 +1,3 @@
+[HomePage] Step     : Read the current page URL
+[HomePage] Expected : "https://stage-exchange.knooz.com/"
+[HomePage] Actual   : "https://stage-exchange.knooz.com/"
