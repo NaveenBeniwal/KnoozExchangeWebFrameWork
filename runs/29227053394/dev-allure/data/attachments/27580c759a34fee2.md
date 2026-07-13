@@ -1,0 +1,116 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: portfolio/overview.spec.ts >> Portfolio Overview Page >> back button is visible on portfolio page @smoke @sanity
+- Location: tests/portfolio/overview.spec.ts:42:1
+
+# Error details
+
+```
+TimeoutError: locator.click: Timeout 15000ms exceeded.
+Call log:
+  - waiting for getByText('Get OTP', { exact: true })
+
+```
+
+# Test source
+
+```ts
+  1  | import type { Locator, Page } from '@playwright/test';
+  2  | import { BasePage } from './BasePage';
+  3  | 
+  4  | export class LoginPage extends BasePage {
+  5  | 
+  6  |     //private locators:
+  7  |     private readonly signInButton: Locator;
+  8  |     private readonly emailInput: Locator;
+  9  |     private readonly passwordInput: Locator;
+  10 |     private readonly forgotPasswordLink: Locator;
+  11 |     private readonly logo: Locator;
+  12 |     private readonly continueButton: Locator;
+  13 |     private readonly getOtpButton: Locator;
+  14 |     private readonly codeInput: Locator;
+  15 |     private readonly loginSuccessMessage: Locator;
+  16 |     private readonly homePage: Locator;
+  17 |     private readonly loginErrorMessage: Locator;
+  18 |     private readonly laterButton: Locator;
+  19 | 
+  20 |     constructor(page: Page) {
+  21 |         super(page);
+  22 |         this.signInButton = page.getByText('Sign In', { exact: true });
+  23 |         this.emailInput = page.getByRole('textbox', { name: 'Email' });
+  24 |         this.passwordInput = page.getByRole('textbox', { name: 'Password' });
+  25 |         this.forgotPasswordLink = page.getByRole('link', { name: 'Forgot Password?' });
+  26 |         this.logo = page.getByAltText('img');
+  27 |         this.continueButton = page.getByRole('button', { name: 'Continue' });
+  28 |         this.getOtpButton = page.getByText('Get OTP', { exact: true });
+  29 |         this.codeInput = page.getByRole('textbox', { name: 'Enter code' });
+  30 |         this.loginSuccessMessage = page.locator(`span:has-text("Login Successfully")`);
+  31 |         this.homePage = page.getByText('Home', { exact: true });
+  32 |         this.loginErrorMessage = page.locator(`span:has-text("Invalid credentials. You are left with 0 more attempts")`);
+  33 |         this.laterButton = page.getByRole('button', { name: 'Later', exact: true });
+  34 |     }
+  35 | 
+  36 |     //public page actions(methods)/behaviors:
+  37 |     async goToLoginPage(): Promise<void> {
+  38 |         await this.page.goto('/login');
+  39 |         // goto() resolves on the 'load' event, before this SPA finishes client-side rendering
+  40 |         // (logo, forgot-password link, etc.) — isLogoVisible()/isForgotPasswordLinkExist() use a
+  41 |         // plain isVisible() with no auto-retry, so checking immediately after goto() can race the
+  42 |         // render and report "not visible" even though the page loads correctly a moment later.
+  43 |         await this.page.waitForLoadState('networkidle');
+  44 |         await this.logo.waitFor({ state: 'visible', timeout: 10000 }).catch(() => {});
+  45 |     }
+  46 | 
+  47 |     async getLoginPageTitle(): Promise<string> {
+  48 |         return await this.page.title();
+  49 |     }
+  50 | 
+  51 |     async isLogoVisible(): Promise<boolean> {
+  52 |         return await this.logo.isVisible();
+  53 |     }
+  54 | 
+  55 |     async isForgotPasswordLinkExist(): Promise<boolean> {
+  56 |         return await this.forgotPasswordLink.isVisible();
+  57 |     }
+  58 | 
+  59 |     async doLogin(email: string, password: string, otp: string): Promise<void> {
+  60 |         console.log(`user creds: ${email} : ${password} : ${otp}`);
+  61 |         await this.emailInput.fill(email);
+  62 |         await this.passwordInput.fill(password);
+  63 |         await this.continueButton.click();
+> 64 |         await this.getOtpButton.click();
+     |                                 ^ TimeoutError: locator.click: Timeout 15000ms exceeded.
+  65 |         await this.page.waitForTimeout(2000);
+  66 |         await this.codeInput.fill(otp);
+  67 |         await this.page.waitForTimeout(2000);
+  68 |         await this.continueButton.click();
+  69 |         // Toast is transient — may vanish before a slow worker checks it.
+  70 |         // Fall back to waiting for the Home nav item which persists after login.
+  71 |         await this.loginSuccessMessage.waitFor({ state: 'visible', timeout: 15000 }).catch(async () => {
+  72 |             await this.homePage.waitFor({ state: 'visible', timeout: 10000 });
+  73 |         });
+  74 |     }
+  75 | 
+  76 |     async isUserOnHomePage(): Promise<boolean> {
+  77 |         await this.page.waitForTimeout(2000);
+  78 |         const isVisible = await this.homePage.isVisible();
+  79 |         console.log(isVisible ? '[LoginPage] Login successful — Home page loaded' : '[LoginPage] Login failed — Home page not visible');
+  80 |         return isVisible;
+  81 |     }
+  82 | 
+  83 |     async dismissPostLoginDialogsAndWaitForHome(): Promise<void> {
+  84 |         if (await this.laterButton.isVisible({ timeout: 8000 }).catch(() => false)) {
+  85 |             await this.laterButton.click();
+  86 |             await this.page.waitForLoadState('domcontentloaded').catch(() => {});
+  87 |         }
+  88 |         await this.homePage.waitFor({ state: 'visible', timeout: 15000 });
+  89 |     }
+  90 | 
+  91 | }
+```
