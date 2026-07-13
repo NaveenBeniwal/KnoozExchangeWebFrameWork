@@ -1,0 +1,22 @@
+user creds: naveen.beniwal@antiersolutions.com : Test@123 : 12345
+[Spot] Spot page loaded
+[CoinDetail] Opened detail page for "Tether USDT"
+[CoinDetail] Step     : Opened "TETHER USDT" detail page and checked the header
+[CoinDetail] Expected : coin name, "Overview" tab and "Primary balance" tab all visible
+[CoinDetail] Actual   : name: true | overview tab: true | primary balance tab: true
+[CoinDetail] Returned to Spot page
+[CoinDetail] Opened detail page for "Bitcoin"
+[CoinDetail] Step     : Opened "BITCOIN" detail page and checked the header
+[CoinDetail] Expected : coin name, "Overview" tab and "Primary balance" tab all visible
+[CoinDetail] Actual   : name: true | overview tab: true | primary balance tab: true
+[CoinDetail] Returned to Spot page
+[CoinDetail] Opened detail page for "Ethereum"
+[CoinDetail] Step     : Opened "ETHEREUM" detail page and checked the header
+[CoinDetail] Expected : coin name, "Overview" tab and "Primary balance" tab all visible
+[CoinDetail] Actual   : name: true | overview tab: true | primary balance tab: true
+[CoinDetail] Returned to Spot page
+[CoinDetail] Opened detail page for "BNB"
+[CoinDetail] Step     : Opened "BNB" detail page and checked the header
+[CoinDetail] Expected : coin name, "Overview" tab and "Primary balance" tab all visible
+[CoinDetail] Actual   : name: true | overview tab: true | primary balance tab: true
+[CoinDetail] Returned to Spot page

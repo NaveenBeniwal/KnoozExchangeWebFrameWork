@@ -1,0 +1,2 @@
+[SpotBuyLimit] placeAboveMarketLimitOrder | LimitPrice: 70000 | ExecutedPrice: 62780 | Amount: 0.000143 | OrderId: 13491
+[TC-RT-03] Buy order placed | Limit: 70000 | Executed Price: 62780 | Amount: 0.000143 | Message: "Order created successfully"

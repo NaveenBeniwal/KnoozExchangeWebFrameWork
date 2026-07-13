@@ -1,0 +1,18 @@
+[Funding] Step     : Navigated to Portfolio > Funding tab
+[Funding] Expected : Funding page loaded
+[Funding] Actual   : Funding page loaded
+[Funding] Step     : Checked "Ethereum" row
+[Funding] Expected : visible
+[Funding] Actual   : visible
+[Funding] Step     : Read Ethereum row data
+[Funding] Expected : funding/inOrder/total amounts
+[Funding] Actual   : funding: 0.0212682, inOrder: 0, total: 0.0212682, ≈$37.88
+[Funding] Step     : Checked "Deposit" action for Ethereum
+[Funding] Expected : visible
+[Funding] Actual   : visible
+[Funding] Step     : Checked "Withdraw" action for Ethereum
+[Funding] Expected : visible
+[Funding] Actual   : visible
+[Funding] Step     : Checked "Transfer" action for Ethereum
+[Funding] Expected : visible
+[Funding] Actual   : visible

@@ -1,0 +1,30 @@
+[SpotBase] Funds tab: found 3 .fundsMain elements
+[Spot] Spot page loaded
+[Portfolio] USDT     spot=125.13425369   inOrder=0              total=125.13425369 ~$125.13
+[Portfolio] BTC      spot=0.00123678     inOrder=0              total=0.00123678 ~$77.54
+[Portfolio] ETH      spot=0.01138299     inOrder=0.028          total=0.03938299 ~$70
+[Portfolio] 1234     spot=0              inOrder=0              total=0 ~$0
+[Portfolio] BNB      spot=0              inOrder=0              total=0 ~$0
+[Portfolio] XYE      spot=0              inOrder=0              total=0 ~$0
+[validateMarketFillBalance] side=buy price=62698.01 amount=0.000143 spentQuote=8.96581543
+AfterAboveMarketFill — buyAvlb: ✓ expected=124.94616 actual=125.134254
+AfterAboveMarketFill — sellAvlb: ✓ expected=0.01152599 actual=0.00123678
+AfterAboveMarketFill — portfolio.USDT.spotBalance: ✓ expected=124.94616 actual=125.134254
+AfterAboveMarketFill — portfolio.USDT.total: ✓ expected=125.134254 actual=125.134254
+AfterAboveMarketFill — portfolio.BTC.spotBalance: ✓ expected=0.00123983 actual=0.00123678
+AfterAboveMarketFill — portfolio.BTC.total: ✓ expected=0.00123678 actual=0.00123678
+AfterAboveMarketFill — funds.USDT: ⚠ coin not found in Funds tab (skipped)
+AfterAboveMarketFill — funds.BTC: ⚠ coin not found in Funds tab (skipped)
+[TC-RT-04] Balance verified after buy fill | Executed Price: 62698.01 | Amount: 0.000143
+[SpotBase] Funds tab: found 3 .fundsMain elements
+[Spot] Spot page loaded
+[Portfolio] USDT     spot=125.13425369   inOrder=0              total=125.13425369 ~$125.13
+[Portfolio] BTC      spot=0.00123678     inOrder=0              total=0.00123678 ~$77.54
+[Portfolio] ETH      spot=0.01138299     inOrder=0.028          total=0.03938299 ~$70
+[Portfolio] 1234     spot=0              inOrder=0              total=0 ~$0
+[Portfolio] BNB      spot=0              inOrder=0              total=0 ~$0
+[Portfolio] XYE      spot=0              inOrder=0              total=0 ~$0
+[TC-RT-04 — after buy] Buy Avlb (USDT): 125.13425369 | Sell Avlb (BTC): 0.00123678
+[TC-RT-04 — after buy] Funds — current pair: []
+[TC-RT-04 — after buy] Funds — other assets: []
+[TC-RT-04 — after buy] Portfolio coins: [{"coin":"USDT","spotBalance":125.13425369,"inOrder":0,"total":125.13425369,"totalUsd":125.13},{"coin":"BTC","spotBalance":0.00123678,"inOrder":0,"total":0.00123678,"totalUsd":77.54},{"coin":"ETH","spotBalance":0.01138299,"inOrder":0.028,"total":0.03938299,"totalUsd":70},{"coin":"1234","spotBalance":0,"inOrder":0,"total":0,"totalUsd":0},{"coin":"BNB","spotBalance":0,"inOrder":0,"total":0,"totalUsd":0},{"coin":"XYE","spotBalance":0,"inOrder":0,"total":0,"totalUsd":0}]

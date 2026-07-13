@@ -1,0 +1,56 @@
+[CoinDetail] Opened detail page for "Tether USDT"
+[CoinDetail] Step     : Checked "Market cap" stat label for "TETHER USDT"
+[CoinDetail] Expected : visible
+[CoinDetail] Actual   : visible
+[CoinDetail] Step     : Checked "Volume (24h)" stat label for "TETHER USDT"
+[CoinDetail] Expected : visible
+[CoinDetail] Actual   : visible
+[CoinDetail] Step     : Checked "Circulating supply" stat label for "TETHER USDT"
+[CoinDetail] Expected : visible
+[CoinDetail] Actual   : visible
+[CoinDetail] Step     : Checked "Popularity" stat label for "TETHER USDT"
+[CoinDetail] Expected : visible
+[CoinDetail] Actual   : visible
+[CoinDetail] Returned to Spot page
+[CoinDetail] Opened detail page for "Bitcoin"
+[CoinDetail] Step     : Checked "Market cap" stat label for "BITCOIN"
+[CoinDetail] Expected : visible
+[CoinDetail] Actual   : visible
+[CoinDetail] Step     : Checked "Volume (24h)" stat label for "BITCOIN"
+[CoinDetail] Expected : visible
+[CoinDetail] Actual   : visible
+[CoinDetail] Step     : Checked "Circulating supply" stat label for "BITCOIN"
+[CoinDetail] Expected : visible
+[CoinDetail] Actual   : visible
+[CoinDetail] Step     : Checked "Popularity" stat label for "BITCOIN"
+[CoinDetail] Expected : visible
+[CoinDetail] Actual   : visible
+[CoinDetail] Returned to Spot page
+[CoinDetail] Opened detail page for "Ethereum"
+[CoinDetail] Step     : Checked "Market cap" stat label for "ETHEREUM"
+[CoinDetail] Expected : visible
+[CoinDetail] Actual   : visible
+[CoinDetail] Step     : Checked "Volume (24h)" stat label for "ETHEREUM"
+[CoinDetail] Expected : visible
+[CoinDetail] Actual   : visible
+[CoinDetail] Step     : Checked "Circulating supply" stat label for "ETHEREUM"
+[CoinDetail] Expected : visible
+[CoinDetail] Actual   : visible
+[CoinDetail] Step     : Checked "Popularity" stat label for "ETHEREUM"
+[CoinDetail] Expected : visible
+[CoinDetail] Actual   : visible
+[CoinDetail] Returned to Spot page
+[CoinDetail] Opened detail page for "BNB"
+[CoinDetail] Step     : Checked "Market cap" stat label for "BNB"
+[CoinDetail] Expected : visible
+[CoinDetail] Actual   : visible
+[CoinDetail] Step     : Checked "Volume (24h)" stat label for "BNB"
+[CoinDetail] Expected : visible
+[CoinDetail] Actual   : visible
+[CoinDetail] Step     : Checked "Circulating supply" stat label for "BNB"
+[CoinDetail] Expected : visible
+[CoinDetail] Actual   : visible
+[CoinDetail] Step     : Checked "Popularity" stat label for "BNB"
+[CoinDetail] Expected : visible
+[CoinDetail] Actual   : visible
+[CoinDetail] Returned to Spot page

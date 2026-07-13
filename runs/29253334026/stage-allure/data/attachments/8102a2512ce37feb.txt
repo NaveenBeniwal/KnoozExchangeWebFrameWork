@@ -1,0 +1,17 @@
+[CoinDetail] Opened detail page for "Tether USDT"
+[CoinDetail] Step     : Checked chart period button "1H"
+[CoinDetail] Expected : visible
+[CoinDetail] Actual   : visible
+[CoinDetail] Step     : Checked chart period button "1D"
+[CoinDetail] Expected : visible
+[CoinDetail] Actual   : visible
+[CoinDetail] Step     : Checked chart period button "1W"
+[CoinDetail] Expected : visible
+[CoinDetail] Actual   : visible
+[CoinDetail] Step     : Checked chart period button "1M"
+[CoinDetail] Expected : visible
+[CoinDetail] Actual   : visible
+[CoinDetail] Step     : Checked chart period button "1Y"
+[CoinDetail] Expected : visible
+[CoinDetail] Actual   : visible
+[CoinDetail] Returned to Spot page

@@ -1,0 +1,237 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: trade/spotBuyLimitOrder.spec.ts >> Spot Module — Buy Limit Order & Open Orders Validation >> TC-07: 24h ticker header values match Binance reference data (exact match) @sanity
+- Location: tests/trade/spotBuyLimitOrder.spec.ts:122:5
+
+# Error details
+
+```
+Error: TC-07 24h High — page:64425 Binance:0
+
+expect(received).toBe(expected) // Object.is equality
+
+Expected: 0
+Received: 64425
+```
+
+```
+Error: TC-07 24h Low — page:62101 Binance:0
+
+expect(received).toBe(expected) // Object.is equality
+
+Expected: 0
+Received: 62101
+```
+
+# Test source
+
+```ts
+  30  | let aboveMarketOrderDetails: { limitPrice: number; executedPrice: number; amount: number; placedAt: Date; orderId: string } | null = null;
+  31  | 
+  32  | // Set in TC-09: true when limit price > market price at order time (fills immediately)
+  33  | let orderFilledImmediately = false;
+  34  | let marketPriceAtOrder     = 0;
+  35  | 
+  36  | // Actual total from All Orders — used in TC-13 for balance check
+  37  | let allOrdersTotalActual = 0;
+  38  | 
+  39  | // Cancel All scenario (TC-20 onwards)
+  40  | let snapshotBeforeMultiOrders: FullBalanceSnapshot | null = null;
+  41  | let multiOrdersSucceeded = false;
+  42  | let multiOrderActualBuyTotals:   number[] = [];
+  43  | let multiOrderActualSellAmounts: number[] = [];
+  44  | 
+  45  | // Helper: compute % difference as a number for expect assertions
+  46  | const diffPct = (actual: number, ref: number) =>
+  47  |     ref > 0 ? parseFloat((Math.abs(actual - ref) / ref * 100).toFixed(3)) : 0;
+  48  | 
+  49  | test.describe.serial('Spot Module — Buy Limit Order & Open Orders Validation', () => {
+  50  | 
+  51  |     test.beforeAll(async ({ playwright }, testInfo) => {
+  52  |         browser = await playwright.chromium.launch({ headless: testInfo.project.use.headless });
+  53  |         context = await browser.newContext({ viewport: { width: 1280, height: 720 }, baseURL: process.env.BASE_URL, ignoreHTTPSErrors: true });
+  54  |         page              = await context.newPage();
+  55  |         loginPage         = new LoginPage(page);
+  56  |         spotBuyPage       = new SpotBuyLimitOrderPage(page);
+  57  |         portfolioSpotPage = new PortfolioSpotPage(page);
+  58  |         await loginPage.goToLoginPage();
+  59  |         await loginPage.doLogin(process.env.EMAIL!, process.env.PASSWORD!, process.env.OTP!).catch(() => {});
+  60  |         await loginPage.dismissPostLoginDialogsAndWaitForHome();
+  61  |     });
+  62  | 
+  63  |     test.afterAll(async () => { await browser.close(); });
+  64  | 
+  65  |     // ── TC-01 ─────────────────────────────────────────────────────────────────
+  66  |     test('TC-01: navigate to Spot Trading page @smoke @sanity', async () => {
+  67  |         await spotBuyPage.navigateToSpotTrading();
+  68  |         console.log('[TC-01] Navigated to Spot Trading page');
+  69  |     });
+  70  | 
+  71  |     // ── TC-02 ─────────────────────────────────────────────────────────────────
+  72  |     test('TC-02: Spot Trading page shows all expected labels @smoke @sanity', async () => {
+  73  |         const r = await spotBuyPage.getSpotPageLabelsStatus();
+  74  |         expect.soft(r.tradingText,       'Trading page heading').toBe('Trading');
+  75  |         expect.soft(r.spotText,          'Spot label').toBe('Spot');
+  76  |         expect.soft(r.depthViewText,     'Depth View label').toBe('Depth View');
+  77  |         expect.soft(r.orderBookText,     'Order Book heading').toBe('Order Book');
+  78  |         expect.soft(r.buyTabText,        'Buy tab').toBe('Buy');
+  79  |         expect.soft(r.sellTabText,       'Sell tab').toBe('Sell');
+  80  |         expect.soft(r.limitTabText,      'Limit tab').toBe('Limit');
+  81  |         expect.soft(r.marketTabText,     'Market tab').toBe('Market');
+  82  |         expect.soft(r.stopTabText,       'Stop tab').toBe('Stop');
+  83  |         expect.soft(r.marketTradesText,  'Market Trades label').toBe('Market Trades');
+  84  |         expect.soft(r.myTradesText,      'My Trades label').toBe('My Trades');
+  85  |         expect.soft(r.openOrdersTabText, 'Open Orders tab').toBe('Open Orders');
+  86  |         expect.soft(r.allOrdersText,     'All Orders tab').toBe('All Orders');
+  87  |         expect.soft(r.tradeHistoryText,  'Trade History label').toBe('Trade History');
+  88  |         console.log(`[TC-02] Depth View: "${r.depthViewText}" | Order Book: "${r.orderBookText}" | Buy: "${r.buyTabText}" | Sell: "${r.sellTabText}" | Limit: "${r.limitTabText}" | Market: "${r.marketTabText}" | Market Trades: "${r.marketTradesText}" | My Trades: "${r.myTradesText}" | All Orders: "${r.allOrdersText}" | Trade History: "${r.tradeHistoryText}"`);
+  89  |     });
+  90  | 
+  91  |     // ── TC-03 ─────────────────────────────────────────────────────────────────
+  92  |     test('TC-03: search currency pair in the market dropdown @sanity', async () => {
+  93  |         await spotBuyPage.searchCurrencyPair(tradeData.searchPair);
+  94  |         console.log(`[TC-03] Searched pair: ${tradeData.searchPair}`);
+  95  |     });
+  96  | 
+  97  |     // ── TC-04 ─────────────────────────────────────────────────────────────────
+  98  |     test('TC-04: mark currency pair as favorite and verify it appears in Favorites tab @sanity', async () => {
+  99  |         const r = await spotBuyPage.markAsFavorite(tradeData.searchPair);
+  100 |         expect.soft(r.favoriteAddedStatus, r.favoriteMsg).toBe('added');
+  101 |         console.log(`[TC-04] Marked ${tradeData.searchPair} as favorite | Status: "${r.favoriteAddedStatus}" | Message: "${r.favoriteMsg}"`);
+  102 |     });
+  103 | 
+  104 |     // ── TC-05 ─────────────────────────────────────────────────────────────────
+  105 |     test('TC-05: unmark currency pair from favorites and verify "No records found" @sanity', async () => {
+  106 |         const r = await spotBuyPage.unmarkFavorite(tradeData.searchPair);
+  107 |         expect.soft(r.noRecordsStatus,    r.noRecordsMsg).toBe('visible');
+  108 |         expect.soft(r.favoriteRemovedStatus, r.favoriteMsg).toBe('removed');
+  109 |         console.log(`[TC-05] Unmarked ${tradeData.searchPair} from favorites | Status: "${r.favoriteRemovedStatus}" | Message: "${r.favoriteMsg}" | No Records Status: "${r.noRecordsStatus}"`);
+  110 |     });
+  111 | 
+  112 |     // ── TC-06 ─────────────────────────────────────────────────────────────────
+  113 |     // Pair is now active — all price/OB comparisons with Binance run after this point
+  114 |     test('TC-06: select currency pair from ALL tab @sanity', async () => {
+  115 |         await spotBuyPage.selectCurrencyPair();
+  116 |         console.log('[TC-06] Currency pair selected from ALL tab');
+  117 |     });
+  118 | 
+  119 |     // ── TC-07 ────────────────────────────────────────────────────────────────
+  120 |     // NOTE: positioned after TC-06 so the page is showing tradeData.searchPair before
+  121 |     // we compare its ticker against the Binance API for that same pair.
+  122 |     test('TC-07: 24h ticker header values match Binance reference data (exact match) @sanity', async () => {
+  123 |         const [binance, ticker] = await Promise.all([
+  124 |             BinanceHelper.get24hTicker(page, tradeData.searchPair),
+  125 |             spotBuyPage.getTickerHeaderData(),
+  126 |         ]);
+  127 |         expect.soft(ticker.lastPrice, 'Last Price should be a positive number').toBeGreaterThan(0);
+  128 |         expect.soft(diffPct(ticker.lastPrice, binance.lastPrice),      `TC-07 Last Price diff% — page:${ticker.lastPrice} Binance:${binance.lastPrice} (live price may shift 2-5s during fetch)`).toBeLessThan(1);
+  129 |         expect.soft(ticker.high24h,        `TC-07 24h High — page:${ticker.high24h} Binance:${binance.highPrice}`).toBe(binance.highPrice);
+> 130 |         expect.soft(ticker.low24h,         `TC-07 24h Low — page:${ticker.low24h} Binance:${binance.lowPrice}`).toBe(binance.lowPrice);
+      |                                                                                                                 ^ Error: TC-07 24h Low — page:62101 Binance:0
+  131 |         expect.soft(diffPct(ticker.volume24hBase,  binance.volume), `TC-07 Volume(base) diff% — page:${ticker.volume24hBase} Binance:${binance.volume} (volume changes with every trade)`).toBeLessThan(1);
+  132 |         // Quote volume: exchange counts both buyer+seller side (~2× Binance). Log as info only, not a test failure.
+  133 |         const quoteDiffPct = diffPct(ticker.volume24hQuote, binance.quoteVolume);
+  134 |         if (quoteDiffPct >= 1) test.info().annotations.push({ type: 'info', description: `TC-07 Volume(quote) diff: ${quoteDiffPct.toFixed(2)}% — page:${ticker.volume24hQuote} Binance:${binance.quoteVolume} — exchange counts both sides of each trade (~2× Binance), not a bug` });
+  135 |         console.log(`[TC-07] Verified 24h ticker for ${tradeData.searchPair} | Page Last: ${ticker.lastPrice} | Page High: ${ticker.high24h} | Page Low: ${ticker.low24h} | Page Vol Base: ${ticker.volume24hBase} | Page Vol Quote: ${ticker.volume24hQuote} | Binance Last: ${binance.lastPrice} | Binance High: ${binance.highPrice} | Binance Low: ${binance.lowPrice} | Binance Vol: ${binance.volume} | Binance Quote Vol: ${binance.quoteVolume} | Last Diff%: ${diffPct(ticker.lastPrice, binance.lastPrice)} | Vol Base Diff%: ${diffPct(ticker.volume24hBase, binance.volume)} | Vol Quote Diff%: ${quoteDiffPct}`);
+  136 |     });
+  137 | 
+  138 |     // ── TC-08 ────────────────────────────────────────────────────────────────
+  139 |     test('TC-08: order book column headers show Price, Amount and Total @sanity', async () => {
+  140 |         const h = await spotBuyPage.getOrderBookColumnHeaders();
+  141 |         expect.soft(h.price,  'Order book Price header should be visible').not.toBe('');
+  142 |         expect.soft(h.amount, 'Order book Amount header should be visible').not.toBe('');
+  143 |         expect.soft(h.total,  'Order book Total header should be visible').not.toBe('');
+  144 |         console.log(`[TC-08] Order book headers | Price: "${h.price}" | Amount: "${h.amount}" | Total: "${h.total}"`);
+  145 |     });
+  146 | 
+  147 |     // ── TC-09 ────────────────────────────────────────────────────────────────
+  148 |     test('TC-09: order book view switches — all / sell-only / buy-only @sanity', async () => {
+  149 |         await spotBuyPage.setOrderBookView('sell');
+  150 |         const v1 = await spotBuyPage.isOrderBookVisible();
+  151 |         expect.soft(v1 ? 'visible' : 'not visible', 'Order book should remain visible in sell-only view').toBe('visible');
+  152 |         await spotBuyPage.setOrderBookView('buy');
+  153 |         const v2 = await spotBuyPage.isOrderBookVisible();
+  154 |         expect.soft(v2 ? 'visible' : 'not visible', 'Order book should remain visible in buy-only view').toBe('visible');
+  155 |         await spotBuyPage.setOrderBookView('all');
+  156 |         console.log(`[TC-09] Order book view switch | Sell-only Visible: ${v1} | Buy-only Visible: ${v2} | Restored to all`);
+  157 |     });
+  158 | 
+  159 |     // ── TC-10 ─────────────────────────────────────────────────────────────────
+  160 |     test('TC-10: order book precision dropdown changes price decimal places across all views @sanity', async () => {
+  161 |         const precisions: string[]                    = ['0.01', '0.1', '1', '0.01'];
+  162 |         const views: Array<'all' | 'sell' | 'buy'>   = ['all', 'sell', 'buy'];
+  163 |         const r = await spotBuyPage.validateOrderBookPrecisionDecimals(precisions, views);
+  164 |         for (const f of r.failures) {
+  165 |             expect.soft(false, `TC-10: ${f.msg}`).toBe(true);
+  166 |         }
+  167 |         console.log(`[TC-10] Precision validation | Passed: ${r.passed} | Failures: ${r.failures.length}`);
+  168 |     });
+  169 | 
+  170 |     // ── TC-11 ─────────────────────────────────────────────────────────────────
+  171 |     test('TC-11: order book LTP and buy/sell ratio bar (suggestions — not yet implemented) @sanity', async () => {
+  172 |         const ltp   = await spotBuyPage.getOrderBookLtp();
+  173 |         const ratio = await spotBuyPage.getOrderBookBuySellRatio();
+  174 |         const sum   = parseFloat((ratio.buyPct + ratio.sellPct).toFixed(1));
+  175 |         // LTP display in orderbook not yet implemented — recorded as suggestion
+  176 |         test.info().annotations.push({
+  177 |             type: 'suggestion',
+  178 |             description: `SUGGESTION [TC-11 LTP]: Order book last traded price (LTP) display is not yet ` +
+  179 |                 `implemented. Observed LTP=${ltp}. Consider showing the last trade price in the order book mid-row.`,
+  180 |         });
+  181 |         // Buy/sell ratio bar not yet implemented — recorded as suggestion
+  182 |         test.info().annotations.push({
+  183 |             type: 'suggestion',
+  184 |             description: `SUGGESTION [TC-11 B%+S%]: Order book buy/sell ratio bar is not yet implemented. ` +
+  185 |                 `Observed B%=${ratio.buyPct} + S%=${ratio.sellPct} = ${sum}. ` +
+  186 |                 `Consider adding a visual percentage bar showing bid vs ask volume split.`,
+  187 |         });
+  188 |         console.log(`[TC-11] LTP: ${ltp} | Buy Pct: ${ratio.buyPct} | Sell Pct: ${ratio.sellPct} | Sum: ${sum} (features not yet implemented — logged as suggestions)`);
+  189 |     });
+  190 | 
+  191 |     // ── TC-12 ─────────────────────────────────────────────────────────────────
+  192 |     test('TC-12: order book has actual ask and bid data rows @sanity', async () => {
+  193 |         const { topAsk, topBid, askCount, bidCount } = await spotBuyPage.getOrderBookTopBidAsk();
+  194 |         expect.soft(askCount, 'Ask row count should be >0').toBeGreaterThan(0);
+  195 |         expect.soft(bidCount, 'Bid row count should be >0').toBeGreaterThan(0);
+  196 |         expect.soft(topAsk,   'Top ask price should be positive').toBeGreaterThan(0);
+  197 |         expect.soft(topBid,   'Top bid price should be positive').toBeGreaterThan(0);
+  198 |         console.log(`[TC-12] Order book rows | Ask Count: ${askCount} | Bid Count: ${bidCount} | Top Ask: ${topAsk} | Top Bid: ${topBid}`);
+  199 |     });
+  200 | 
+  201 |     // ── TC-13 ─────────────────────────────────────────────────────────────────
+  202 |     test('TC-13: top bid price is less than top ask price (valid spread) @sanity', async () => {
+  203 |         const { topAsk, topBid } = await spotBuyPage.getOrderBookTopBidAsk();
+  204 |         if (topAsk > 0 && topBid > 0) {
+  205 |             expect.soft(topBid, `Top bid(${topBid}) must be < top ask(${topAsk})`).toBeLessThan(topAsk);
+  206 |         }
+  207 |         const spread = topAsk > 0 && topBid > 0 ? parseFloat((topAsk - topBid).toFixed(8)) : 'N/A';
+  208 |         console.log(`[TC-13] Spread check | Top Bid: ${topBid} | Top Ask: ${topAsk} | Spread: ${spread}`);
+  209 |     });
+  210 | 
+  211 |     // ── TC-14 ─────────────────────────────────────────────────────────────────
+  212 |     test('TC-14: order book top bid/ask match Binance within 0.5% @sanity', async () => {
+  213 |         const [{ topAsk, topBid }, binanceOb] = await Promise.all([
+  214 |             spotBuyPage.getOrderBookTopBidAsk(),
+  215 |             BinanceHelper.getOrderBook(page, tradeData.searchPair, 5),
+  216 |         ]);
+  217 |         const binanceBid = binanceOb.bids[0]?.price ?? 0;
+  218 |         const binanceAsk = binanceOb.asks[0]?.price ?? 0;
+  219 |         if (binanceBid > 0 && topBid > 0) {
+  220 |             expect.soft(
+  221 |                 diffPct(topBid, binanceBid),
+  222 |                 `Top bid diff% — page:${topBid} Binance:${binanceBid}`,
+  223 |             ).toBeLessThan(0.5);
+  224 |         }
+  225 |         if (binanceAsk > 0 && topAsk > 0) {
+  226 |             expect.soft(
+  227 |                 diffPct(topAsk, binanceAsk),
+  228 |                 `Top ask diff% — page:${topAsk} Binance:${binanceAsk}`,
+  229 |             ).toBeLessThan(0.5);
+  230 |         }
+```

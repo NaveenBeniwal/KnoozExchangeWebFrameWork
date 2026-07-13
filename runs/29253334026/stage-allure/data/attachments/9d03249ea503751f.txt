@@ -1,0 +1,31 @@
+[SpotBase] Funds tab: found 3 .fundsMain elements
+[Spot] Spot page loaded
+[Portfolio] USDT     spot=136.418657     inOrder=0              total=136.418657 ~$136.42
+[Portfolio] ETH      spot=0.01138299     inOrder=0.028          total=0.03938299 ~$70.05
+[Portfolio] BTC      spot=0.00105674     inOrder=0              total=0.00105674 ~$66.33
+[Portfolio] 1234     spot=0              inOrder=0              total=0 ~$0
+[Portfolio] BNB      spot=0              inOrder=0              total=0 ~$0
+[Portfolio] XYE      spot=0              inOrder=0              total=0 ~$0
+[validateMarketFillBalance] side=sell price=62797.93 amount=0.000167 spentQuote=10.48725431
+AfterBelowMarketFill — buyAvlb: ✓ expected=136.861257 actual=136.418657
+AfterBelowMarketFill — sellAvlb: ✓ expected=0.00104974 actual=0.00105674
+AfterBelowMarketFill — portfolio.BTC.spotBalance: ✓ expected=0.00104974 actual=0.00105674
+AfterBelowMarketFill — portfolio.BTC.total: ✓ expected=0.00105674 actual=0.00105674
+AfterBelowMarketFill — portfolio.USDT.spotBalance: ✓ expected=136.861257 actual=136.418657
+AfterBelowMarketFill — portfolio.USDT.total: ✓ expected=136.418657 actual=136.418657
+AfterBelowMarketFill — funds.BTC: ⚠ coin not found in Funds tab (skipped)
+AfterBelowMarketFill — funds.USDT: ⚠ coin not found in Funds tab (skipped)
+[TC-RT-07] Balance verified after sell fill | Executed Price: 62797.93 | Amount: 0.000167 — round trip complete
+[SpotBase] Funds tab: found 3 .fundsMain elements
+[Spot] Spot page loaded
+[Portfolio] USDT     spot=136.418657     inOrder=0              total=136.418657 ~$136.42
+[Portfolio] ETH      spot=0.01138299     inOrder=0.028          total=0.03938299 ~$70.05
+[Portfolio] BTC      spot=0.00105674     inOrder=0              total=0.00105674 ~$66.33
+[Portfolio] 1234     spot=0              inOrder=0              total=0 ~$0
+[Portfolio] BNB      spot=0              inOrder=0              total=0 ~$0
+[Portfolio] XYE      spot=0              inOrder=0              total=0 ~$0
+[TC-RT-07 — final (after sell)] Buy Avlb (USDT): 136.418657 | Sell Avlb (BTC): 0.00105674
+[TC-RT-07 — final (after sell)] Funds — current pair: []
+[TC-RT-07 — final (after sell)] Funds — other assets: []
+[TC-RT-07 — final (after sell)] Portfolio coins: [{"coin":"USDT","spotBalance":136.418657,"inOrder":0,"total":136.418657,"totalUsd":136.42},{"coin":"ETH","spotBalance":0.01138299,"inOrder":0.028,"total":0.03938299,"totalUsd":70.05},{"coin":"BTC","spotBalance":0.00105674,"inOrder":0,"total":0.00105674,"totalUsd":66.33},{"coin":"1234","spotBalance":0,"inOrder":0,"total":0,"totalUsd":0},{"coin":"BNB","spotBalance":0,"inOrder":0,"total":0,"totalUsd":0},{"coin":"XYE","spotBalance":0,"inOrder":0,"total":0,"totalUsd":0}]
+[TC-RT-07] ROUND TRIP SUMMARY | Net USDT change: 1.2554545 | Net BTC change: -0.01032625 | Buy: 0.000143 BTC @ 62780 | Sell: 0.000167 BTC @ 62797.93

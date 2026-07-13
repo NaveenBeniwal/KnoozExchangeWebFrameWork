@@ -1,0 +1,1 @@
+[TC-07] Verified 24h ticker for BTC/USDT | Page Last: 62734 | Page High: 64425 | Page Low: 62101 | Page Vol Base: 18195.7752 | Page Vol Quote: 2296082591.59 | Binance Last: 0 | Binance High: 0 | Binance Low: 0 | Binance Vol: 0 | Binance Quote Vol: 0 | Last Diff%: 0 | Vol Base Diff%: 0 | Vol Quote Diff%: 0

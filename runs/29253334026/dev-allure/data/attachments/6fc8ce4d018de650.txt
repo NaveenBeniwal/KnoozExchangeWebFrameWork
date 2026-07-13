@@ -1,0 +1,2 @@
+user creds: naveen.beniwal@antiersolutions.com : Test@123 : 12345
+[TC-01] Navigated to Spot Trading page
