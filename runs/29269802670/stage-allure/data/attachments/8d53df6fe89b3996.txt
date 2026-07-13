@@ -1,0 +1,1 @@
+[TC-15] OB LTP vs Binance last price | LTP: 62025.32 | Binance: 0 | Diff%: 0

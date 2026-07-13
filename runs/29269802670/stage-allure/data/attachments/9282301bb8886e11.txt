@@ -1,0 +1,20 @@
+[CoinDetail] Opened detail page for "Tether USDT"
+[CoinDetail] Step     : Scrolled to the Overview text section for "TETHER USDT"
+[CoinDetail] Expected : section visible with non-empty text
+[CoinDetail] Actual   : visible — "Tether (USDT) is an Ethereum token that is pegged to the value of a U.S. dollar (also known as a stablecoin). Tether’s issuer claims that USDT is backed by bank reserves and loans which match or exceed the value of USDT in circulation."
+[CoinDetail] Returned to Spot page
+[CoinDetail] Opened detail page for "Bitcoin"
+[CoinDetail] Step     : Scrolled to the Overview text section for "BITCOIN"
+[CoinDetail] Expected : section visible with non-empty text
+[CoinDetail] Actual   : visible — "The world’s first cryptocurrency, Bitcoin is stored and exchanged securely on the internet through a digital ledger known as a blockchain. Bitcoins are divisible into smaller units known as satoshis — each satoshi is worth 0.00000001 bitcoin."
+[CoinDetail] Returned to Spot page
+[CoinDetail] Opened detail page for "Ethereum"
+[CoinDetail] Step     : Scrolled to the Overview text section for "ETHEREUM"
+[CoinDetail] Expected : section visible with non-empty text
+[CoinDetail] Actual   : visible — "Ethereum is a decentralized computing platform that uses ETH (also called Ether) to pay transaction fees (or “gas”). Developers can use Ethereum to run decentralized applications (dApps) and issue new crypto assets, known as Ethereum tokens."
+[CoinDetail] Returned to Spot page
+[CoinDetail] Opened detail page for "BNB"
+[CoinDetail] Step     : Scrolled to the Overview text section for "BNB"
+[CoinDetail] Expected : section visible with non-empty text
+[CoinDetail] Actual   : visible — "Binance Coin is a cryptocurrency used to pay fees on the Binance cryptocurrency exchange. Fees paid in Binance Coin on the exchange receive a discount."
+[CoinDetail] Returned to Spot page

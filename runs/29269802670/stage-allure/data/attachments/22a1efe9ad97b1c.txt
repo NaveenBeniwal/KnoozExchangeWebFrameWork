@@ -1,0 +1,18 @@
+[Funding] Step     : Navigated to Portfolio > Funding tab
+[Funding] Expected : Funding page loaded
+[Funding] Actual   : Funding page loaded
+[Funding] Step     : Checked "BNB" row
+[Funding] Expected : visible
+[Funding] Actual   : visible
+[Funding] Step     : Read BNB row data
+[Funding] Expected : funding/inOrder/total amounts
+[Funding] Actual   : funding: 0, inOrder: 0, total: 0, ≈$0
+[Funding] Step     : Checked "Deposit" action for BNB
+[Funding] Expected : visible
+[Funding] Actual   : visible
+[Funding] Step     : Checked "Withdraw" action for BNB
+[Funding] Expected : visible
+[Funding] Actual   : visible
+[Funding] Step     : Checked "Transfer" action for BNB
+[Funding] Expected : visible
+[Funding] Actual   : visible

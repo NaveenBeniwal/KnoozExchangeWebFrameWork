@@ -1,0 +1,18 @@
+[Funding] Step     : Navigated to Portfolio > Funding tab
+[Funding] Expected : Funding page loaded
+[Funding] Actual   : Funding page loaded
+[Funding] Step     : Clicked "Transfer" for Tether USDT
+[Funding] Expected : Transfer modal opens
+[Funding] Actual   : Transfer modal opened
+[Funding] Step     : Read Transfer modal Coin field
+[Funding] Expected : "Tether USDT"
+[Funding] Actual   : "Tether USDT"
+[Funding] Step     : Checked Coin dropdown icon
+[Funding] Expected : visible
+[Funding] Actual   : visible
+[Funding] Step     : Closed the open modal
+[Funding] Expected : modal closes (or was already closed)
+[Funding] Actual   : closed
+[Funding] Step     : Checked "Funding" tab
+[Funding] Expected : visible
+[Funding] Actual   : visible

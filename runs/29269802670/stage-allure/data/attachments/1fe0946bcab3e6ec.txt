@@ -1,0 +1,1 @@
+[TC-06a1] Buy button label | Label: "BUY  BTC"

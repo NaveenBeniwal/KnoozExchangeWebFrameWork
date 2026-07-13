@@ -1,0 +1,1 @@
+[TC-11] LTP: 62011.93 | Buy Pct: 0 | Sell Pct: 0 | Sum: 0 (features not yet implemented — logged as suggestions)

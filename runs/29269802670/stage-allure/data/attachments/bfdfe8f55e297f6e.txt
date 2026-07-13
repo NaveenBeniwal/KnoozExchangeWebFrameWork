@@ -1,0 +1,1 @@
+[PortfolioOverviewPage][isTabVisible] tab: Funding | visible: true

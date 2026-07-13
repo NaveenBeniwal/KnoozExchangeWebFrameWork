@@ -1,0 +1,18 @@
+[Funding] Step     : Navigated to Portfolio > Funding tab
+[Funding] Expected : Funding page loaded
+[Funding] Actual   : Funding page loaded
+[Funding] Step     : Clicked "Transfer" for Tether USDT
+[Funding] Expected : Transfer modal opens
+[Funding] Actual   : Transfer modal opened
+[Funding] Step     : Read Transfer modal Quantity text
+[Funding] Expected : available quantity for the selected coin
+[Funding] Actual   : "33.69490335 P2P / 136.35587972 Avlb"
+[Funding] Step     : Read Spot and Funding wallet quantities from Transfer modal
+[Funding] Expected : Spot: 136.35587972, Funding: 33.69490335
+[Funding] Actual   : Spot: 136.35587972, Funding: 33.69490335
+[Funding] Step     : Closed the open modal
+[Funding] Expected : modal closes (or was already closed)
+[Funding] Actual   : closed
+[Funding] Step     : Checked "Funding" tab
+[Funding] Expected : visible
+[Funding] Actual   : visible

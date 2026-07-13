@@ -1,0 +1,1 @@
+[PortfolioOverviewPage][isMyAssetsVisible] visible: true

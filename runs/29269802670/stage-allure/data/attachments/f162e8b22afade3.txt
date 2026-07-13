@@ -1,0 +1,7 @@
+[validateOrderBookBidRowsFillForm] Row 0 | Bid:61955.5 Qty:0.00222 | Price:61955.5 Amt:0.00222 | priceOk:true amtOk:true
+[validateOrderBookBidRowsFillForm] Row 1 | Bid:61955.69 Qty:0.0002 | Price:61955.69 Amt:0.0002 | priceOk:true amtOk:true
+[validateOrderBookBidRowsFillForm] Row 2 | Bid:61955.82 Qty:0.225 | Price:61955.82 Amt:0.225 | priceOk:true amtOk:true
+[validateOrderBookBidRowsFillForm] Row 3 | Bid:61956.5 Qty:0.0001 | Price:61956.5 Amt:0.0001 | priceOk:true amtOk:true
+[validateOrderBookBidRowsFillForm] Row 4 | Bid:61956.52 Qty:0.00022 | Price:61956.52 Amt:0.00022 | priceOk:true amtOk:true
+[validateOrderBookBidRowsFillForm] Summary: 5/5 passed
+[TC-17] Summary: 5/5 bid rows matched price+amount in form

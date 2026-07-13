@@ -1,0 +1,7 @@
+user creds: naveen.beniwal@antiersolutions.com : Test@123 : 12345
+[ChangePasswordValidation] Step     : Navigated to Change Password
+[ChangePasswordValidation] Expected : Change Password form visible
+[ChangePasswordValidation] Actual   : navigation clicked through Settings > Profile Settings > Security settings > Change Password
+[ChangePasswordValidation] Step     : Read the Change Password page heading
+[ChangePasswordValidation] Expected : "Change Password"
+[ChangePasswordValidation] Actual   : "Change Password"

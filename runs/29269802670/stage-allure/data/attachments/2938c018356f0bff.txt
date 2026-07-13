@@ -1,0 +1,9 @@
+[SpotBase] Funds tab: found 3 .fundsMain elements
+[Spot] Spot page loaded
+[Portfolio] USDT     spot=136.35587972   inOrder=0              total=136.35587972 ~$136.36
+[Portfolio] ETH      spot=0.01138299     inOrder=0.028          total=0.03938299 ~$69.71
+[Portfolio] BTC      spot=0.0010565      inOrder=0              total=0.0010565 ~$65.67
+[Portfolio] 1234     spot=0              inOrder=0              total=0 ~$0
+[Portfolio] BNB      spot=0              inOrder=0              total=0 ~$0
+[Portfolio] XYE      spot=0              inOrder=0              total=0 ~$0
+[TC-06b] Buy Avlb: 136.35587972 | Portfolio USDT: 136.35587972 | Buy Match: true | Sell Avlb: 0.0010565 | Portfolio BTC: 0.0010565 | Sell Match: true

@@ -1,0 +1,1 @@
+[TC-02] Depth View: "Depth View" | Order Book: "Order Book" | Buy: "Buy" | Sell: "Sell" | Limit: "Limit" | Market: "Market" | Market Trades: "Market Trades" | My Trades: "My Trades" | All Orders: "All Orders" | Trade History: "Trade History"

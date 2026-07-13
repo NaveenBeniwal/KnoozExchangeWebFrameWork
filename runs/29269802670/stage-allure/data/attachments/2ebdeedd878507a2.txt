@@ -1,0 +1,3 @@
+[SpotMarketSell] Market Sell tab selected
+[SpotMarketSell] Market Price field visible:true, notEditable:true
+[TC-06a] Market Sell tab Price field | Is Disabled: true

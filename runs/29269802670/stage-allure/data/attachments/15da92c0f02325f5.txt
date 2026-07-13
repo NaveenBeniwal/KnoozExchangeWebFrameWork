@@ -1,0 +1,18 @@
+[Funding] Step     : Navigated to Portfolio > Funding tab
+[Funding] Expected : Funding page loaded
+[Funding] Actual   : Funding page loaded
+[Funding] Step     : Checked table header "Coin"
+[Funding] Expected : visible
+[Funding] Actual   : visible
+[Funding] Step     : Checked table header "Funding Balance"
+[Funding] Expected : visible
+[Funding] Actual   : visible
+[Funding] Step     : Checked table header "In Order"
+[Funding] Expected : visible
+[Funding] Actual   : visible
+[Funding] Step     : Checked table header "Total"
+[Funding] Expected : visible
+[Funding] Actual   : visible
+[Funding] Step     : Checked table header "Action"
+[Funding] Expected : visible
+[Funding] Actual   : visible

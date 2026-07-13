@@ -1,0 +1,1 @@
+[TC-08] BTC available before market sell: 0.0010565

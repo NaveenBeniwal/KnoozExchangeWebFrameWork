@@ -1,0 +1,1 @@
+[TC-16] Precision toggle | Original: "0.01" | Alternate: "0.1" | LTP After Restore: 62025.32

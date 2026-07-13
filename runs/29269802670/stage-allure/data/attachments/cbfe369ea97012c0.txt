@@ -1,0 +1,3 @@
+[SpotMarketBuy] Market Buy tab selected
+[SpotMarketBuy] Filled Total: 8
+[TC-07] Total Entered: 8 | FeePercent: 0.15 | Fee Present: false | Est Fee: 0.00000019 | UI Est Fee: 0.00000019 | Fee Match: match

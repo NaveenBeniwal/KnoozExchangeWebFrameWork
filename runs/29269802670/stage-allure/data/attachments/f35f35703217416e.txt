@@ -1,0 +1,2 @@
+[SpotMarketSell] Market Sell tab selected
+[TC-07] Executed Amount: 0.0002 | FeePercent: 0.15 | Fee Present: false | Est Fee: 0.00000030 | UI Est Fee: 0.00000030 | Fee Match: match

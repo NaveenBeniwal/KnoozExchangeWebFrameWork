@@ -1,0 +1,123 @@
+[Funding] Step     : Navigated to Portfolio > Funding tab
+[Funding] Expected : Funding page loaded
+[Funding] Actual   : Funding page loaded
+[Funding] Step     : Clicked "Transfer" for Tether USDT
+[Funding] Expected : Transfer modal opens
+[Funding] Actual   : Transfer modal opened
+[Funding] Step     : Clicked the Coin dropdown icon
+[Funding] Expected : Select Coin panel opened
+[Funding] Actual   : Select Coin panel opened
+[Funding] Step     : Checked Select Coin panel
+[Funding] Expected : visible
+[Funding] Actual   : visible
+[Funding] Step     : Closed the Select Coin panel
+[Funding] Expected : panel closes (or was already closed)
+[Funding] Actual   : closed
+[Funding] Step     : Checked "Funding" tab
+[Funding] Expected : visible
+[Funding] Actual   : visible
+[Funding] Step     : Clicked "Transfer" for Tether USDT
+[Funding] Expected : Transfer modal opens
+[Funding] Actual   : Transfer modal opened
+[Funding] Step     : Clicked the Coin dropdown icon
+[Funding] Expected : Select Coin panel opened
+[Funding] Actual   : Select Coin panel opened
+[Funding] Step     : Checked Select Coin panel
+[Funding] Expected : visible
+[Funding] Actual   : visible
+[Funding] Step     : Clicked Select Coin back button
+[Funding] Expected : went back
+[Funding] Actual   : went back
+[Funding] Step     : Checked Transfer modal
+[Funding] Expected : visible
+[Funding] Actual   : visible
+[Funding] Step     : Clicked the Coin dropdown icon
+[Funding] Expected : Select Coin panel opened
+[Funding] Actual   : Select Coin panel opened
+[Funding] Step     : Checked Select Coin panel
+[Funding] Expected : visible
+[Funding] Actual   : visible
+[Funding] Step     : Checked Select Coin search field
+[Funding] Expected : visible
+[Funding] Actual   : visible
+[Funding] Step     : Counted visible currencies in the Select Coin panel
+[Funding] Expected : row count
+[Funding] Actual   : 6 row(s)
+[Funding] Step     : Searched Select Coin panel: "USDT"
+[Funding] Expected : search applied
+[Funding] Actual   : search applied
+[Funding] Step     : Counted visible currencies in the Select Coin panel
+[Funding] Expected : row count
+[Funding] Actual   : 1 row(s)
+[Funding] Step     : Checked "Tether USDT" row in Select Coin panel
+[Funding] Expected : visible
+[Funding] Actual   : visible
+[Funding] Step     : Cleared the Select Coin panel search field
+[Funding] Expected : search cleared
+[Funding] Actual   : search cleared
+[Funding] Step     : Searched Select Coin panel: "ETH"
+[Funding] Expected : search applied
+[Funding] Actual   : search applied
+[Funding] Step     : Counted visible currencies in the Select Coin panel
+[Funding] Expected : row count
+[Funding] Actual   : 2 row(s)
+[Funding] Step     : Checked "Ethereum" row in Select Coin panel
+[Funding] Expected : visible
+[Funding] Actual   : visible
+[Funding] Step     : Cleared the Select Coin panel search field
+[Funding] Expected : search cleared
+[Funding] Actual   : search cleared
+[Funding] Step     : Searched Select Coin panel: "BTC"
+[Funding] Expected : search applied
+[Funding] Actual   : search applied
+[Funding] Step     : Counted visible currencies in the Select Coin panel
+[Funding] Expected : row count
+[Funding] Actual   : 1 row(s)
+[Funding] Step     : Checked "Bitcoin" row in Select Coin panel
+[Funding] Expected : visible
+[Funding] Actual   : visible
+[Funding] Step     : Cleared the Select Coin panel search field
+[Funding] Expected : search cleared
+[Funding] Actual   : search cleared
+[Funding] Step     : Searched Select Coin panel: "BNB"
+[Funding] Expected : search applied
+[Funding] Actual   : search applied
+[Funding] Step     : Counted visible currencies in the Select Coin panel
+[Funding] Expected : row count
+[Funding] Actual   : 1 row(s)
+[Funding] Step     : Checked "BNB" row in Select Coin panel
+[Funding] Expected : visible
+[Funding] Actual   : visible
+[Funding] Step     : Cleared the Select Coin panel search field
+[Funding] Expected : search cleared
+[Funding] Actual   : search cleared
+[Funding] Step     : Searched Select Coin panel: "USDT"
+[Funding] Expected : search applied
+[Funding] Actual   : search applied
+[Funding] Step     : Checked "Tether USDT" row in Select Coin panel
+[Funding] Expected : visible
+[Funding] Actual   : visible
+[Funding] Step     : Checked coin icon for "Tether USDT" in Select Coin panel
+[Funding] Expected : visible
+[Funding] Actual   : visible
+[Funding] Step     : Read "Tether USDT" row data in Select Coin panel
+[Funding] Expected : balance ≈ 136.35587972
+[Funding] Actual   : balance: "136.35587972 USDT", $ value: "$136.36"
+[Funding] Step     : Selected "Tether USDT" from the Select Coin panel
+[Funding] Expected : Tether USDT selected
+[Funding] Actual   : Tether USDT selected
+[Funding] Step     : Checked Transfer modal
+[Funding] Expected : visible
+[Funding] Actual   : visible
+[Funding] Step     : Read Transfer modal Coin field
+[Funding] Expected : "Tether USDT"
+[Funding] Actual   : "Tether USDT"
+[Funding] Step     : Checked transfer Amount currency label shows "usdt"
+[Funding] Expected : visible
+[Funding] Actual   : visible
+[Funding] Step     : Closed the open modal
+[Funding] Expected : modal closes (or was already closed)
+[Funding] Actual   : closed
+[Funding] Step     : Checked "Funding" tab
+[Funding] Expected : visible
+[Funding] Actual   : visible

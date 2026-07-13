@@ -1,0 +1,1 @@
+[TC-14] Bid/Ask vs Binance | Page Bid: 62176.47 | Page Ask: 62176.48 | Binance Bid: 0 | Binance Ask: 0 | Bid Diff%: 0 | Ask Diff%: 0

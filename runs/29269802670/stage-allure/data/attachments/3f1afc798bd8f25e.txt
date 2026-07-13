@@ -1,0 +1,1 @@
+[TC-12] Order book rows | Ask Count: 500 | Bid Count: 500 | Top Ask: 62176.48 | Top Bid: 62176.47

@@ -1,0 +1,1 @@
+[TC-19] BTC available balance on Sell tab | Available Balance: 0.0010565

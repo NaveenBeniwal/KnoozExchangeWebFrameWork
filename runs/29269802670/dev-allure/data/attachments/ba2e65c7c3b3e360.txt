@@ -1,0 +1,3 @@
+user creds: naveen.beniwal@antiersolutions.com : Test@123 : 12345
+[Portfolio] Overview page loaded
+[PortfolioOverviewPage][isBackButtonVisible] visible: true

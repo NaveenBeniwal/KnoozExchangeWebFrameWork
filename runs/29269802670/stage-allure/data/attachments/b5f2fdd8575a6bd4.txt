@@ -1,0 +1,1 @@
+[TC-26] Executed Price: 70000 | Executed Amount: 0.00014 | Total: 9.8 | FeePercent: 0.15 | Est Fee: 2.1e-7 | UI Est Fee: 2.1e-7 | Fee Match: match
