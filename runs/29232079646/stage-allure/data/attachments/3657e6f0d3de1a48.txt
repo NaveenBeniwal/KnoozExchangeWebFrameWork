@@ -1,0 +1,1 @@
+[TC-06] Currency pair selected from ALL tab

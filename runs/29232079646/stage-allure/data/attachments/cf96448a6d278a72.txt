@@ -1,0 +1,39 @@
+[Funding] Step     : Navigated to Portfolio > Funding tab
+[Funding] Expected : Funding page loaded
+[Funding] Actual   : Funding page loaded
+[Funding] Step     : Clicked "Transfer" for Tether USDT
+[Funding] Expected : Transfer modal opens
+[Funding] Actual   : Transfer modal opened
+[Funding] Step     : Filled transfer amount: 0
+[Funding] Expected : filled with "0"
+[Funding] Actual   : filled with "0"
+[Funding] Step     : Clicked Confirm on transfer modal
+[Funding] Expected : Confirm clicked
+[Funding] Actual   : Confirm clicked
+[Funding] Step     : Checked transfer amount validation message
+[Funding] Expected : visible
+[Funding] Actual   : visible
+[Funding] Step     : Filled transfer amount: 8.42372584
+[Funding] Expected : filled with "8.42372584"
+[Funding] Actual   : filled with "8.42372584"
+[Funding] Step     : Clicked the Transfer swap icon
+[Funding] Expected : swap icon clicked
+[Funding] Actual   : swap icon clicked
+[Funding] Step     : Read transfer amount field value
+[Funding] Expected : ""
+[Funding] Actual   : ""
+[Funding] Step     : Filled transfer amount: 0
+[Funding] Expected : filled with "0"
+[Funding] Actual   : filled with "0"
+[Funding] Step     : Clicked Confirm on transfer modal
+[Funding] Expected : Confirm clicked
+[Funding] Actual   : Confirm clicked
+[Funding] Step     : Checked transfer amount validation message
+[Funding] Expected : visible
+[Funding] Actual   : visible
+[Funding] Step     : Closed the open modal
+[Funding] Expected : modal closes (or was already closed)
+[Funding] Actual   : closed
+[Funding] Step     : Checked "Funding" tab
+[Funding] Expected : visible
+[Funding] Actual   : visible

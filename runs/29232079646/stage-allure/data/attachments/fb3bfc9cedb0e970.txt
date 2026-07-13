@@ -1,0 +1,1 @@
+[PortfolioOverviewPage][isTabVisible] tab: Copy | visible: true

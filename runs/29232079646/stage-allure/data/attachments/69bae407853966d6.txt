@@ -1,0 +1,1 @@
+[TC-05] Unmarked BTC/USDT from favorites | Status: "removed" | Message: ""BTC/USDT" should be removed from the Favorites tab"

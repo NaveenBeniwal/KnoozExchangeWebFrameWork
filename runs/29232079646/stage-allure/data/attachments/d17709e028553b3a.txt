@@ -1,0 +1,11 @@
+[Funding] Step     : Navigated to Portfolio > Funding tab
+[Funding] Expected : Funding page loaded
+[Funding] Actual   : Funding page loaded
+[Funding] Step     : Read Tether USDT row data
+[Funding] Expected : funding/inOrder/total amounts
+[Funding] Actual   : funding: 33.69490335, inOrder: 29.03333333, total: 62.72823668, ≈$62.73
+[Spot] Spot page loaded
+[Spot] Tether USDT  | spot: 120.06219421   | inOrder: 0              | total: 120.06219421 | ≈$120.06
+[Funding] Step     : Navigated to Portfolio > Funding tab
+[Funding] Expected : Funding page loaded
+[Funding] Actual   : Funding page loaded

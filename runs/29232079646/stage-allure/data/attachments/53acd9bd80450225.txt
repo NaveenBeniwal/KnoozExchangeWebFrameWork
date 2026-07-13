@@ -1,0 +1,18 @@
+[Funding] Step     : Navigated to Portfolio > Funding tab
+[Funding] Expected : Funding page loaded
+[Funding] Actual   : Funding page loaded
+[Funding] Step     : Checked whether the balance is masked
+[Funding] Expected : masked (no digits) or revealed (numeric)
+[Funding] Actual   : "Estimated Balance:100.7615207 USDT≈$100.77" → revealed
+[Funding] Step     : Clicked the balance toggle (eye) icon
+[Funding] Expected : toggle clicked
+[Funding] Actual   : toggle clicked
+[Funding] Step     : Checked whether the balance is masked
+[Funding] Expected : masked (no digits) or revealed (numeric)
+[Funding] Actual   : "Estimated Balance:***** USDT*****" → masked
+[Funding] Step     : Clicked the balance toggle (eye) icon
+[Funding] Expected : toggle clicked
+[Funding] Actual   : toggle clicked
+[Funding] Step     : Checked whether the balance is masked
+[Funding] Expected : masked (no digits) or revealed (numeric)
+[Funding] Actual   : "Estimated Balance:100.7615207 USDT≈$100.77" → revealed

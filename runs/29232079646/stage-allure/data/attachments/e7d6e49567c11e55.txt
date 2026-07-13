@@ -1,0 +1,1 @@
+[PortfolioOverviewPage][isBalanceToggleIconVisible] visible: true
