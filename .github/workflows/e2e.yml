@@ -10,9 +10,11 @@
 #     choice from earlier, unrelated to "the repository" being swapped here.
 #   - Each test job's env block uses this repo's real secrets (BASE_URL/EMAIL/PASSWORD/
 #     OTP/TRADE_*) instead of the reference's generic USERNAME/API_*/OAUTH_*/GRANT_TYPE.
-#   - Test commands are the bare `npx playwright test --project=chromium` (no --grep),
-#     matching the reference exactly — tests/api is excluded globally via
-#     playwright.config.ts's testIgnore, so the bare command collects and runs cleanly.
+#   - Every test job is scoped with --grep (@smoke or @sanity) — all four GitHub
+#     Environments (dev/QA/stage/Prod) now share one real account's credentials, so an
+#     untagged run would place real trades and really change the account password via
+#     changepassword.spec.ts. tests/api is excluded globally via playwright.config.ts's
+#     testIgnore, so these commands collect and run cleanly regardless.
 #   - report_url uses github.repository_owner/github.event.repository.name (dynamic)
 #     instead of a hardcoded naveenanimation20/OpenCartWebAPIFramework Pages path.
 #   - Email recipient is naveen.beniwal@antiersolutions.com (per standing instruction).
@@ -233,7 +235,7 @@ jobs:
           retention-days: 30
 
   # ═════════════════════════════════════════════════════
-  # STEP 4: DEPLOY STAGE + Regression TESTS
+  # STEP 4: DEPLOY STAGE + Sanity TESTS
   # ═════════════════════════════════════════════════════
   deploy-stage:
     name: Deploy to STAGE
@@ -243,8 +245,8 @@ jobs:
       - name: Deploy to STAGE
         run: echo "Deployed to STAGE ✅"
 
-  regression-stage:
-    name: STAGE - Regression Tests
+  sanity-stage:
+    name: STAGE - Sanity Tests
     needs: deploy-stage
     runs-on: ubuntu-latest
     environment: stage
@@ -278,12 +280,12 @@ jobs:
         if: steps.pw-cache-stage.outputs.cache-hit == 'true'
         run: npx playwright install-deps chromium
 
-      - name: Run Regression Tests on STAGE
+      - name: Run Sanity Tests on STAGE
         run: |
           echo "========================================="
-          echo "  Running Regression (all tests) on STAGE"
+          echo "  Running SANITY @sanity on STAGE"
           echo "========================================="
-          npx playwright test --project=chromium
+          npx playwright test --project=chromium --grep @sanity
         env:
           ENV: stage
           BASE_URL: ${{ secrets.BASE_URL }}
@@ -311,7 +313,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: stage-regression-html-report
+          name: stage-sanity-html-report
           path: reports/html-report/
           retention-days: 30
 
@@ -319,7 +321,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: stage-regression-allure-report
+          name: stage-sanity-allure-report
           path: allure-report/
           retention-days: 30
 
@@ -328,7 +330,7 @@ jobs:
   # ═════════════════════════════════════════════════════
   deploy-prod:
     name: Deploy to PROD
-    needs: regression-stage
+    needs: sanity-stage
     runs-on: ubuntu-latest
     environment: Prod
     steps:
@@ -410,7 +412,7 @@ jobs:
   # ═════════════════════════════════════════════════════
   notify:
     name: Publish Reports + Notify
-    needs: [build, smoke-dev, regression-qa, regression-stage, smoke-prod]
+    needs: [build, smoke-dev, regression-qa, sanity-stage, smoke-prod]
     if: always()
     runs-on: ubuntu-latest
     permissions:
@@ -424,7 +426,7 @@ jobs:
           BUILD="${{ needs.build.result }}"
           DEV="${{ needs.smoke-dev.result }}"
           QA="${{ needs.regression-qa.result }}"
-          STAGE="${{ needs.regression-stage.result }}"
+          STAGE="${{ needs.sanity-stage.result }}"
           PROD="${{ needs.smoke-prod.result }}"
 
           get_emoji() { if [ "$1" = "success" ]; then echo "✅"; elif [ "$1" = "skipped" ]; then echo "⏭️"; else echo "❌"; fi; }
@@ -478,7 +480,7 @@ jobs:
               <p class="meta">Run ID: RUN_ID | Branch: BRANCH | Date: RUN_DATE</p>
 
               <div class="card">
-                <h2>🟢 DEV — Sanity</h2>
+                <h2>🟢 DEV — Smoke</h2>
                 <div class="links">
                   <a class="btn html-btn" href="dev-html/index.html">📊 HTML Report</a>
                   <a class="btn allure-btn" href="dev-allure/index.html">📈 Allure Report</a>
@@ -486,7 +488,7 @@ jobs:
               </div>
 
               <div class="card">
-                <h2>🔵 QA — Regression</h2>
+                <h2>🔵 QA — Smoke</h2>
                 <div class="links">
                   <a class="btn html-btn" href="qa-html/index.html">📊 HTML Report</a>
                   <a class="btn allure-btn" href="qa-allure/index.html">📈 Allure Report</a>
@@ -494,7 +496,7 @@ jobs:
               </div>
 
               <div class="card">
-                <h2>🟡 STAGE — Regression</h2>
+                <h2>🟡 STAGE — Sanity</h2>
                 <div class="links">
                   <a class="btn html-btn" href="stage-html/index.html">📊 HTML Report</a>
                   <a class="btn allure-btn" href="stage-allure/index.html">📈 Allure Report</a>
@@ -520,10 +522,10 @@ jobs:
           # Copy reports into organized folders
           cp -r all-reports/dev-sanity-html-report/ pages-deploy/runs/${{ github.run_id }}/dev-html/ 2>/dev/null || true
           cp -r all-reports/dev-sanity-allure-report/ pages-deploy/runs/${{ github.run_id }}/dev-allure/ 2>/dev/null || true
-          cp -r all-reports/qa-regression-html-report/ pages-deploy/runs/${{ github.run_id }}/qa-html/ 2>/dev/null || true
-          cp -r all-reports/qa-regression-allure-report/ pages-deploy/runs/${{ github.run_id }}/qa-allure/ 2>/dev/null || true
-          cp -r all-reports/stage-regression-html-report/ pages-deploy/runs/${{ github.run_id }}/stage-html/ 2>/dev/null || true
-          cp -r all-reports/stage-regression-allure-report/ pages-deploy/runs/${{ github.run_id }}/stage-allure/ 2>/dev/null || true
+          cp -r all-reports/qa-smoke-html-report/ pages-deploy/runs/${{ github.run_id }}/qa-html/ 2>/dev/null || true
+          cp -r all-reports/qa-smoke-allure-report/ pages-deploy/runs/${{ github.run_id }}/qa-allure/ 2>/dev/null || true
+          cp -r all-reports/stage-sanity-html-report/ pages-deploy/runs/${{ github.run_id }}/stage-html/ 2>/dev/null || true
+          cp -r all-reports/stage-sanity-allure-report/ pages-deploy/runs/${{ github.run_id }}/stage-allure/ 2>/dev/null || true
           cp -r all-reports/prod-smoke-html-report/ pages-deploy/runs/${{ github.run_id }}/prod-html/ 2>/dev/null || true
           cp -r all-reports/prod-smoke-allure-report/ pages-deploy/runs/${{ github.run_id }}/prod-allure/ 2>/dev/null || true
 
@@ -583,9 +585,9 @@ jobs:
                 <table>
                   <tr><th>Stage</th><th>Test Suite</th><th>Status</th></tr>
                   <tr><td class="env-name">🔨 Build</td><td class="test-type">Maven Unit Tests</td><td class="status">${{ steps.status.outputs.build }}</td></tr>
-                  <tr><td class="env-name">🟢 DEV</td><td class="test-type">Sanity (@smoke)</td><td class="status">${{ steps.status.outputs.dev }}</td></tr>
-                  <tr><td class="env-name">🔵 QA</td><td class="test-type">Regression (All Tests)</td><td class="status">${{ steps.status.outputs.qa }}</td></tr>
-                  <tr><td class="env-name">🟡 STAGE</td><td class="test-type">Regression (All Tests)</td><td class="status">${{ steps.status.outputs.stage }}</td></tr>
+                  <tr><td class="env-name">🟢 DEV</td><td class="test-type">Smoke (@smoke)</td><td class="status">${{ steps.status.outputs.dev }}</td></tr>
+                  <tr><td class="env-name">🔵 QA</td><td class="test-type">Smoke (@smoke)</td><td class="status">${{ steps.status.outputs.qa }}</td></tr>
+                  <tr><td class="env-name">🟡 STAGE</td><td class="test-type">Sanity (@sanity)</td><td class="status">${{ steps.status.outputs.stage }}</td></tr>
                   <tr><td class="env-name">🔴 PROD</td><td class="test-type">Smoke (@smoke)</td><td class="status">${{ steps.status.outputs.prod }}</td></tr>
                 </table>
               </div>
@@ -635,7 +637,7 @@ jobs:
                 { "type": "divider" },
                 {
                   "type": "section",
-                  "text": { "type": "mrkdwn", "text": "${{ steps.status.outputs.build }}  *Build* — Maven Unit Tests\n${{ steps.status.outputs.dev }}  *DEV* — Sanity (@smoke)\n${{ steps.status.outputs.qa }}  *QA* — Regression (All Tests)\n${{ steps.status.outputs.stage }}  *STAGE* — Sanity (@smoke)\n${{ steps.status.outputs.prod }}  *PROD* — Smoke (@smoke)" }
+                  "text": { "type": "mrkdwn", "text": "${{ steps.status.outputs.build }}  *Build* — Maven Unit Tests\n${{ steps.status.outputs.dev }}  *DEV* — Smoke (@smoke)\n${{ steps.status.outputs.qa }}  *QA* — Smoke (@smoke)\n${{ steps.status.outputs.stage }}  *STAGE* — Sanity (@sanity)\n${{ steps.status.outputs.prod }}  *PROD* — Smoke (@smoke)" }
                 },
                 { "type": "divider" },
                 {
@@ -665,7 +667,7 @@ jobs:
           echo "       MASTER CI/CD PIPELINE SUMMARY"
           echo "═══════════════════════════════════════════"
           echo "  Build + Unit:    ${{ needs.build.result }}"
-          echo "  DEV Sanity:      ${{ needs.sanity-dev.result }}"
+          echo "  DEV Smoke:       ${{ needs.smoke-dev.result }}"
           echo "  QA Regression:   ${{ needs.regression-qa.result }}"
           echo "  STAGE Sanity:    ${{ needs.sanity-stage.result }}"
           echo "  PROD Smoke:      ${{ needs.smoke-prod.result }}"
