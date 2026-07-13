@@ -28,7 +28,7 @@ export class LoginPage extends BasePage {
         this.getOtpButton = page.getByText('Get OTP', { exact: true });
         this.codeInput = page.getByRole('textbox', { name: 'Enter code' });
         this.loginSuccessMessage = page.locator(`span:has-text("Login Successfully")`);
-        this.homePage = page.getByText('Home', { exact: true });
+        this.homePage = page.getByText('Home', { exact: true }).first();
         this.loginErrorMessage = page.locator(`span:has-text("Invalid credentials. You are left with 0 more attempts")`);
         this.laterButton = page.getByRole('button', { name: 'Later', exact: true });
     }
@@ -74,14 +74,7 @@ export class LoginPage extends BasePage {
     }
 
     async isUserOnHomePage(): Promise<boolean> {
-        // A one-time post-login popup ("Later" to dismiss) can cover the Home nav item on a
-        // fresh browser session with no prior history — dismiss it the same way
-        // dismissPostLoginDialogsAndWaitForHome() does, otherwise a plain isVisible() snapshot
-        // taken while it's still up reports "not on home page" even though login succeeded.
-        if (await this.laterButton.isVisible({ timeout: 3000 }).catch(() => false)) {
-            await this.laterButton.click();
-            await this.page.waitForLoadState('domcontentloaded').catch(() => {});
-        }
+        await this.homePage.waitFor({ state: 'visible', timeout: 10000 }).catch(() => {});
         const isVisible = await this.homePage.isVisible({ timeout: 10000 }).catch(() => false);
         console.log(isVisible ? '[LoginPage] Login successful — Home page loaded' : '[LoginPage] Login failed — Home page not visible');
         return isVisible;
