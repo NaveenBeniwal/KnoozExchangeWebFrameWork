@@ -23,10 +23,12 @@ jobs:
     runs-on: ubuntu-latest
     # 15 min was too tight once the suite grew: CI forces a single Playwright worker
     # (playwright.config.ts: workers: process.env.CI ? 1 : undefined), and the combined
-    # suite is now 380+ tests — the last scheduled run only got through ~140 (37%) before
-    # being killed at 15 min (~6.5s/test average → ~45 min needed for the full run, plus
-    # the newly added tests/p2p suite). 50 min gives headroom above that estimate.
-    timeout-minutes: 50
+    # suite is now 380+ tests. A verification run completed in 41m38s at the old 15s
+    # actionTimeout/30s test timeout; those are now doubled for CI (playwright.config.ts)
+    # to absorb the runner's slower/less consistent connection to the real staging site,
+    # so any test that was timing out — not hanging — will take longer to give up. 65 min
+    # keeps headroom above that.
+    timeout-minutes: 65
     environment: ${{ github.event.inputs.environment || 'stage' }}
 
     env:

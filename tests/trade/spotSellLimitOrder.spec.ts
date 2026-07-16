@@ -117,6 +117,7 @@ test.describe.serial('Spot Module — Sell Limit Order Positive Flow', () => {
     // ── TC-07 ─────────────────────────────────────────────────────────────────
     // Positioned after TC-06 so the page shows the selected pair before comparing with Binance
     test('TC-07: 24h ticker header matches Binance reference data (exact match)', async () => {
+        test.skip(!!process.env.CI, 'Binance public API is blocked for GitHub-hosted runner IPs — see project memory (Binance API blocked on CI runners)');
         const [binance, ticker] = await Promise.all([
             BinanceHelper.get24hTicker(page, tradeData.searchPair),
             spotSellPage.getTickerHeaderData(),

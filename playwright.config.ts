@@ -23,6 +23,11 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
+  // GitHub-hosted runners are slower/less consistent reaching the real staging site than a local
+  // machine — confirmed live: a run on 2026-07-16 hit 13 timeout failures (locator.click/waitFor
+  // at the 15s actionTimeout, or the 30s per-test default) clustered in one ~20min window, spread
+  // across otppagevalidation/p2p/coinDetail/copy/grid — not a bug in any one of those pages.
+  timeout: process.env.CI ? 60000 : 30000,
 
   reporter: [
     ["list"],
@@ -45,7 +50,7 @@ export default defineConfig({
     // timeout fires, tears down the page mid-action and surfaces as a misleading "page/context/
     // browser has been closed" error rather than a clear "locator not found". Hit this same failure
     // shape three separate times across the OTP and Funding suites before tracing it back here.
-    actionTimeout: 15000,
+    actionTimeout: process.env.CI ? 30000 : 15000,
   },
 
   /* Configure projects for major browsers */
