@@ -8,6 +8,7 @@ export class CsvHelper {
             columns: true,
             skip_empty_lines: true,
             trim: true,
+            relax_quotes: true,
         }) as Record<string, string>[];
     }
 

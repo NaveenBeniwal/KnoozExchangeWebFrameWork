@@ -1,0 +1,20 @@
+scenario,param,expectedText,description
+risk_notice_heading,,Risk Notice,Risk Notice heading should be shown in the P2P risk notice popup
+risk_notice_body,,"To avoid becoming a victim of scammers, NEVER release cryptocurrency before actually receiving the payment! Don't believe anyone who claims to be a customer support and convinces you to release crypto before you receive payment - they're scammers. Once the seller confirms the order and transfers the assets to the buyer, the transaction is considered completed and cannot be disputed. Knooz does not take any responsibility for transaction made outside of the platform.",Risk Notice disclaimer text should match
+risk_notice_checkbox_label,,I have read and agree to the above content.,Risk Notice checkbox label text should match
+peer_to_peer_heading,,Peer To Peer,P2P page heading should be visible after confirming the risk notice
+market_update_heading,,How P2P Works,How P2P Works heading should be visible on the Market Update tab
+market_update_subtext,,Buy & sell Crypto safely and easily on Knooz P2P platform with your preferred payment methods today.,Sub text below the How P2P Works heading should match
+buy_step,1,"Once you place a P2P order, the crypto asset will be escrowed by KNOOZ P2P.",Buy step 1 (Place an Order) text should match
+buy_step,2,"Send money to the seller via payment methods. Complete the fiat transaction and click Transferred, notify seller on KNOOZ P2P.",Buy step 2 (Pay directly to the seller) text should match
+buy_step,3,"Once the seller confirms receipt of money, the escrowed crypto will be released to the buyer.",Buy step 3 (KNOOZ releases the escrowed crypto) text should match
+sell_step,1,"After you place an order, your crypto will be escrowed by KNOOZ P2P.",Sell step 1 (Place an Order) text should match
+sell_step,2,"Check the transaction record in the given payment account, and make sure you receive the money sent by the buyer.",Sell step 2 (Confirm the Payment) text should match
+sell_step,3,"Once you confirm the receipt of money, release crypto to the buyer on KNOOZ P2P.",Sell step 3 (KNOOZ releases the escrowed crypto) text should match
+p2p_listing_heading,,P2P,P2P heading should be visible on the currency listing section
+no_data_text,,No data,No data text and icon should be shown when a currency/filter combination has no matching orders
+no_data_amount_value,,999999999,Amount value used to force zero matching orders so the No data state can be verified deterministically
+filter_fiat_option,,USD,Fiat filter selection should update to show the selected method
+filter_country_option,,India,Country filter selection should update to show the selected country
+filter_fiat_after_country,,INR,Selecting Country=India auto-updates the Fiat filter to the country's local currency
+filter_payment_after_country,,PHONEPE,Payment filter selection should update to show the selected method once Country/Fiat are India/INR
