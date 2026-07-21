@@ -103,7 +103,7 @@ pipeline {
                     string(credentialsId: 'dev-base-url', variable: 'BASE_URL'),
                     string(credentialsId: 'dev-email', variable: 'EMAIL'),
                     string(credentialsId: 'dev-password', variable: 'PASSWORD'),
-                    string(credentialsId: 'dev-otp', variable: 'OTP')
+                    string(credentialsId: 'app-static-otp', variable: 'OTP')
                 ]) {
                     bat """
                         docker run --rm ^
@@ -162,7 +162,7 @@ pipeline {
                     string(credentialsId: 'qa-base-url', variable: 'BASE_URL'),
                     string(credentialsId: 'qa-email', variable: 'EMAIL'),
                     string(credentialsId: 'qa-password', variable: 'PASSWORD'),
-                    string(credentialsId: 'qa-otp', variable: 'OTP')
+                    string(credentialsId: 'app-static-otp', variable: 'OTP')
                 ]) {
                     bat """
                         docker run --rm ^
@@ -221,7 +221,7 @@ pipeline {
                     string(credentialsId: 'stage-base-url', variable: 'BASE_URL'),
                     string(credentialsId: 'stage-email', variable: 'EMAIL'),
                     string(credentialsId: 'stage-password', variable: 'PASSWORD'),
-                    string(credentialsId: 'stage-otp', variable: 'OTP'),
+                    string(credentialsId: 'app-static-otp', variable: 'OTP'),
                     string(credentialsId: 'trade-base-url', variable: 'TRADE_BASE_URL'),
                     string(credentialsId: 'trade-user-email', variable: 'TRADE_USER_EMAIL'),
                     string(credentialsId: 'trade-user-password', variable: 'TRADE_USER_PASSWORD'),
@@ -308,7 +308,7 @@ pipeline {
                     string(credentialsId: 'prod-base-url', variable: 'BASE_URL'),
                     string(credentialsId: 'prod-email', variable: 'EMAIL'),
                     string(credentialsId: 'prod-password', variable: 'PASSWORD'),
-                    string(credentialsId: 'prod-otp', variable: 'OTP')
+                    string(credentialsId: 'app-static-otp', variable: 'OTP')
                 ]) {
                     bat """
                         docker run --rm ^
