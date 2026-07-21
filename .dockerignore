@@ -1,0 +1,9 @@
+node_modules
+.git
+.github
+test-results
+playwright-report
+blob-report
+allure-results
+allure-report
+reports

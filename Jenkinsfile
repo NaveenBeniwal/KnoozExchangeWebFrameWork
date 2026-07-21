@@ -48,11 +48,7 @@ pipeline {
                 echo "========================================="
                 echo "  Building Playwright Docker Image"
                 echo "========================================="
-                dir('qa-tests') {
-                    git url: 'https://github.com/NaveenBeniwal/KnoozExchangeWebFrameWork.git',
-                        branch: 'main'
-                    bat "docker build -t ${DOCKER_IMAGE} ."
-                }
+                bat "docker build -t ${DOCKER_IMAGE} ."
                 bat "docker images | findstr ${DOCKER_IMAGE}"
             }
         }
