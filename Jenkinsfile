@@ -56,7 +56,7 @@ pipeline {
                 dir('dev-app') {
                     git url: 'https://github.com/jglick/simple-maven-project-with-tests.git',
                         branch: 'master'
-                    sh 'mvn clean install -Dmaven.test.failure.ignore=true'
+                    bat 'mvn clean install -Dmaven.test.failure.ignore=true'
                 }
             }
             post {
@@ -77,9 +77,9 @@ pipeline {
                 dir('qa-tests') {
                     git url: 'https://github.com/NaveenBeniwal/KnoozExchangeWebFrameWork.git',
                         branch: 'main'
-                    sh "docker build -t ${DOCKER_IMAGE} ."
+                    bat "docker build -t ${DOCKER_IMAGE} ."
                 }
-                sh "docker images | grep ${DOCKER_IMAGE}"
+                bat "docker images | findstr ${DOCKER_IMAGE}"
             }
         }
 
@@ -97,32 +97,33 @@ pipeline {
                 echo "========================================="
                 echo "  Running SANITY @smoke on DEV (Docker)"
                 echo "========================================="
-                sh 'mkdir -p reports-dev/html allure-results-dev'
+                bat 'if not exist reports-dev\\html mkdir reports-dev\\html'
+                bat 'if not exist allure-results-dev mkdir allure-results-dev'
                 withCredentials([
                     string(credentialsId: 'dev-base-url', variable: 'BASE_URL'),
                     string(credentialsId: 'dev-email', variable: 'EMAIL'),
                     string(credentialsId: 'dev-password', variable: 'PASSWORD'),
                     string(credentialsId: 'dev-otp', variable: 'OTP')
                 ]) {
-                    sh """
-                        docker run --rm \
-                            -e CI=true \
-                            -e ENV=dev \
-                            -e BASE_URL=${BASE_URL} \
-                            -e EMAIL=${EMAIL} \
-                            -e PASSWORD=${PASSWORD} \
-                            -e OTP=${OTP} \
-                            -v \${WORKSPACE}/reports-dev/html:/app/reports/html-report \
-                            -v \${WORKSPACE}/allure-results-dev:/app/allure-results \
-                            ${DOCKER_IMAGE} \
+                    bat """
+                        docker run --rm ^
+                            -e CI=true ^
+                            -e ENV=dev ^
+                            -e BASE_URL=${BASE_URL} ^
+                            -e EMAIL=${EMAIL} ^
+                            -e PASSWORD=${PASSWORD} ^
+                            -e OTP=${OTP} ^
+                            -v ${WORKSPACE}/reports-dev/html:/app/reports/html-report ^
+                            -v ${WORKSPACE}/allure-results-dev:/app/allure-results ^
+                            ${DOCKER_IMAGE} ^
                             npx playwright test --project=chromium --grep @smoke
                     """
                 }
             }
             post {
                 always {
-                    sh 'mkdir -p reports-dev/allure'
-                    sh 'npx allure generate allure-results-dev --clean -o reports-dev/allure || true'
+                    bat 'if not exist reports-dev\\allure mkdir reports-dev\\allure'
+                    bat 'npx allure generate allure-results-dev --clean -o reports-dev/allure || ver>nul'
                     publishHTML(target: [
                         reportName: 'DEV Sanity - PW HTML Report',
                         reportDir: 'reports-dev/html',
@@ -155,32 +156,33 @@ pipeline {
                 echo "========================================="
                 echo "  Running REGRESSION on QA (Docker)"
                 echo "========================================="
-                sh 'mkdir -p reports-qa/html allure-results-qa'
+                bat 'if not exist reports-qa\\html mkdir reports-qa\\html'
+                bat 'if not exist allure-results-qa mkdir allure-results-qa'
                 withCredentials([
                     string(credentialsId: 'qa-base-url', variable: 'BASE_URL'),
                     string(credentialsId: 'qa-email', variable: 'EMAIL'),
                     string(credentialsId: 'qa-password', variable: 'PASSWORD'),
                     string(credentialsId: 'qa-otp', variable: 'OTP')
                 ]) {
-                    sh """
-                        docker run --rm \
-                            -e CI=true \
-                            -e ENV=qa \
-                            -e BASE_URL=${BASE_URL} \
-                            -e EMAIL=${EMAIL} \
-                            -e PASSWORD=${PASSWORD} \
-                            -e OTP=${OTP} \
-                            -v \${WORKSPACE}/reports-qa/html:/app/reports/html-report \
-                            -v \${WORKSPACE}/allure-results-qa:/app/allure-results \
-                            ${DOCKER_IMAGE} \
+                    bat """
+                        docker run --rm ^
+                            -e CI=true ^
+                            -e ENV=qa ^
+                            -e BASE_URL=${BASE_URL} ^
+                            -e EMAIL=${EMAIL} ^
+                            -e PASSWORD=${PASSWORD} ^
+                            -e OTP=${OTP} ^
+                            -v ${WORKSPACE}/reports-qa/html:/app/reports/html-report ^
+                            -v ${WORKSPACE}/allure-results-qa:/app/allure-results ^
+                            ${DOCKER_IMAGE} ^
                             npx playwright test --project=chromium --grep @smoke
                     """
                 }
             }
             post {
                 always {
-                    sh 'mkdir -p reports-qa/allure'
-                    sh 'npx allure generate allure-results-qa --clean -o reports-qa/allure || true'
+                    bat 'if not exist reports-qa\\allure mkdir reports-qa\\allure'
+                    bat 'npx allure generate allure-results-qa --clean -o reports-qa/allure || ver>nul'
                     publishHTML(target: [
                         reportName: 'QA Regression - PW HTML Report',
                         reportDir: 'reports-qa/html',
@@ -213,7 +215,8 @@ pipeline {
                 echo "========================================="
                 echo "  Running SANITY @smoke on STAGE (Docker)"
                 echo "========================================="
-                sh 'mkdir -p reports-stage/html allure-results-stage'
+                bat 'if not exist reports-stage\\html mkdir reports-stage\\html'
+                bat 'if not exist allure-results-stage mkdir allure-results-stage'
                 withCredentials([
                     string(credentialsId: 'stage-base-url', variable: 'BASE_URL'),
                     string(credentialsId: 'stage-email', variable: 'EMAIL'),
@@ -230,35 +233,35 @@ pipeline {
                     string(credentialsId: 'trade-sell-volume', variable: 'TRADE_SELL_VOLUME'),
                     string(credentialsId: 'trade-sell-price', variable: 'TRADE_SELL_PRICE')
                 ]) {
-                    sh """
-                        docker run --rm \
-                            -e CI=true \
-                            -e ENV=stage \
-                            -e BASE_URL=${BASE_URL} \
-                            -e EMAIL=${EMAIL} \
-                            -e PASSWORD=${PASSWORD} \
-                            -e OTP=${OTP} \
-                            -e TRADE_BASE_URL=${TRADE_BASE_URL} \
-                            -e TRADE_USER_EMAIL=${TRADE_USER_EMAIL} \
-                            -e TRADE_USER_PASSWORD=${TRADE_USER_PASSWORD} \
-                            -e TRADE_2FA_SECRET=${TRADE_2FA_SECRET} \
-                            -e TRADE_BUY_MARKET=${TRADE_BUY_MARKET} \
-                            -e TRADE_BUY_VOLUME=${TRADE_BUY_VOLUME} \
-                            -e TRADE_BUY_PRICE=${TRADE_BUY_PRICE} \
-                            -e TRADE_SELL_MARKET=${TRADE_SELL_MARKET} \
-                            -e TRADE_SELL_VOLUME=${TRADE_SELL_VOLUME} \
-                            -e TRADE_SELL_PRICE=${TRADE_SELL_PRICE} \
-                            -v \${WORKSPACE}/reports-stage/html:/app/reports/html-report \
-                            -v \${WORKSPACE}/allure-results-stage:/app/allure-results \
-                            ${DOCKER_IMAGE} \
+                    bat """
+                        docker run --rm ^
+                            -e CI=true ^
+                            -e ENV=stage ^
+                            -e BASE_URL=${BASE_URL} ^
+                            -e EMAIL=${EMAIL} ^
+                            -e PASSWORD=${PASSWORD} ^
+                            -e OTP=${OTP} ^
+                            -e TRADE_BASE_URL=${TRADE_BASE_URL} ^
+                            -e TRADE_USER_EMAIL=${TRADE_USER_EMAIL} ^
+                            -e TRADE_USER_PASSWORD=${TRADE_USER_PASSWORD} ^
+                            -e TRADE_2FA_SECRET=${TRADE_2FA_SECRET} ^
+                            -e TRADE_BUY_MARKET=${TRADE_BUY_MARKET} ^
+                            -e TRADE_BUY_VOLUME=${TRADE_BUY_VOLUME} ^
+                            -e TRADE_BUY_PRICE=${TRADE_BUY_PRICE} ^
+                            -e TRADE_SELL_MARKET=${TRADE_SELL_MARKET} ^
+                            -e TRADE_SELL_VOLUME=${TRADE_SELL_VOLUME} ^
+                            -e TRADE_SELL_PRICE=${TRADE_SELL_PRICE} ^
+                            -v ${WORKSPACE}/reports-stage/html:/app/reports/html-report ^
+                            -v ${WORKSPACE}/allure-results-stage:/app/allure-results ^
+                            ${DOCKER_IMAGE} ^
                             npx playwright test --project=chromium --grep @sanity
                     """
                 }
             }
             post {
                 always {
-                    sh 'mkdir -p reports-stage/allure'
-                    sh 'npx allure generate allure-results-stage --clean -o reports-stage/allure || true'
+                    bat 'if not exist reports-stage\\allure mkdir reports-stage\\allure'
+                    bat 'npx allure generate allure-results-stage --clean -o reports-stage/allure || ver>nul'
                     publishHTML(target: [
                         reportName: 'STAGE Sanity - PW HTML Report',
                         reportDir: 'reports-stage/html',
@@ -299,32 +302,33 @@ pipeline {
                 echo "========================================="
                 echo "  Running SMOKE @smoke on PROD (Docker)"
                 echo "========================================="
-                sh 'mkdir -p reports-prod/html allure-results-prod'
+                bat 'if not exist reports-prod\\html mkdir reports-prod\\html'
+                bat 'if not exist allure-results-prod mkdir allure-results-prod'
                 withCredentials([
                     string(credentialsId: 'prod-base-url', variable: 'BASE_URL'),
                     string(credentialsId: 'prod-email', variable: 'EMAIL'),
                     string(credentialsId: 'prod-password', variable: 'PASSWORD'),
                     string(credentialsId: 'prod-otp', variable: 'OTP')
                 ]) {
-                    sh """
-                        docker run --rm \
-                            -e CI=true \
-                            -e ENV=prod \
-                            -e BASE_URL=${BASE_URL} \
-                            -e EMAIL=${EMAIL} \
-                            -e PASSWORD=${PASSWORD} \
-                            -e OTP=${OTP} \
-                            -v \${WORKSPACE}/reports-prod/html:/app/reports/html-report \
-                            -v \${WORKSPACE}/allure-results-prod:/app/allure-results \
-                            ${DOCKER_IMAGE} \
+                    bat """
+                        docker run --rm ^
+                            -e CI=true ^
+                            -e ENV=prod ^
+                            -e BASE_URL=${BASE_URL} ^
+                            -e EMAIL=${EMAIL} ^
+                            -e PASSWORD=${PASSWORD} ^
+                            -e OTP=${OTP} ^
+                            -v ${WORKSPACE}/reports-prod/html:/app/reports/html-report ^
+                            -v ${WORKSPACE}/allure-results-prod:/app/allure-results ^
+                            ${DOCKER_IMAGE} ^
                             npx playwright test --project=chromium --grep @smoke
                     """
                 }
             }
             post {
                 always {
-                    sh 'mkdir -p reports-prod/allure'
-                    sh 'npx allure generate allure-results-prod --clean -o reports-prod/allure || true'
+                    bat 'if not exist reports-prod\\allure mkdir reports-prod\\allure'
+                    bat 'npx allure generate allure-results-prod --clean -o reports-prod/allure || ver>nul'
                     publishHTML(target: [
                         reportName: 'PROD Smoke - PW HTML Report',
                         reportDir: 'reports-prod/html',
@@ -412,7 +416,7 @@ pipeline {
             }
 
             // Cleanup Docker image after pipeline
-            sh "docker rmi ${DOCKER_IMAGE} || true"
+            bat "docker rmi ${DOCKER_IMAGE} || ver>nul"
         }
         success {
             echo '═══════════════════════════════════════════'
