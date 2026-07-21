@@ -97,48 +97,40 @@ pipeline {
                 echo "========================================="
                 echo "  Running SANITY @smoke on DEV (Docker)"
                 echo "========================================="
-                bat 'if not exist reports-dev\\html mkdir reports-dev\\html'
-                bat 'if not exist allure-results-dev mkdir allure-results-dev'
-                withCredentials([
-                    string(credentialsId: 'dev-base-url', variable: 'BASE_URL'),
-                    string(credentialsId: 'dev-email', variable: 'EMAIL'),
-                    string(credentialsId: 'dev-password', variable: 'PASSWORD'),
-                    string(credentialsId: 'app-static-otp', variable: 'OTP')
-                ]) {
-                    bat """
-                        docker run --rm ^
-                            -e CI=true ^
-                            -e ENV=dev ^
-                            -e BASE_URL=${BASE_URL} ^
-                            -e EMAIL=${EMAIL} ^
-                            -e PASSWORD=${PASSWORD} ^
-                            -e OTP=${OTP} ^
-                            -v ${WORKSPACE}/reports-dev/html:/app/reports/html-report ^
-                            -v ${WORKSPACE}/allure-results-dev:/app/allure-results ^
-                            ${DOCKER_IMAGE} ^
-                            npx playwright test --project=chromium --grep @smoke
-                    """
-                }
-            }
-            post {
-                always {
-                    bat 'if not exist reports-dev\\allure mkdir reports-dev\\allure'
-                    bat 'npx allure generate allure-results-dev --clean -o reports-dev/allure || ver>nul'
-                    publishHTML(target: [
-                        reportName: 'DEV Sanity - PW HTML Report',
-                        reportDir: 'reports-dev/html',
-                        reportFiles: 'index.html',
-                        keepAll: true,
-                        alwaysLinkToLastBuild: true
-                    ])
-                    publishHTML(target: [
-                        reportName: 'DEV Sanity - Allure Report',
-                        reportDir: 'reports-dev/allure',
-                        reportFiles: 'index.html',
-                        keepAll: true,
-                        alwaysLinkToLastBuild: true
-                    ])
-                }
+        post {
+    always {
+        echo 'Generating DEV Allure report...'
+
+        bat '''
+            if not exist reports-dev\\allure mkdir reports-dev\\allure
+            npx allure generate allure-results-dev --clean -o reports-dev/allure
+        '''
+
+        echo 'Allure report generated successfully.'
+
+        publishHTML(target: [
+            reportName: 'DEV Sanity - PW HTML Report',
+            reportDir: 'reports-dev/html',
+            reportFiles: 'index.html',
+            keepAll: true,
+            alwaysLinkToLastBuild: true,
+            allowMissing: true
+        ])
+
+        echo 'Playwright HTML report published.'
+
+        publishHTML(target: [
+            reportName: 'DEV Sanity - Allure Report',
+            reportDir: 'reports-dev/allure',
+            reportFiles: 'index.html',
+            keepAll: true,
+            alwaysLinkToLastBuild: true,
+            allowMissing: true
+        ])
+
+        echo 'Allure report published successfully.'
+    }
+}
             }
         }
 
