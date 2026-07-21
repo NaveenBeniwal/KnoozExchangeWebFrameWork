@@ -56,7 +56,7 @@ pipeline {
                 dir('dev-app') {
                     git url: 'https://github.com/jglick/simple-maven-project-with-tests.git',
                         branch: 'master'
-                    bat 'mvn clean install -Dmaven.test.failure.ignore=true'
+                    bat 'mvn clean install'
                 }
             }
             post {
