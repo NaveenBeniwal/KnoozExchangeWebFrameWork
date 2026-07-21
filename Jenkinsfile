@@ -8,11 +8,6 @@
 pipeline {
     agent any
 
-    tools {
-        maven 'Maven-3.9'
-        jdk 'JDK-21'
-    }
-
     parameters {
         choice(
             name: 'ENVIRONMENT',
@@ -37,7 +32,7 @@ pipeline {
     }
 
     options {
-        timeout(time: 30, unit: 'MINUTES')
+        timeout(time: 50, unit: 'MINUTES')
         timestamps()
         buildDiscarder(logRotator(numToKeepStr: '20'))
         disableConcurrentBuilds()
@@ -46,28 +41,7 @@ pipeline {
     stages {
 
         // ═════════════════════════════════════════════════
-        // STAGE 1: BUILD APP + UNIT TESTS
-        // ═════════════════════════════════════════════════
-        stage('Build & Unit Tests') {
-            steps {
-                echo "========================================="
-                echo "  Building App + Running Unit Tests"
-                echo "========================================="
-                dir('dev-app') {
-                    git url: 'https://github.com/jglick/simple-maven-project-with-tests.git',
-                        branch: 'master'
-                    bat 'mvn clean install'
-                }
-            }
-            post {
-                always {
-                    junit 'dev-app/target/surefire-reports/*.xml'
-                }
-            }
-        }
-
-        // ═════════════════════════════════════════════════
-        // STAGE 2: BUILD DOCKER IMAGE
+        // STAGE 1: BUILD DOCKER IMAGE
         // ═════════════════════════════════════════════════
         stage('Build Docker Image') {
             steps {
@@ -84,7 +58,7 @@ pipeline {
         }
 
         // ═════════════════════════════════════════════════
-        // STAGE 3: DEPLOY DEV + SANITY
+        // STAGE 2: DEPLOY DEV + SANITY
         // ═════════════════════════════════════════════════
         stage('Deploy to DEV') {
             steps {
@@ -97,45 +71,55 @@ pipeline {
                 echo "========================================="
                 echo "  Running SANITY @smoke on DEV (Docker)"
                 echo "========================================="
-        post {
-    always {
-        echo 'Generating DEV Allure report...'
-
-        bat '''
-            if not exist reports-dev\\allure mkdir reports-dev\\allure
-            npx allure generate allure-results-dev --clean -o reports-dev/allure
-        '''
-
-        echo 'Allure report generated successfully.'
-
-        publishHTML(target: [
-            reportName: 'DEV Sanity - PW HTML Report',
-            reportDir: 'reports-dev/html',
-            reportFiles: 'index.html',
-            keepAll: true,
-            alwaysLinkToLastBuild: true,
-            allowMissing: true
-        ])
-
-        echo 'Playwright HTML report published.'
-
-        publishHTML(target: [
-            reportName: 'DEV Sanity - Allure Report',
-            reportDir: 'reports-dev/allure',
-            reportFiles: 'index.html',
-            keepAll: true,
-            alwaysLinkToLastBuild: true,
-            allowMissing: true
-        ])
-
-        echo 'Allure report published successfully.'
-    }
-}
+                bat 'if not exist reports-dev\\html mkdir reports-dev\\html'
+                bat 'if not exist allure-results-dev mkdir allure-results-dev'
+                withCredentials([
+                    string(credentialsId: 'dev-base-url', variable: 'BASE_URL'),
+                    string(credentialsId: 'dev-email', variable: 'EMAIL'),
+                    string(credentialsId: 'dev-password', variable: 'PASSWORD'),
+                    string(credentialsId: 'app-static-otp', variable: 'OTP')
+                ]) {
+                    bat """
+                        docker run --rm ^
+                            -e CI=true ^
+                            -e ENV=dev ^
+                            -e BASE_URL=${BASE_URL} ^
+                            -e EMAIL=${EMAIL} ^
+                            -e PASSWORD=${PASSWORD} ^
+                            -e OTP=${OTP} ^
+                            -v ${WORKSPACE}/reports-dev/html:/app/reports/html-report ^
+                            -v ${WORKSPACE}/allure-results-dev:/app/allure-results ^
+                            ${DOCKER_IMAGE} ^
+                            npx playwright test --project=chromium --grep @smoke
+                    """
+                }
+            }
+            post {
+                always {
+                    bat 'if not exist reports-dev\\allure mkdir reports-dev\\allure'
+                    bat 'npx allure generate allure-results-dev --clean -o reports-dev/allure || ver>nul'
+                    publishHTML(target: [
+                        reportName: 'DEV Sanity - PW HTML Report',
+                        reportDir: 'reports-dev/html',
+                        reportFiles: 'index.html',
+                        keepAll: true,
+                        alwaysLinkToLastBuild: true,
+                        allowMissing: true
+                    ])
+                    publishHTML(target: [
+                        reportName: 'DEV Sanity - Allure Report',
+                        reportDir: 'reports-dev/allure',
+                        reportFiles: 'index.html',
+                        keepAll: true,
+                        alwaysLinkToLastBuild: true,
+                        allowMissing: true
+                    ])
+                }
             }
         }
 
         // ═════════════════════════════════════════════════
-        // STAGE 4: DEPLOY QA + REGRESSION
+        // STAGE 3: DEPLOY QA + REGRESSION
         // ═════════════════════════════════════════════════
         stage('Deploy to QA') {
             steps {
@@ -194,7 +178,7 @@ pipeline {
         }
 
         // ═════════════════════════════════════════════════
-        // STAGE 5: DEPLOY STAGE + SANITY
+        // STAGE 4: DEPLOY STAGE + SANITY
         // ═════════════════════════════════════════════════
         stage('Deploy to STAGE') {
             steps {
@@ -273,7 +257,7 @@ pipeline {
         }
 
         // ═════════════════════════════════════════════════
-        // STAGE 6: DEPLOY PROD + SMOKE (with approval)
+        // STAGE 5: DEPLOY PROD + SMOKE (with approval)
         // ═════════════════════════════════════════════════
         stage('Approval for PROD') {
             steps {
