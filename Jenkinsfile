@@ -70,16 +70,14 @@ pipeline {
                 bat 'if not exist reports-dev\\html mkdir reports-dev\\html'
                 bat 'if not exist allure-results-dev mkdir allure-results-dev'
                 withCredentials([
-                    string(credentialsId: 'dev-base-url', variable: 'BASE_URL'),
-                    string(credentialsId: 'dev-email', variable: 'EMAIL'),
-                    string(credentialsId: 'dev-password', variable: 'PASSWORD'),
+                    usernamePassword(credentialsId: 'dev-credentials', usernameVariable: 'EMAIL', passwordVariable: 'PASSWORD'),
                     string(credentialsId: 'app-static-otp', variable: 'OTP')
                 ]) {
                     bat """
                         docker run --rm ^
                             -e CI=true ^
                             -e ENV=dev ^
-                            -e BASE_URL=${BASE_URL} ^
+                            -e BASE_URL=https://stage-exchange.knooz.com ^
                             -e EMAIL=${EMAIL} ^
                             -e PASSWORD=${PASSWORD} ^
                             -e OTP=${OTP} ^
@@ -131,16 +129,14 @@ pipeline {
                 bat 'if not exist reports-qa\\html mkdir reports-qa\\html'
                 bat 'if not exist allure-results-qa mkdir allure-results-qa'
                 withCredentials([
-                    string(credentialsId: 'qa-base-url', variable: 'BASE_URL'),
-                    string(credentialsId: 'qa-email', variable: 'EMAIL'),
-                    string(credentialsId: 'qa-password', variable: 'PASSWORD'),
+                    usernamePassword(credentialsId: 'qa-credentials', usernameVariable: 'EMAIL', passwordVariable: 'PASSWORD'),
                     string(credentialsId: 'app-static-otp', variable: 'OTP')
                 ]) {
                     bat """
                         docker run --rm ^
                             -e CI=true ^
                             -e ENV=qa ^
-                            -e BASE_URL=${BASE_URL} ^
+                            -e BASE_URL=https://stage-exchange.knooz.com ^
                             -e EMAIL=${EMAIL} ^
                             -e PASSWORD=${PASSWORD} ^
                             -e OTP=${OTP} ^
@@ -190,39 +186,28 @@ pipeline {
                 bat 'if not exist reports-stage\\html mkdir reports-stage\\html'
                 bat 'if not exist allure-results-stage mkdir allure-results-stage'
                 withCredentials([
-                    string(credentialsId: 'stage-base-url', variable: 'BASE_URL'),
-                    string(credentialsId: 'stage-email', variable: 'EMAIL'),
-                    string(credentialsId: 'stage-password', variable: 'PASSWORD'),
+                    usernamePassword(credentialsId: 'stage-credentials', usernameVariable: 'EMAIL', passwordVariable: 'PASSWORD'),
                     string(credentialsId: 'app-static-otp', variable: 'OTP'),
-                    string(credentialsId: 'trade-base-url', variable: 'TRADE_BASE_URL'),
-                    string(credentialsId: 'trade-user-email', variable: 'TRADE_USER_EMAIL'),
-                    string(credentialsId: 'trade-user-password', variable: 'TRADE_USER_PASSWORD'),
-                    string(credentialsId: 'trade-2fa-secret', variable: 'TRADE_2FA_SECRET'),
-                    string(credentialsId: 'trade-buy-market', variable: 'TRADE_BUY_MARKET'),
-                    string(credentialsId: 'trade-buy-volume', variable: 'TRADE_BUY_VOLUME'),
-                    string(credentialsId: 'trade-buy-price', variable: 'TRADE_BUY_PRICE'),
-                    string(credentialsId: 'trade-sell-market', variable: 'TRADE_SELL_MARKET'),
-                    string(credentialsId: 'trade-sell-volume', variable: 'TRADE_SELL_VOLUME'),
-                    string(credentialsId: 'trade-sell-price', variable: 'TRADE_SELL_PRICE')
+                    string(credentialsId: 'app-totp-secret', variable: 'TRADE_2FA_SECRET')
                 ]) {
                     bat """
                         docker run --rm ^
                             -e CI=true ^
                             -e ENV=stage ^
-                            -e BASE_URL=${BASE_URL} ^
+                            -e BASE_URL=https://stage-exchange.knooz.com ^
                             -e EMAIL=${EMAIL} ^
                             -e PASSWORD=${PASSWORD} ^
                             -e OTP=${OTP} ^
-                            -e TRADE_BASE_URL=${TRADE_BASE_URL} ^
-                            -e TRADE_USER_EMAIL=${TRADE_USER_EMAIL} ^
-                            -e TRADE_USER_PASSWORD=${TRADE_USER_PASSWORD} ^
+                            -e TRADE_BASE_URL=https://stage-exchange.knooz.com ^
+                            -e TRADE_USER_EMAIL=${EMAIL} ^
+                            -e TRADE_USER_PASSWORD=${PASSWORD} ^
                             -e TRADE_2FA_SECRET=${TRADE_2FA_SECRET} ^
-                            -e TRADE_BUY_MARKET=${TRADE_BUY_MARKET} ^
-                            -e TRADE_BUY_VOLUME=${TRADE_BUY_VOLUME} ^
-                            -e TRADE_BUY_PRICE=${TRADE_BUY_PRICE} ^
-                            -e TRADE_SELL_MARKET=${TRADE_SELL_MARKET} ^
-                            -e TRADE_SELL_VOLUME=${TRADE_SELL_VOLUME} ^
-                            -e TRADE_SELL_PRICE=${TRADE_SELL_PRICE} ^
+                            -e TRADE_BUY_MARKET=btcusdt ^
+                            -e TRADE_BUY_VOLUME=0.0001 ^
+                            -e TRADE_BUY_PRICE=62500 ^
+                            -e TRADE_SELL_MARKET=btcusdt ^
+                            -e TRADE_SELL_VOLUME=0.0001 ^
+                            -e TRADE_SELL_PRICE=85000 ^
                             -v ${WORKSPACE}/reports-stage/html:/app/reports/html-report ^
                             -v ${WORKSPACE}/allure-results-stage:/app/allure-results ^
                             ${DOCKER_IMAGE} ^
@@ -277,16 +262,14 @@ pipeline {
                 bat 'if not exist reports-prod\\html mkdir reports-prod\\html'
                 bat 'if not exist allure-results-prod mkdir allure-results-prod'
                 withCredentials([
-                    string(credentialsId: 'prod-base-url', variable: 'BASE_URL'),
-                    string(credentialsId: 'prod-email', variable: 'EMAIL'),
-                    string(credentialsId: 'prod-password', variable: 'PASSWORD'),
+                    usernamePassword(credentialsId: 'prod-credentials', usernameVariable: 'EMAIL', passwordVariable: 'PASSWORD'),
                     string(credentialsId: 'app-static-otp', variable: 'OTP')
                 ]) {
                     bat """
                         docker run --rm ^
                             -e CI=true ^
                             -e ENV=prod ^
-                            -e BASE_URL=${BASE_URL} ^
+                            -e BASE_URL=https://stage-exchange.knooz.com ^
                             -e EMAIL=${EMAIL} ^
                             -e PASSWORD=${PASSWORD} ^
                             -e OTP=${OTP} ^
