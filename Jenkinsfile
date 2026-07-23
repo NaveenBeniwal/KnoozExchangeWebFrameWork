@@ -73,19 +73,19 @@ pipeline {
                     usernamePassword(credentialsId: 'dev-credentials', usernameVariable: 'EMAIL', passwordVariable: 'PASSWORD'),
                     string(credentialsId: 'app-static-otp', variable: 'OTP')
                 ]) {
-                    bat """
+                    bat '''
                         docker run --rm ^
                             -e CI=true ^
                             -e ENV=dev ^
                             -e BASE_URL=https://stage-exchange.knooz.com ^
-                            -e EMAIL=${EMAIL} ^
-                            -e PASSWORD=${PASSWORD} ^
-                            -e OTP=${OTP} ^
-                            -v ${WORKSPACE}/reports-dev/html:/app/reports/html-report ^
-                            -v ${WORKSPACE}/allure-results-dev:/app/allure-results ^
-                            ${DOCKER_IMAGE} ^
+                            -e EMAIL=%EMAIL% ^
+                            -e PASSWORD=%PASSWORD% ^
+                            -e OTP=%OTP% ^
+                            -v "%WORKSPACE%/reports-dev/html:/app/reports/html-report" ^
+                            -v "%WORKSPACE%/allure-results-dev:/app/allure-results" ^
+                            %DOCKER_IMAGE% ^
                             npx playwright test --project=chromium --grep @smoke
-                    """
+                    '''
                 }
             }
             post {
@@ -132,19 +132,19 @@ pipeline {
                     usernamePassword(credentialsId: 'qa-credentials', usernameVariable: 'EMAIL', passwordVariable: 'PASSWORD'),
                     string(credentialsId: 'app-static-otp', variable: 'OTP')
                 ]) {
-                    bat """
+                    bat '''
                         docker run --rm ^
                             -e CI=true ^
                             -e ENV=qa ^
                             -e BASE_URL=https://stage-exchange.knooz.com ^
-                            -e EMAIL=${EMAIL} ^
-                            -e PASSWORD=${PASSWORD} ^
-                            -e OTP=${OTP} ^
-                            -v ${WORKSPACE}/reports-qa/html:/app/reports/html-report ^
-                            -v ${WORKSPACE}/allure-results-qa:/app/allure-results ^
-                            ${DOCKER_IMAGE} ^
+                            -e EMAIL=%EMAIL% ^
+                            -e PASSWORD=%PASSWORD% ^
+                            -e OTP=%OTP% ^
+                            -v "%WORKSPACE%/reports-qa/html:/app/reports/html-report" ^
+                            -v "%WORKSPACE%/allure-results-qa:/app/allure-results" ^
+                            %DOCKER_IMAGE% ^
                             npx playwright test --project=chromium --grep @smoke
-                    """
+                    '''
                 }
             }
             post {
@@ -190,29 +190,29 @@ pipeline {
                     string(credentialsId: 'app-static-otp', variable: 'OTP'),
                     string(credentialsId: 'app-totp-secret', variable: 'TRADE_2FA_SECRET')
                 ]) {
-                    bat """
+                    bat '''
                         docker run --rm ^
                             -e CI=true ^
                             -e ENV=stage ^
                             -e BASE_URL=https://stage-exchange.knooz.com ^
-                            -e EMAIL=${EMAIL} ^
-                            -e PASSWORD=${PASSWORD} ^
-                            -e OTP=${OTP} ^
+                            -e EMAIL=%EMAIL% ^
+                            -e PASSWORD=%PASSWORD% ^
+                            -e OTP=%OTP% ^
                             -e TRADE_BASE_URL=https://stage-exchange.knooz.com ^
-                            -e TRADE_USER_EMAIL=${EMAIL} ^
-                            -e TRADE_USER_PASSWORD=${PASSWORD} ^
-                            -e TRADE_2FA_SECRET=${TRADE_2FA_SECRET} ^
+                            -e TRADE_USER_EMAIL=%EMAIL% ^
+                            -e TRADE_USER_PASSWORD=%PASSWORD% ^
+                            -e TRADE_2FA_SECRET=%TRADE_2FA_SECRET% ^
                             -e TRADE_BUY_MARKET=btcusdt ^
                             -e TRADE_BUY_VOLUME=0.0001 ^
                             -e TRADE_BUY_PRICE=62500 ^
                             -e TRADE_SELL_MARKET=btcusdt ^
                             -e TRADE_SELL_VOLUME=0.0001 ^
                             -e TRADE_SELL_PRICE=85000 ^
-                            -v ${WORKSPACE}/reports-stage/html:/app/reports/html-report ^
-                            -v ${WORKSPACE}/allure-results-stage:/app/allure-results ^
-                            ${DOCKER_IMAGE} ^
+                            -v "%WORKSPACE%/reports-stage/html:/app/reports/html-report" ^
+                            -v "%WORKSPACE%/allure-results-stage:/app/allure-results" ^
+                            %DOCKER_IMAGE% ^
                             npx playwright test --project=chromium --grep @sanity
-                    """
+                    '''
                 }
             }
             post {
@@ -265,19 +265,19 @@ pipeline {
                     usernamePassword(credentialsId: 'prod-credentials', usernameVariable: 'EMAIL', passwordVariable: 'PASSWORD'),
                     string(credentialsId: 'app-static-otp', variable: 'OTP')
                 ]) {
-                    bat """
+                    bat '''
                         docker run --rm ^
                             -e CI=true ^
                             -e ENV=prod ^
                             -e BASE_URL=https://stage-exchange.knooz.com ^
-                            -e EMAIL=${EMAIL} ^
-                            -e PASSWORD=${PASSWORD} ^
-                            -e OTP=${OTP} ^
-                            -v ${WORKSPACE}/reports-prod/html:/app/reports/html-report ^
-                            -v ${WORKSPACE}/allure-results-prod:/app/allure-results ^
-                            ${DOCKER_IMAGE} ^
+                            -e EMAIL=%EMAIL% ^
+                            -e PASSWORD=%PASSWORD% ^
+                            -e OTP=%OTP% ^
+                            -v "%WORKSPACE%/reports-prod/html:/app/reports/html-report" ^
+                            -v "%WORKSPACE%/allure-results-prod:/app/allure-results" ^
+                            %DOCKER_IMAGE% ^
                             npx playwright test --project=chromium --grep @smoke
-                    """
+                    '''
                 }
             }
             post {
