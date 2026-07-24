@@ -193,10 +193,6 @@ export class PortfolioSpotPage extends BasePage {
             const totalUsd    = this.parseUsdValue(totalText);
 
             balances.push({ coin, spotBalance, inOrder, total, totalUsd });
-            console.log(
-                `[Portfolio] ${coin.padEnd(8)} spot=${String(spotBalance).padEnd(14)}` +
-                ` inOrder=${String(inOrder).padEnd(14)} total=${total} ~$${totalUsd}`
-            );
         }
         return balances;
     }

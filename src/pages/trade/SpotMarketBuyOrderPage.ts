@@ -61,7 +61,9 @@ export class SpotMarketBuyOrderPage extends SpotTradingBasePage {
         } else {
             // Fallback: calculate amount from current market price
             const mktPrice = await this.getCurrentMarketPrice();
-            const amount   = mktPrice > 0 ? parseFloat((totalSpend / mktPrice).toFixed(6)) : totalSpend;
+            // Truncate (not round) to 5 decimals — rounding up can push the computed spend
+            // above the requested total.
+            const amount   = mktPrice > 0 ? Math.floor((totalSpend / mktPrice) * 100000) / 100000 : totalSpend;
             await this.marketAmountInput.click({ clickCount: 3 });
             await this.marketAmountInput.pressSequentially(amount.toString(), { delay: 30 });
             await this.page.waitForTimeout(500);

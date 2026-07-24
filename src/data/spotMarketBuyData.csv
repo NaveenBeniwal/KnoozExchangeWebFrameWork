@@ -1,2 +1,2 @@
-buyCurrency,sellCurrency,searchPair,buyTotal,tradeSuccessMsg,feePercent,orderType,orderSide,allOrdersSide,tradeHistorySide
-USDT,BTC,BTC/USDT,8,Order created successfully.,0.15,Market,Buy Full,Buy Full,Buy
+buyCurrency,sellCurrency,searchPair,buyTotal,tradeSuccessMsg,makerFeePercent,takerFeePercent,orderType,orderSide,allOrdersSide,tradeHistorySide
+USDT,BTC,BTC/USDT,8,Order created successfully.,0.02,0.03,Market,Buy Full,Buy Full,Buy

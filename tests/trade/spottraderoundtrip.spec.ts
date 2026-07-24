@@ -35,13 +35,11 @@ let soldAmount         = 0;
 let buyExecutedPrice   = 0;
 let sellExecutedPrice  = 0;
 
-// Prints every field of a balance snapshot (Avlb, Funds tab, Portfolio coins) so the
-// HTML report's console output shows the full picture, not just a one-line summary.
+// One-line balance headline at each checkpoint (before buy / after buy / before sell /
+// after sell) — the per-field expected-vs-actual detail is already reported separately
+// by compareSnapshots(), so this only needs to say where the balance stood at that point.
 function logSnapshot(label: string, snap: FullBalanceSnapshot): void {
     console.log(`[${label}] Buy Avlb (${quoteCoin}): ${snap.buyAvlb} | Sell Avlb (${baseCoin}): ${snap.sellAvlb}`);
-    console.log(`[${label}] Funds — current pair: ${JSON.stringify(snap.fundsCurrentPair)}`);
-    console.log(`[${label}] Funds — other assets: ${JSON.stringify(snap.fundsOtherAssets)}`);
-    console.log(`[${label}] Portfolio coins: ${JSON.stringify(snap.portfolioCoins)}`);
 }
 
 test.describe.serial('Spot Module — Buy/Sell Round-Trip Smoke & Sanity Flow', () => {
@@ -56,11 +54,10 @@ test.describe.serial('Spot Module — Buy/Sell Round-Trip Smoke & Sanity Flow', 
         spotBuyPage       = new SpotBuyLimitOrderPage(page);
         spotSellPage      = new SpotSellLimitOrderPage(page);
         portfolioSpotPage = new PortfolioSpotPage(page);
-        console.log(`[Setup] Trade CSV row (src/data/spotTradeRoundTripData.csv): ${JSON.stringify(tradeData)}`);
         await loginPage.goToLoginPage();
         await loginPage.doLogin(process.env.EMAIL!, process.env.PASSWORD!, process.env.OTP!).catch(() => {});
         await loginPage.dismissPostLoginDialogsAndWaitForHome();
-        console.log(`[Setup] Logged in as: ${process.env.EMAIL}`);
+         console.log(`[Setup] Logged in as: ${process.env.EMAIL}`);
     });
 
     test.afterAll(async () => { await browser.close(); });
@@ -101,7 +98,7 @@ test.describe.serial('Spot Module — Buy/Sell Round-Trip Smoke & Sanity Flow', 
         const results = await spotBuyPage.validateMarketFillBalance(
             portfolioSpotPage, tradeData.searchPair, snapshotBeforeBuy,
             buyExecutedPrice, boughtAmount, parseFloat(tradeData.aboveMarketLimitPrice ?? '70000'),
-            quoteCoin, baseCoin, 'buy',
+            quoteCoin, baseCoin, 'buy', parseFloat(tradeData.takerFeePercent ?? '0'),
         );
         for (const r of results) expect.soft(r.pass, r.msg).toBe(true);
         console.log(`[TC-RT-04] Balance verified after buy fill | Executed Price: ${buyExecutedPrice} | Amount: ${boughtAmount}`);
@@ -126,7 +123,7 @@ test.describe.serial('Spot Module — Buy/Sell Round-Trip Smoke & Sanity Flow', 
         test.skip(!buyOrderSucceeded, 'Buy order did not succeed — skipping sell leg.');
         const limitPrice = parseFloat(tradeData.belowMarketLimitPrice ?? '50000');
         const sellTotal  = parseFloat(tradeData.sellTotal ?? tradeData.buyTotal ?? '10');
-        const sellAmount = parseFloat((sellTotal / limitPrice).toFixed(6));
+        const sellAmount = parseFloat((sellTotal / limitPrice).toFixed(5));
         const r = await spotSellPage.placeBelowMarketLimitSell(limitPrice, sellAmount);
         sellOrderSucceeded = r.successMsg.toLowerCase().includes('success') || r.successMsg.toLowerCase().includes('creat');
         sellExecutedPrice  = r.executedPrice;
@@ -142,7 +139,7 @@ test.describe.serial('Spot Module — Buy/Sell Round-Trip Smoke & Sanity Flow', 
         const results = await spotSellPage.validateMarketFillBalance(
             portfolioSpotPage, tradeData.searchPair, snapshotBeforeSell,
             sellExecutedPrice, soldAmount, parseFloat(tradeData.belowMarketLimitPrice ?? '50000'),
-            quoteCoin, baseCoin, 'sell',
+            quoteCoin, baseCoin, 'sell', parseFloat(tradeData.takerFeePercent ?? '0'),
         );
         for (const r of results) expect.soft(r.pass, r.msg).toBe(true);
         console.log(`[TC-RT-07] Balance verified after sell fill | Executed Price: ${sellExecutedPrice} | Amount: ${soldAmount} — round trip complete`);

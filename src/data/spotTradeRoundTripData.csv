@@ -1,2 +1,2 @@
-buyCurrency,sellCurrency,searchPair,aboveMarketLimitPrice,buyTotal,belowMarketLimitPrice,sellTotal,feePercent
-USDT,BTC,BTC/USDT,70000,10,60000,10,0.15
+buyCurrency,sellCurrency,searchPair,aboveMarketLimitPrice,buyTotal,belowMarketLimitPrice,sellTotal,makerFeePercent,takerFeePercent
+USDT,BTC,BTC/USDT,70000,10,60000,10,0.02,0.03

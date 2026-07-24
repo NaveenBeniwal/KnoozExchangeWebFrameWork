@@ -1,5 +1,35 @@
 import type { Locator, Page } from '@playwright/test';
+import crypto from 'crypto';
 import { BasePage } from './BasePage';
+
+// Same TOTP (RFC 6238) implementation already used by src/api/TradeApiHelper.ts for the API-level
+// 2FA login flow — duplicated here rather than imported since that module doesn't export it.
+function generateTOTP(base32Secret: string): string {
+    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+    const clean = base32Secret.replace(/=+$/, '').toUpperCase();
+    let bits = '';
+    for (const char of clean) {
+        const idx = alphabet.indexOf(char);
+        if (idx === -1) continue;
+        bits += idx.toString(2).padStart(5, '0');
+    }
+    const keyBytes = Buffer.alloc(Math.floor(bits.length / 8));
+    for (let i = 0; i < keyBytes.length; i++) {
+        keyBytes[i] = parseInt(bits.slice(i * 8, i * 8 + 8), 2);
+    }
+    const step = Math.floor(Date.now() / 1000 / 30);
+    const msg = Buffer.alloc(8);
+    msg.writeBigUInt64BE(BigInt(step));
+    const digest = crypto.createHmac('sha1', keyBytes).update(msg).digest();
+    const offset = digest[19] & 0x0f;
+    const code =
+        (((digest[offset] & 0x7f) << 24) |
+            ((digest[offset + 1] & 0xff) << 16) |
+            ((digest[offset + 2] & 0xff) << 8) |
+            (digest[offset + 3] & 0xff)) %
+        1_000_000;
+    return code.toString().padStart(6, '0');
+}
 
 export class LoginPage extends BasePage {
 
@@ -57,15 +87,41 @@ export class LoginPage extends BasePage {
     }
 
     async doLogin(email: string, password: string, otp: string): Promise<void> {
-        console.log(`user creds: ${email} : ${password} : ${otp}`);
         await this.emailInput.fill(email);
         await this.passwordInput.fill(password);
         await this.continueButton.click();
-        await this.getOtpButton.click();
-        await this.page.waitForTimeout(2000);
-        await this.codeInput.fill(otp);
-        await this.page.waitForTimeout(2000);
-        await this.continueButton.click();
+
+        // Some accounts show a "Get OTP" button (static email OTP flow); others go straight to
+        // a 2FA authenticator code field with no such button. Detect which one applies.
+        const getOtpVisible = await this.getOtpButton.isVisible({ timeout: 4000 }).catch(() => false);
+
+        if (getOtpVisible) {
+            await this.getOtpButton.click();
+            await this.page.waitForTimeout(2000);
+            await this.codeInput.fill(otp);
+            await this.page.waitForTimeout(2000);
+            await this.continueButton.click();
+        } else {
+            const totpSecret = process.env.UI_2FA_SECRET;
+            const code = totpSecret ? generateTOTP(totpSecret) : otp;
+            await this.page.waitForTimeout(2000);
+
+            // This screen ("Enter 2FA code from the app") renders one single-digit textbox per
+            // code digit instead of the single named "Enter code" field the email-OTP flow uses —
+            // confirmed via a live failure snapshot showing 6 unnamed textboxes. Fill each one.
+            const digitInputs = this.page.getByRole('textbox');
+            const boxCount = await digitInputs.count();
+            if (boxCount > 1) {
+                for (let i = 0; i < code.length && i < boxCount; i++) {
+                    await digitInputs.nth(i).fill(code[i]);
+                }
+            } else {
+                await this.codeInput.fill(code);
+            }
+            // The 2FA digit-box screen has no Continue button at all — it auto-submits once the
+            // last digit is filled. Only the "Get OTP" branch above has a Continue button to click.
+            await this.page.waitForTimeout(2000);
+        }
         // Toast is transient — may vanish before a slow worker checks it.
         // Fall back to waiting for the Home nav item which persists after login.
         await this.loginSuccessMessage.waitFor({ state: 'visible', timeout: 15000 }).catch(async () => {

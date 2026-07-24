@@ -136,8 +136,10 @@ export class SpotSellLimitOrderPage extends SpotTradingBasePage {
     // For sell orders: a limit price BELOW the current best bid fills at market.
 
     async placeBelowMarketLimitSell(limitPrice: number, amount: number): Promise<{
-        limitPrice: number; executedPrice: number; amount: number; successMsg: string; orderId: string;
+        limitPrice: number; executedPrice: number; amount: number; requestedAmount: number; successMsg: string; orderId: string;
     }> {
+        const requestedAmount = amount;
+
         await this.sellTabButton.click().catch(() => {});
         await this.limitTabButton.click().catch(() => {});
         await this.page.waitForTimeout(300);
@@ -145,7 +147,7 @@ export class SpotSellLimitOrderPage extends SpotTradingBasePage {
         await this.limitPriceInput.fill(limitPrice.toString());
         await this.page.waitForTimeout(300);
         await this.limitAmountInput.click({ clickCount: 3 });
-        await this.limitAmountInput.pressSequentially(amount.toString(), { delay: 30 });
+        await this.limitAmountInput.pressSequentially(requestedAmount.toString(), { delay: 30 });
         await this.page.waitForTimeout(500);
         await this.sellSubmitButton.click();
 
@@ -158,11 +160,24 @@ export class SpotSellLimitOrderPage extends SpotTradingBasePage {
 
         await this.allOrdersTab.click();
         await this.page.waitForTimeout(1000);
-        const cells = await this.findMainTableRow();
+
+        // The row for a taker fill can briefly show before the exchange finishes computing the
+        // average execution price — reading it once right away can catch "Executed" still at 0
+        // (confirmed live: TC-44, which reads the same row a few seconds later, always sees it
+        // populated). Poll until it settles instead of trusting the first read.
+        let cells = await this.findMainTableRow();
+        for (let attempt = 0; attempt < 6 && this.parseNumber(cells[5] ?? '0') <= 0; attempt++) {
+            await this.page.waitForTimeout(1000);
+            cells = await this.findMainTableRow();
+        }
         const executedPrice = this.parseNumber(cells[5] ?? '0');
+        // Exchange rounds the requested amount to its own quantity precision — the "Filled"
+        // column (cells[7]) is the actual traded quantity, which can differ from what we typed.
+        const filledAmount  = this.parseNumber(cells[7] ?? '0');
+        const actualAmount  = filledAmount > 0 ? filledAmount : requestedAmount;
         const orderId = cells.length ? (cells[1] ?? '').trim() : '';
-        console.log(`[SpotSellLimit] placeBelowMarketLimitSell | LimitPrice: ${limitPrice} | ExecutedPrice: ${executedPrice} | Amount: ${amount} | OrderId: ${orderId}`);
-        return { limitPrice, executedPrice, amount, successMsg, orderId };
+        console.log(`[SpotSellLimit] placeBelowMarketLimitSell | LimitPrice: ${limitPrice} | ExecutedPrice: ${executedPrice} | Requested: ${requestedAmount} | Filled: ${actualAmount} | OrderId: ${orderId}`);
+        return { limitPrice, executedPrice, amount: actualAmount, requestedAmount, successMsg, orderId };
     }
 
     // ─── Verify below-market sell in All Orders ───────────────────────────────
@@ -214,7 +229,9 @@ export class SpotSellLimitOrderPage extends SpotTradingBasePage {
         orderId: string; successMsg: string; actualTotal: number; balanceBefore: number;
         actual: number; totalOk: boolean; pctBelow: number; pctBelowOk: boolean;
     }> {
-        const amount = parseFloat((total / limitPrice).toFixed(6));
+        // Truncate (not round) to 5 decimals — rounding up can push the computed total
+        // above what was actually entered, which "total must not exceed entered" checks reject.
+        const amount = Math.floor((total / limitPrice) * 100000) / 100000;
         await this.buyTabButton.click().catch(() => {});
         await this.limitTabButton.click().catch(() => {});
         await this.page.waitForTimeout(300);
