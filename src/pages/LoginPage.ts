@@ -86,6 +86,12 @@ export class LoginPage extends BasePage {
         return await this.forgotPasswordLink.isVisible();
     }
 
+    /**
+     * Performs login with the given email, password, and OTP.
+     * @param email - The user's email address.
+     * @param password - The user's password.
+     * @param otp - The one-time password.
+     */
     async doLogin(email: string, password: string, otp: string): Promise<void> {
         await this.emailInput.fill(email);
         await this.passwordInput.fill(password);
