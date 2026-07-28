@@ -93,7 +93,9 @@ export class LoginPage extends BasePage {
 
         // Some accounts show a "Get OTP" button (static email OTP flow); others go straight to
         // a 2FA authenticator code field with no such button. Detect which one applies.
-        const getOtpVisible = await this.getOtpButton.isVisible({ timeout: 4000 }).catch(() => false);
+        const getOtpVisible = await this.getOtpButton.waitFor({ state: 'visible', timeout: 15000 }).then(() => true).catch(() => false);
+        console.log(getOtpVisible ? '[LoginPage] Detected "Get OTP" button — using email OTP flow' : '[LoginPage] No "Get OTP" button — using 2FA authenticator flow');
+
 
         if (getOtpVisible) {
             await this.getOtpButton.click();
